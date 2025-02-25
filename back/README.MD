@@ -1,0 +1,2 @@
+- Créer un fichier `.env.local`
+- Générer une clé secrète pour le JWT : `php bin/console lexik:jwt:generate-keypair`
