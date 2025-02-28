@@ -73,6 +73,15 @@ const store = createStore({
                 console.error("Erreur lors de la réinitialisation du mot de passe:", error)
                 throw error
             }
+        },
+
+        async register({ commit }, userData) {
+            try {
+                await AuthService.register(userData);
+            } catch (error) {
+                console.error("Erreur lors de l'inscription:", error);
+                throw error;
+            }
         }
     },
     getters: {

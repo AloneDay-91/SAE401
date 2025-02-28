@@ -84,6 +84,22 @@ class AuthService {
         }
     }
 
+    async register({ email, roles, password, nom, prenom }) {
+        try {
+            const response = await axios.post(
+                `${API_URL}/users`,
+                { email, roles, password, nom, prenom },
+                {
+                    headers: { "Content-Type": "application/ld+json" }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Erreur lors de l'inscription :", error.response?.data || error);
+            throw error;
+        }
+    }
+
 
     setupAxiosInterceptors() {
         const token = this.getToken();

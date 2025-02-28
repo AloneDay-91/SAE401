@@ -42,7 +42,10 @@ const handleLogout = () => {
           <button @click="handleLogout">Déconnexion</button>
         </div>
 
-        <RouterLink v-else to="/connexion">Connexion</RouterLink>
+        <div v-else>
+          <RouterLink to="/connexion">Connexion</RouterLink>
+          <RouterLink to="/inscription">Inscription</RouterLink>
+        </div>
       </nav>
     </div>
   </header>

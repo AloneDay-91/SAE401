@@ -16,14 +16,11 @@ L'objectif est de concevoir une application web qui permet aux étudiants de cen
 ![Tailwind CSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
 
-### Fonctionnalités
-En cours de réflexion
-
 ## Installation et initialisation du projet
 ### Partie Local
 - Cloner le projet : `git clone https://github.com/AloneDay-91/SAE401.git`
 - Installer les dépendances PHP pour le Back : `composer install`
-- Installer les dépendances JS pour le Front : `npm install`
+- Installer les dépendances JS pour le Front et le Back : `npm install`
 - Créer un fichier `.env.local` et configurer la connexion à la base de données ainsi que l'adresse sur serveur de mail
 - Créer la base de données : `php bin/console doctrine:database:create`
 - Créer les tables : `php bin/console doctrine:migrations:migrate`
