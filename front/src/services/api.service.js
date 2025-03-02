@@ -23,15 +23,14 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401) {
-            AuthService.logout();
+        if (error.response?.status === 401 || AuthService.isTokenExpired()) {
+            store.dispatch('logout');
             router.push("/connexion");
-            return Promise.reject(
-                new Error("Session expirée. Veuillez vous reconnecter.")
-            );
+            return Promise.reject(new Error("Session expirée. Veuillez vous reconnecter."));
         }
         return Promise.reject(error);
     }
 );
+
 
 export default api;

@@ -9,7 +9,7 @@ class AuthService {
             const response = await axios.post(
                 `${API_URL}/auth`,
                 { email, password },
-                { headers: { "Content-Type": "application/json" } }
+                { headers: { "Content-Type": "application/ld+json" } }
             );
 
             if (response.data.token) {
@@ -125,6 +125,20 @@ class AuthService {
             return false;
         }
     }
+
+    isTokenExpired() {
+        const token = localStorage.getItem('token')
+        if (!token) return true
+
+        try {
+            const decoded = jwtDecode(token)
+            return decoded.exp * 1000 < Date.now()
+        } catch (error) {
+            console.error("Erreur lors de la vérification de l'expiration du token:", error)
+            return true
+        }
+    }
+
 }
 
 export default new AuthService();

@@ -1,7 +1,7 @@
 <script setup>
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import { computed, onMounted } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
 const store = useStore()
 const router = useRouter()
@@ -12,23 +12,33 @@ const isAuthenticated = computed(() => !!store.state.token)
 // Récupérer l'utilisateur depuis Vuex
 const user = computed(() => store.state.user)
 
-// Charger l'utilisateur si connecté
-onMounted(async () => {
-  if (isAuthenticated.value && user.value === null) {
-    try {
-      await store.dispatch('fetchUser') // Appelle l'action pour récupérer l'utilisateur
-    } catch (error) {
-      console.error("Erreur lors du chargement de l'utilisateur:", error)
+// Référence pour l'intervalle de vérification du token
+
+const tokenCheckInterval = ref(null)
+
+onMounted(() => {
+    // Vérifier immédiatement l'expiration du token
+    store.dispatch('checkTokenExpiration')
+
+    // Puis configurer la vérification périodique
+    tokenCheckInterval.value = setInterval(() => {
+        store.dispatch('checkTokenExpiration')
+    }, 60000) // Vérifier toutes les minutes
+})
+
+onBeforeUnmount(() => {
+    if (tokenCheckInterval.value) {
+        clearInterval(tokenCheckInterval.value)
     }
-  }
 })
 
 // Fonction pour se déconnecter
 const handleLogout = () => {
-  store.dispatch('logout')
-  router.push('/connexion') // Redirection après déconnexion
+    store.dispatch('logout')
+    router.push('/connexion') // Redirection après déconnexion
 }
 </script>
+
 
 <template>
   <header>

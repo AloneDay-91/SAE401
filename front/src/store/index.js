@@ -82,7 +82,20 @@ const store = createStore({
                 console.error("Erreur lors de l'inscription:", error);
                 throw error;
             }
-        }
+        },
+
+        checkTokenExpiration({ commit, dispatch }) {
+            const token = localStorage.getItem('token')
+            if (token) {
+                if (AuthService.isTokenExpired()) {
+                    dispatch('logout')
+                    router.push('/connexion')
+                } else {
+                    // Si le token est valide, assurez-vous que le state est à jour
+                    commit('setToken', token)
+                }
+            }
+        },
     },
     getters: {
         isAuthenticated: (state) => !!state.token,
