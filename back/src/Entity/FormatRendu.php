@@ -3,14 +3,14 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Repository\MatieresRepository;
+use App\Repository\FormatRenduRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: MatieresRepository::class)]
+#[ORM\Entity(repositoryClass: FormatRenduRepository::class)]
 #[ApiResource]
-class Matieres
+class FormatRendu
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -18,18 +18,15 @@ class Matieres
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $nom = null;
+    private ?string $intitule = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $code = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $couleur = null;
+    private ?string $lien = null;
 
     /**
      * @var Collection<int, Devoirs>
      */
-    #[ORM\OneToMany(targetEntity: Devoirs::class, mappedBy: 'id_matieres')]
+    #[ORM\OneToMany(targetEntity: Devoirs::class, mappedBy: 'id_formatRendu')]
     private Collection $devoirs;
 
     public function __construct()
@@ -42,38 +39,26 @@ class Matieres
         return $this->id;
     }
 
-    public function getNom(): ?string
+    public function getIntitule(): ?string
     {
-        return $this->nom;
+        return $this->intitule;
     }
 
-    public function setNom(string $nom): static
+    public function setIntitule(string $intitule): static
     {
-        $this->nom = $nom;
+        $this->intitule = $intitule;
 
         return $this;
     }
 
-    public function getCode(): ?string
+    public function getLien(): ?string
     {
-        return $this->code;
+        return $this->lien;
     }
 
-    public function setCode(string $code): static
+    public function setLien(string $lien): static
     {
-        $this->code = $code;
-
-        return $this;
-    }
-
-    public function getCouleur(): ?string
-    {
-        return $this->couleur;
-    }
-
-    public function setCouleur(string $couleur): static
-    {
-        $this->couleur = $couleur;
+        $this->lien = $lien;
 
         return $this;
     }
@@ -90,7 +75,7 @@ class Matieres
     {
         if (!$this->devoirs->contains($devoir)) {
             $this->devoirs->add($devoir);
-            $devoir->setIdMatieres($this);
+            $devoir->setIdFormatRendu($this);
         }
 
         return $this;
@@ -100,8 +85,8 @@ class Matieres
     {
         if ($this->devoirs->removeElement($devoir)) {
             // set the owning side to null (unless already changed)
-            if ($devoir->getIdMatieres() === $this) {
-                $devoir->setIdMatieres(null);
+            if ($devoir->getIdFormatRendu() === $this) {
+                $devoir->setIdFormatRendu(null);
             }
         }
 

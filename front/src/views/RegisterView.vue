@@ -1,7 +1,8 @@
 <script setup>
-import { ref } from 'vue'
+import {onMounted, ref} from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -15,10 +16,18 @@ const password = ref('')
 const confirmPassword = ref('')
 const loading = ref(false)
 const error = ref('')
+const classe = ref('')
+const classes = ref([])
 
 const register = async () => {
     loading.value = true;
     error.value = "";
+
+    if (!classe.value) {
+        error.value = "Veuillez sélectionner une classe";
+        loading.value = false;
+        return;
+    }
 
     if (password.value !== confirmPassword.value) {
         error.value = "Les mots de passe ne correspondent pas";
@@ -34,12 +43,13 @@ const register = async () => {
         password: password.value,
         nom: nom.value,
         prenom: prnm.value,
+        id_classes: `/api/classes/${classe.value}`,
+        roleapp: "ELEVE"
     };
 
     try {
         await store.dispatch("register", userData);
-        // Si l'inscription réussit, redirigez l'utilisateur ou affichez un message
-        router.push("/login"); // ou toute autre route appropriée
+        router.push("/connexion");
     } catch (err) {
         console.error("Erreur API :", err.response?.data || err);
         error.value = err.response?.data?.detail || "Erreur lors de l'inscription";
@@ -49,14 +59,22 @@ const register = async () => {
 };
 
 
-
-
-
 const hash = async (password) => {
   const bcrypt = await import('bcryptjs');
   const salt = await bcrypt.genSalt(10);
   return await bcrypt.hash(password, salt);
 };
+
+// fonction pour recuperer la liste des classes
+onMounted(async () => {
+    try {
+        const response = await axios.get(`${API_URL}/classes`);
+        classes.value = response.data.member;
+    } catch (err) {
+        console.error("Erreur lors de la récupération des classes:", err);
+    }
+});
+
 
 </script>
 
@@ -82,7 +100,15 @@ const hash = async (password) => {
         <label for="confirmPassword">Confirmer le mot de passe</label>
         <input type="password" id="confirmPassword" v-model="confirmPassword" required />
       </div>
-      <button type="submit" class="btn-submit" :disabled="loading">
+      <br>
+        <select id="classe" v-model="classe" required>
+            <option value="">Choisir une classe</option>
+            <option v-for="cls in classes" :key="cls.id" :value="cls.id">
+                {{ cls.intitule }} ({{ cls.tp }})
+            </option>
+        </select>
+        <br>
+        <button type="submit" class="btn-submit" :disabled="loading">
         {{ loading ? "Inscription..." : "S'inscrire" }}
       </button>
       <p v-if="error" class="error-message">{{ error }}</p>

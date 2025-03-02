@@ -3,14 +3,14 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Repository\MatieresRepository;
+use App\Repository\CategoriesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: MatieresRepository::class)]
+#[ORM\Entity(repositoryClass: CategoriesRepository::class)]
 #[ApiResource]
-class Matieres
+class Categories
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -21,15 +21,12 @@ class Matieres
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $code = null;
-
-    #[ORM\Column(length: 255)]
     private ?string $couleur = null;
 
     /**
      * @var Collection<int, Devoirs>
      */
-    #[ORM\OneToMany(targetEntity: Devoirs::class, mappedBy: 'id_matieres')]
+    #[ORM\OneToMany(targetEntity: Devoirs::class, mappedBy: 'id_categories')]
     private Collection $devoirs;
 
     public function __construct()
@@ -50,18 +47,6 @@ class Matieres
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-
-        return $this;
-    }
-
-    public function getCode(): ?string
-    {
-        return $this->code;
-    }
-
-    public function setCode(string $code): static
-    {
-        $this->code = $code;
 
         return $this;
     }
@@ -90,7 +75,7 @@ class Matieres
     {
         if (!$this->devoirs->contains($devoir)) {
             $this->devoirs->add($devoir);
-            $devoir->setIdMatieres($this);
+            $devoir->setIdCategories($this);
         }
 
         return $this;
@@ -100,8 +85,8 @@ class Matieres
     {
         if ($this->devoirs->removeElement($devoir)) {
             // set the owning side to null (unless already changed)
-            if ($devoir->getIdMatieres() === $this) {
-                $devoir->setIdMatieres(null);
+            if ($devoir->getIdCategories() === $this) {
+                $devoir->setIdCategories(null);
             }
         }
 

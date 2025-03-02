@@ -23,7 +23,7 @@ L'objectif est de concevoir une application web qui permet aux étudiants de cen
 - Installer les dépendances JS pour le Front et le Back : `npm install`
 - Créer un fichier `.env.local` et configurer la connexion à la base de données ainsi que l'adresse sur serveur de mail
 - Créer la base de données : `php bin/console doctrine:database:create`
-- Créer les tables : `php bin/console doctrine:migrations:migrate`
+- Créer les tables : `php bin/console doctrine:schema:update --force`
 - Générer les fichiers jwt : `php bin/console lexik:jwt:generate-keypair`
 - Changer l'url de l'api dans le fichier `.env` du dossier Front
 - Lancer le serveur front : `npm run dev` ou `npx vite`

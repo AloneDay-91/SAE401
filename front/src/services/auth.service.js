@@ -84,11 +84,11 @@ class AuthService {
         }
     }
 
-    async register({ email, roles, password, nom, prenom }) {
+    async register({ email, roles, password, nom, prenom, id_classes, roleapp }) {
         try {
             const response = await axios.post(
                 `${API_URL}/users`,
-                { email, roles, password, nom, prenom },
+                { email, roles, password, nom, prenom, id_classes, roleapp },
                 {
                     headers: { "Content-Type": "application/ld+json" }
                 }
