@@ -1,127 +1,107 @@
 <script setup>
-import { RouterLink, RouterView, useRouter } from 'vue-router'
-import { useStore } from 'vuex'
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { RouterLink, useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+import {computed, markRaw, onBeforeUnmount, onMounted, ref} from 'vue';
+import axios from "axios";
 
-const store = useStore()
-const router = useRouter()
+const store = useStore();
+const router = useRouter();
 
-// Vérifie si l'utilisateur est connecté
-const isAuthenticated = computed(() => !!store.state.token)
+const openProfile = ref(false);
+const tokenCheckInterval = ref(null);
 
-// Récupérer l'utilisateur depuis Vuex
-const user = computed(() => store.state.user)
-
-// Référence pour l'intervalle de vérification du token
-
-const tokenCheckInterval = ref(null)
+const isAuthenticated = computed(() => !!store.state.token);
+const user = computed(() => store.state.user || {}); // Eviter des erreurs si user est undefined
 
 onMounted(() => {
-    // Vérifier immédiatement l'expiration du token
-    store.dispatch('checkTokenExpiration')
-
-    // Puis configurer la vérification périodique
+    store.dispatch('checkTokenExpiration');
     tokenCheckInterval.value = setInterval(() => {
-        store.dispatch('checkTokenExpiration')
-    }, 60000) // Vérifier toutes les minutes
-})
+        store.dispatch('checkTokenExpiration');
+    }, 60000);
+});
 
 onBeforeUnmount(() => {
     if (tokenCheckInterval.value) {
-        clearInterval(tokenCheckInterval.value)
+        clearInterval(tokenCheckInterval.value);
     }
-})
+});
 
 // Fonction pour se déconnecter
 const handleLogout = () => {
-    store.dispatch('logout')
-    router.push('/connexion') // Redirection après déconnexion
-}
+    store.dispatch('logout');
+    router.push('/connexion');
+};
+
+// Vérifier le rôle de l'utilisateur
+const getRoles = () => {
+    try {
+        return JSON.parse(localStorage.getItem('roles') || '[]');
+    } catch (error) {
+        console.error("Erreur lors de la lecture des rôles depuis localStorage", error);
+        return [];
+    }
+};
+
+const isAdmin = computed(() => getRoles().includes('ROLE_ADMIN'));
+const isDelegue = computed(() => getRoles().includes('ROLE_DELEGUE'));
+
+const userEmail = localStorage.getItem('email');
+
 </script>
 
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+    <header class="antialiased">
+        <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5">
+            <div class="flex flex-wrap justify-between items-center">
+                <div class="flex items-center">
+                    <RouterLink to="/" class="flex mr-4">LOGO</RouterLink>
+                    <nav v-if="isAuthenticated" class="mr-6">
+                        <ul class="flex items-center gap-4 text-sm">
+                            <li><RouterLink class="p-2 font-light text-black" to="/">Tableau de bord</RouterLink></li>
+                            <li><RouterLink class="p-2 font-light text-gray-400" to="/devoirs">Mes devoirs</RouterLink></li>
+                            <li><RouterLink class="p-2 font-light text-gray-400" to="/badges">Mes badges</RouterLink></li>
+                            <li><RouterLink class="p-2 font-light text-gray-400" to="/settings">Mon profil</RouterLink></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div v-if="isAuthenticated" class="flex items-center lg:order-2 relative">
+                    <button @click="openProfile = !openProfile" class="flex items-center p-2 rounded-lg border border-gray-300 gap-2">
+                        <div>
+                            <img class="h-8 w-8 rounded-lg" :src="`https://api.dicebear.com/9.x/dylan/svg?seed=${user.nom || 'User'}`" alt="Avatar">
+                        </div>
+                        <div class="text-left">
+                            <div class="flex items-center gap-1">
+                                <span class="block text-sm font-medium text-gray-900">{{ user.prenom || 'Prénom' }}</span>
+                                <span class="block text-sm font-medium text-gray-900">{{ user.nom || 'Nom' }}</span>
+                            </div>
+                            <div>
+                                <span class="block text-xs font-light text-gray-500">{{user.id_classes.promo}} {{ user.id_classes.tp }}</span>
+                            </div>
+                        </div>
+                    </button>
+                    <div v-show="openProfile" class="z-50 w-48 absolute right-0 top-15 bg-white rounded-lg shadow-lg divide-y divide-gray-100 border border-[#D8D9E0]">
+                        <div class="py-3 px-4">
+                            <span class="block text-sm font-medium text-gray-900 mx-2">{{ user.nom || 'Nom' }} {{ user.prenom || 'Prénom' }}</span>
+                            <span class="block text-sm font-light text-gray-500 truncate mx-2">{{ userEmail || 'Email' }}</span>
+                        </div>
+                        <ul class="py-1 text-black">
+                            <li><RouterLink class="block py-2 px-4 text-sm font-light hover:bg-[#00DF82] rounded-lg mx-2" to="/settings">Mon profil</RouterLink></li>
+                            <li><RouterLink class="block py-2 px-4 text-sm font-light hover:bg-[#00DF82] rounded-lg mx-2" to="/devoirs">Mes devoirs</RouterLink></li>
+                            <li><RouterLink class="block py-2 px-4 text-sm font-light hover:bg-[#00DF82] rounded-lg mx-2" to="/badges">Mes badges</RouterLink></li>
+                            <li v-if="isDelegue"><RouterLink class="block py-2 px-4 text-sm font-light hover:bg-[#00DF82] rounded-lg mx-2" to="/classe">Ma classe</RouterLink></li>
+                            <li v-if="isAdmin"><RouterLink class="block py-2 px-4 text-sm font-light hover:bg-[#00DF82] rounded-lg mx-2" to="/admin/dashboard">Administration</RouterLink></li>
+                        </ul>
+                        <ul class="py-1 text-gray-500">
+                            <li><button @click="handleLogout" class="block py-2 px-4 text-sm hover:underline mx-2 text-red-500">Déconnexion</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
 
-    <div class="wrapper">
-      <nav>
-        <div v-if="isAuthenticated" class="flex items-center">
-          <RouterLink to="/">Home</RouterLink>
-          <span v-if="user" class="flex items-center">Bonjour, <RouterLink to="/settings">{{ user.nom }} {{ user.prenom }}</RouterLink></span>
-          <button @click="handleLogout">Déconnexion</button>
-        </div>
-
-        <div v-else>
-          <RouterLink to="/connexion">Connexion</RouterLink>
-          <RouterLink to="/inscription">Inscription</RouterLink>
-        </div>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+    <RouterView />
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
 </style>

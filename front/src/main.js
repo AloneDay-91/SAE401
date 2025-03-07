@@ -8,13 +8,11 @@ import { onMounted } from 'vue'
 
 const app = createApp(App)
 
-onMounted(async () => {
-    const isTokenExpired = await store.dispatch('checkTokenExpiration');
-    if (isTokenExpired) {
-        await store.dispatch('logout');
-        router.push('/connexion');
-    }
-});
+const isTokenExpired = await store.dispatch('checkTokenExpiration');
+if (isTokenExpired) {
+    await store.dispatch('logout');
+    router.push('/connexion');
+}
 
 app.use(store)
 app.use(router)

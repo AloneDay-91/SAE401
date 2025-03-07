@@ -20,6 +20,11 @@ class JWTCreatedListener
         $payload['id'] = $user->getId();
         $payload['nom'] = $user->getNom();
         $payload['prenom'] = $user->getPrenom();
+        $payload['roles'] = $user->getRoles();
+        $payload['email'] = $user->getEmail();
+        $payload['avatar'] = $user->getAvatar();
+        $classe = $user->getIdClasses();
+        $payload['classes'] = $classe ? ['id' => $classe->getId(), 'intitule' => $classe->getIntitule(), 'promo' => $classe->getPromo(), 'td' => $classe->getTd(), 'tp' => $classe->getTp()] : null;
 
         $event->setData($payload);
     }

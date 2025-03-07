@@ -20,6 +20,10 @@ const store = createStore({
                         id: decodedToken.id,
                         nom: decodedToken.nom,
                         prenom: decodedToken.prenom,
+                        email: decodedToken.username,
+                        roles: decodedToken.roles,
+                        avatar: decodedToken.avatar,
+                        id_classes: decodedToken.classes
                     }
                 } catch (error) {
                     console.error("Erreur lors du décodage du token :", error)

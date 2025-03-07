@@ -10,28 +10,32 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ClassesRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['classes:read']],
+    denormalizationContext: ['groups' => ['classes:write']],
+)]
 class Classes
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['classes:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'classes:read', 'classes:write'])]
     private ?string $intitule = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'classes:read', 'classes:write'])]
     private ?string $promo = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'classes:read', 'classes:write'])]
     private ?string $tp = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'classes:read', 'classes:write'])]
     private ?string $td = null;
 
     /**
@@ -40,9 +44,16 @@ class Classes
     #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'id_classes')]
     private Collection $users;
 
+    /**
+     * @var Collection<int, Devoirs>
+     */
+    #[ORM\OneToMany(targetEntity: Devoirs::class, mappedBy: 'id_classes')]
+    private Collection $devoirs;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->devoirs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -122,6 +133,36 @@ class Classes
             // set the owning side to null (unless already changed)
             if ($user->getIdClasses() === $this) {
                 $user->setIdClasses(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Devoirs>
+     */
+    public function getDevoirs(): Collection
+    {
+        return $this->devoirs;
+    }
+
+    public function addDevoir(Devoirs $devoir): static
+    {
+        if (!$this->devoirs->contains($devoir)) {
+            $this->devoirs->add($devoir);
+            $devoir->setIdClasses($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDevoir(Devoirs $devoir): static
+    {
+        if ($this->devoirs->removeElement($devoir)) {
+            // set the owning side to null (unless already changed)
+            if ($devoir->getIdClasses() === $this) {
+                $devoir->setIdClasses(null);
             }
         }
 

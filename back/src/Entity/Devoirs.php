@@ -8,9 +8,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: DevoirsRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['devoir:read']],
+    denormalizationContext: ['groups' => ['devoir:write']],
+)]
 class Devoirs
 {
     #[ORM\Id]
@@ -19,47 +23,63 @@ class Devoirs
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['devoir:read', 'devoir:write'])]
     private ?string $intitule = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['devoir:read', 'devoir:write'])]
     private ?string $contenu = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(['devoir:read', 'devoir:write'])]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[Groups(['devoir:read', 'devoir:write'])]
     private ?\DateTimeInterface $heure = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['devoir:read', 'devoir:write'])]
     private ?string $status = null;
 
     // Relation avec Users (ManyToOne)
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'devoirs')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['devoir:read', 'devoir:write'])]
     private ?User $id_users = null;
 
     // Relation avec Matieres (ManyToOne)
     #[ORM\ManyToOne(targetEntity: Matieres::class, inversedBy: 'devoirs')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['devoir:read', 'devoir:write'])]
     private ?Matieres $id_matieres = null;
 
     // Relation avec Categories (ManyToOne)
     #[ORM\ManyToOne(targetEntity: Categories::class, inversedBy: 'devoirs')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['devoir:read', 'devoir:write'])]
     private ?Categories $id_categories = null;
 
     // Relation avec FormatRendu (ManyToOne)
     #[ORM\ManyToOne(targetEntity: FormatRendu::class, inversedBy: 'devoirs')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['devoir:read', 'devoir:write', 'format_rendu:write'])]
     private ?FormatRendu $id_formatRendu = null;
 
     // Relation avec CheckboxStatus (OneToMany)
     #[ORM\OneToMany(mappedBy: 'devoirs', targetEntity: CheckboxStatus::class, cascade: ['persist', 'remove'])]
+    #[Groups(['devoir:read', 'devoir:write'])]
     private Collection $checkboxStatuses;
 
     // Relation avec UserDevoirVote (OneToMany)
     #[ORM\OneToMany(mappedBy: 'devoirs', targetEntity: UserDevoirVote::class, cascade: ['persist', 'remove'])]
+    #[Groups(['devoir:read', 'devoir:write'])]
     private Collection $userDevoirVotes;
+
+    #[ORM\ManyToOne(targetEntity: Classes::class, inversedBy: 'devoirs')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['devoir:read', 'devoir:write'])]
+    private ?Classes $id_classes = null;
 
     public function __construct()
     {
@@ -156,4 +176,43 @@ class Devoirs
 
         return $this;
     }
+
+    // Pour la relation Categories
+    public function getIdCategories(): ?Categories
+    {
+        return $this->id_categories;
+    }
+
+    public function setIdCategories(?Categories $id_categories): static
+    {
+        $this->id_categories = $id_categories;
+
+        return $this;
+    }
+
+// Pour la relation FormatRendu
+    public function getIdFormatRendu(): ?FormatRendu
+    {
+        return $this->id_formatRendu;
+    }
+
+    public function setIdFormatRendu(?FormatRendu $id_formatRendu): static
+    {
+        $this->id_formatRendu = $id_formatRendu;
+
+        return $this;
+    }
+
+    public function getIdClasses(): ?Classes
+    {
+        return $this->id_classes;
+    }
+
+    public function setIdClasses(?Classes $id_classes): static
+    {
+        $this->id_classes = $id_classes;
+
+        return $this;
+    }
+
 }

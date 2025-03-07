@@ -25,10 +25,14 @@ class AuthService {
                     id: decodedUser.id || null,
                     nom: decodedUser.nom || "Inconnu",
                     prenom: decodedUser.prenom || "Inconnu",
+                    email: decodedUser.username || "Inconnu",
+                    roles: decodedUser.roles || [],
                 };
 
                 /*// Stocker les infos de l'utilisateur dans localStorage
                 localStorage.setItem("user", JSON.stringify(user));*/
+                localStorage.setItem("roles", JSON.stringify(user.roles));
+                localStorage.setItem("email", JSON.stringify(user.email));
 
                 return { token, user };
             }
@@ -65,6 +69,7 @@ class AuthService {
     logout() {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
+        localStorage.removeItem("roles");
         delete axios.defaults.headers.common["Authorization"];
     }
 

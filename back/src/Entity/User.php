@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,6 +13,12 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 
+#[ApiResource(security: "is_granted('ROLE_ADMIN')")]
+#[Get(security: "is_granted('ROLE_ADMIN') or object == user")]
+#[GetCollection(security: "is_granted('ROLE_ADMIN')")]
+#[Post(security: "is_granted('ROLE_ADMIN')")]
+#[Put(security: "is_granted('ROLE_ADMIN') or object == user")]
+#[Delete(security: "is_granted('ROLE_ADMIN')")]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => ['user:read']],
@@ -243,7 +251,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        return ['ROLE_USER'];
+        return [$this->roleapp];
     }
 
     public function eraseCredentials(): void

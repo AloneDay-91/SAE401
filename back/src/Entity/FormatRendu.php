@@ -7,20 +7,26 @@ use App\Repository\FormatRenduRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: FormatRenduRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    denormalizationContext: ['groups' => ['format_rendu:write']]
+)]
 class FormatRendu
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['format_rendu:write'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['format_rendu:write'])]
     private ?string $intitule = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['format_rendu:write'])]
     private ?string $lien = null;
 
     /**
