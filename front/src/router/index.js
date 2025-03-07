@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
+import ConnexionView from '../views/Auth/ConnexionView.vue'; // Import direct
 import store from '../store';
 
 const router = createRouter({
@@ -8,8 +9,14 @@ const router = createRouter({
     { path: '/', name: 'home', component: HomeView, meta: { requiresAuth: true } },
 
     // AUTH
-    { path: '/connexion', name: 'connexion', component: () => import('../views/Auth/ConnexionView.vue') },
-    { path: '/inscription', name: 'inscription', component: () => import('../views/Auth/RegisterView.vue') },
+    {
+      path: '/connexion',
+      component: ConnexionView,
+      children: [
+        { path: '', name: 'connexion', component: () => import('../views/Auth/FormLoginView.vue') },
+        { path: 'inscription', name: 'inscription', component: () => import('../views/Auth/RegisterView.vue') },
+      ],
+    },
     { path: '/mot-de-passe-oublie', name: 'ForgotPassword', component: () => import('../views/Auth/ForgotPasswordView.vue') },
     { path: '/reset-password', name: 'ResetPassword', component: () => import('../views/Auth/ResetPasswordView.vue') },
 
@@ -49,7 +56,7 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // Empêche un utilisateur authentifié d'accéder aux pages d'inscription ou de connexion
-    if (isAuthenticated && ['/connexion', '/reset-password', '/mot-de-passe-oublie', '/inscription'].includes(to.path)) {
+    if (isAuthenticated && ['/connexion', '/reset-password', '/mot-de-passe-oublie'].includes(to.path)) {
       return next('/');
     }
 
