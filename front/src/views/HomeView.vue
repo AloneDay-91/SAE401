@@ -6,13 +6,12 @@ import { useStore } from "vuex";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const store = useStore();
-const user = computed(() => store.state.user); // Récupère l'utilisateur depuis Vuex
+const user = computed(() => store.state.user);
 
-const devoirs = ref([]); // Liste des devoirs
-const loading = ref(true); // Indique si les données sont en cours de chargement
-const error = ref(""); // Message d'erreur
+const devoirs = ref([]);
+const loading = ref(true);
+const error = ref("");
 
-// Fonction pour charger la liste des devoirs
 onMounted(async () => {
     try {
         const token = localStorage.getItem("token");
@@ -28,7 +27,7 @@ onMounted(async () => {
             },
         });
 
-        devoirs.value = response.data.member || []; // Assure que `devoirs` est toujours un tableau
+        devoirs.value = response.data.member || [];
         console.log("Devoirs récupérés avec succès:", devoirs.value);
     } catch (e) {
         console.error("Erreur lors de la récupération des devoirs:", e);
@@ -39,15 +38,155 @@ onMounted(async () => {
     }
 });
 
-// Filtrage des devoirs pour l'utilisateur actuel
+
 const devoirsUser = computed(() =>
     devoirs.value.filter(
         (devoir) => devoir.id_users === `/api/users/${user.value.id}`
     )
 );
+
+const getDateDevoirStatus = (dateRendu) => {
+    if (!dateRendu) return "Date inconnue";
+
+    const dateRenduObj = new Date(dateRendu);
+    const dateActuelle = new Date();
+    const diff = dateRenduObj - dateActuelle;
+    const diffJours = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    if (diffJours < 0) {
+        return "En retard";
+    } else if (diffJours === 0) {
+        return "Aujourd'hui";
+    } else if (diffJours === 1) {
+        return "Demain";
+    } else {
+        return `Dans ${diffJours} jours`;
+    }
+};
+
+const getDateDevoirClass = (dateRendu) => {
+    if (!dateRendu) return "bg-gray-500/20 text-gray-700";
+
+    const dateRenduObj = new Date(dateRendu);
+    const dateActuelle = new Date();
+    const diff = dateRenduObj - dateActuelle;
+    const diffJours = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    if (diffJours <= 0) {
+        return "bg-red-500/20 text-red-700"; // En retard
+    } else if (diffJours === 0) {
+        return "bg-orange-500/20 text-orange-700"; // Aujourd'hui
+    } else if (diffJours <= 4) {
+        return "bg-yellow-500/20 text-yellow-700"; // Moins de 4 jours
+    } else {
+        return "bg-green-500/20 text-green-700"; // Plus de 4 jours
+    }
+};
+
+const devoirsFiltres = computed(() => {
+    return devoirsUser.value
+        .slice() // Copie du tableau pour éviter les mutations directes
+        .sort((a, b) => new Date(a.date) - new Date(b.date)); // Tri par date croissante
+})
+
+// Fonctionnalités du calendrier
+const today = new Date();
+const currentWeekStart = ref(getWeekStart(today));
+
+// Formatage du numéro du jour
+const formatDayNumber = (date) => {
+    return date.getDate();
+};
+
+// Vérifier si une date est aujourd'hui
+const isToday = (date) => {
+    const today = new Date();
+    return date.getDate() === today.getDate() &&
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear();
+};
+
+// Obtenir le début de la semaine (lundi) pour une date donnée
+function getWeekStart(date) {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Ajustement pour dimanche
+    return new Date(d.setDate(diff));
+}
+
+// Générer un tableau des jours pour la semaine en cours
+const daysOfWeek = computed(() => {
+    const days = [];
+    const weekStart = new Date(currentWeekStart.value);
+
+    const shortDayNames = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(weekStart);
+        date.setDate(date.getDate() + i);
+        days.push({
+            shortName: shortDayNames[i],
+            date: date
+        });
+    }
+
+    return days;
+});
+
+// Libellé de la semaine en cours
+const currentWeekLabel = computed(() => {
+    const start = new Date(currentWeekStart.value);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 6);
+
+    const startDay = start.getDate();
+    const endDay = end.getDate();
+
+    // Si le début et la fin sont dans des mois différents
+    if (start.getMonth() !== end.getMonth()) {
+        const startMonth = start.toLocaleDateString('fr-FR', { month: 'long' });
+        const endMonth = end.toLocaleDateString('fr-FR', { month: 'long' });
+        return `${startDay} ${startMonth} - ${endDay} ${endMonth} ${end.getFullYear()}`;
+    }
+
+    const month = end.toLocaleDateString('fr-FR', { month: 'long' });
+    return `${startDay} - ${endDay} ${month} ${end.getFullYear()}`;
+});
+
+// Fonctions de navigation
+const previousWeek = () => {
+    const prevWeek = new Date(currentWeekStart.value);
+    prevWeek.setDate(prevWeek.getDate() - 7);
+    currentWeekStart.value = prevWeek;
+};
+
+const nextWeek = () => {
+    const nextWeek = new Date(currentWeekStart.value);
+    nextWeek.setDate(nextWeek.getDate() + 7);
+    currentWeekStart.value = nextWeek;
+};
+
+const goToToday = () => {
+    currentWeekStart.value = getWeekStart(new Date());
+};
+
+// Formatage de l'heure (HH:MM)
+const formatTime = (timeString) => {
+    if (!timeString) return '';
+    const date = new Date(timeString);
+    return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+};
+
+// Obtenir les devoirs pour un jour spécifique
+const getDevoirsForDay = (date) => {
+    return devoirsFiltres.value.filter(devoir => {
+        const devoirDate = new Date(devoir.date);
+        return devoirDate.getDate() === date.getDate() &&
+            devoirDate.getMonth() === date.getMonth() &&
+            devoirDate.getFullYear() === date.getFullYear();
+    });
+};
 </script>
-
-
 
 <template>
     <main class="m-auto">
@@ -87,15 +226,65 @@ const devoirsUser = computed(() =>
         <!-- Section des devoirs -->
         <div class="bg-gray-50 border border-gray-200 w-full">
             <div class="flex flex-col md:flex-row items-start justify-between gap-4 mx-auto py-8 max-w-screen-xl">
+                <div class="w-full p-4">
+                    <h2 class="text-2xl font-semibold">Calendrier</h2>
+
+                    <p v-if="error" class="error-message border rounded p-3 text-sm font-light border-red-400/20 bg-red-200/10 text-red-900 flex items-center gap-2">
+                        ⚠ {{ error }}
+                    </p>
+
+                    <div class="calendar-container w-full p-4 bg-white rounded-lg shadow space-y-4 mt-4">
+                        <div class="calendar-header flex justify-between items-center mb-4">
+                            <div class="flex items-center gap-2">
+                                <button class="px-3 py-1.5 rounded hover:bg-gray-200" @click="previousWeek">
+                                    &lt; Précédent
+                                </button>
+                                <button class="px-3 py-1.5 rounded hover:bg-gray-200" @click="goToToday">
+                                    Aujourd'hui
+                                </button>
+                            </div>
+                            <div class="text-lg font-semibold">
+                                {{ currentWeekLabel }}
+                            </div>
+                            <div>
+                                <button class="px-3 py-1.5 rounded hover:bg-gray-200" @click="nextWeek">
+                                    Suivant &gt;
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="calendar-grid grid grid-cols-7 gap-1">
+                            <!-- Jours de la semaine -->
+                            <div v-for="(day, index) in daysOfWeek" :key="index"
+                                 class="text-center py-2 font-medium bg-gray-100 rounded-t">
+                                {{ day.shortName }}
+                                <div class="text-sm font-light" :class="isToday(day.date) ? 'text-[#00D478] font-semibold' : ''">
+                                    {{ formatDayNumber(day.date) }}
+                                </div>
+                            </div>
+
+                            <!-- Cellules du calendrier -->
+                            <div v-for="(day, index) in daysOfWeek" :key="'day-'+index"
+                                 class="min-h-[150px] bg-white border border-gray-200 rounded-b p-2"
+                                 :class="isToday(day.date) ? 'bg-[#00D478]/10 border-[#00D478]/30' : ''">
+                                <!-- Devoirs pour ce jour -->
+                                <div v-for="devoir in getDevoirsForDay(day.date)" :key="devoir['@id']"
+                                     class="text-xs p-1.5 mb-1 rounded-sm cursor-pointer relative"
+                                     :class="getDateDevoirClass(devoir.date)">
+                                    <div class="font-medium">{{ devoir.intitule }}</div>
+                                    <div>{{ formatTime(devoir.heure) }}</div>
+                                    <div class="absolute left-0 top-0 bottom-0 w-1 rounded-l"
+                                         :class="devoir.id_categories?.couleur"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- Liste des devoirs -->
                 <div class="w-full p-4">
-                    <h2 class="text-lg font-semibold">Liste des devoirs</h2>
+                    <h2 class="text-2xl font-semibold flex items-center gap-2">Liste des devoirs <span class="bg-white border border-gray-200 text-gray-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded">{{ devoirsFiltres.length }}</span></h2>
 
-                    <!-- Affichage des erreurs -->
-                    <p
-                        v-if="error"
-                        class="error-message border rounded p-3 text-sm font-light border-red-400/20 bg-red-200/10 text-red-900 flex items-center gap-2"
-                    >
+                    <p v-if="error" class="error-message border rounded p-3 text-sm font-light border-red-400/20 bg-red-200/10 text-red-900 flex items-center gap-2">
                         ⚠ {{ error }}
                     </p>
 
@@ -106,29 +295,46 @@ const devoirsUser = computed(() =>
                         <div class="h-20 bg-gray-300 animate-pulse rounded-lg"></div>
                     </div>
 
-                    <!-- Affichage des devoirs filtrés -->
-                    <div v-else-if="devoirsUser.length > 0" class="space-y-4 mt-4">
-                        <div
-                            v-for="devoir in devoirsUser"
-                            :key="devoir['@id']"
-                            class="border rounded p-4 mb-4 bg-white shadow-md"
-                        >
-                            <h3 class="text-lg font-semibold">{{ devoir.intitule }}</h3>
-                            <p class="text-sm font-light">{{ devoir.contenu }}</p>
-                            <p class="text-sm font-light">
-                                {{ new Date(devoir.date).toLocaleDateString("fr-FR") }}
-                            </p>
-                            <p class="text-sm font-light">
-                                {{
-                                    new Date(devoir.heure).toLocaleTimeString("fr-FR", {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                    })
-                                }}
-                            </p>
-                            <p class="text-sm font-light">{{ devoir.status }}</p>
+                    <div v-else-if="devoirsFiltres.length > 0" class="space-y-4 mt-4 max-h-80 overflow-y-auto ">
+                        <div v-for="devoir in devoirsFiltres" :key="devoir['@id']" class="flex items-center p-2 rounded-lg border border-gray-300 gap-2 relative bg-white">
+                            <div :class="devoir.id_categories.couleur" class="absolute h-full w-2 rounded-tl-lg rounded-bl-lg left-0"></div>
+                            <div class="flex items-center gap-4 pl-4 w-full pr-2">
+                                <div class="flex items-center">
+                                    <input type="checkbox" class="h-4 w-4" />
+                                </div>
+                                <div class="flex items-start flex-col w-full">
+                                    <h3 class="text-lg font-semibold">{{ devoir.intitule }}</h3>
+                                    <span class="text-xs font-light uppercase">{{devoir.id_matieres.nom}}</span>
+                                    <p class="text-sm font-light">{{ devoir.contenu }}</p>
+                                    <div class="flex items-center justify-between w-full">
+                                        <div v-if="devoir.id_formatRendu?.intitule && devoir.id_formatRendu.intitule !== 'papier'" class="flex items-start text-sm font-light">
+                                            <span>à rendre sur <span class="font-semibold">{{ devoir.id_formatRendu.intitule }}</span></span>
+                                        </div>
+                                        <a v-if="devoir.id_formatRendu?.lien" :href="devoir.id_formatRendu.lien"
+                                           class="text-xs font-light border border-gray-300 shadow-xs rounded p-1.5">
+                                            Rendre le devoir
+                                        </a>
+                                    </div>
+                                    <div class="absolute right-4 text-xs font-light flex items-center gap-2">
+                                        <span class="rounded-lg p-1 px-1.5">
+                                            {{ new Date(devoir.date).toLocaleDateString("fr-FR") }} | {{
+                                                new Date(devoir.heure).toLocaleTimeString("fr-FR", {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                })
+                                            }}
+                                        </span>
+                                        <p :class="getDateDevoirClass(devoir.date)" class="text-xs font-light p-1 px-2 rounded-lg">
+                                            {{ getDateDevoirStatus(devoir.date) }}
+                                        </p>
+                                    </div>
+                                    <div class="absolute right-4 bottom-0 text-xs font-light flex items-center gap-2">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
 
                     <!-- Message si aucun devoir -->
                     <p v-else class="text-gray-500 text-left mt-4">
@@ -139,7 +345,6 @@ const devoirsUser = computed(() =>
         </div>
     </main>
 </template>
-
 
 <style scoped>
 /* Animation pulse pour le skeleton */
@@ -159,7 +364,6 @@ const devoirsUser = computed(() =>
     animation: pulse 1.5s infinite;
 }
 
-/* Ajustements pour la mise en page responsive */
 @media (max-width: 768px) {
     .calendar-grid {
         font-size: 0.75rem;
@@ -170,4 +374,3 @@ const devoirsUser = computed(() =>
     }
 }
 </style>
-

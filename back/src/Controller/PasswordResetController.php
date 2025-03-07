@@ -52,7 +52,7 @@ class PasswordResetController extends AbstractController
         $entityManager->flush();
 
         // Génération du lien de réinitialisation
-        $resetUrl = 'http://localhost:5173/reset-password?token=' . $passwordResetToken->getToken();
+        $resetUrl = 'http://localhost:5174/reset-password?token=' . $passwordResetToken->getToken();
 
         // Création de l'email avec un template Twig
         $emailMessage = (new TemplatedEmail())

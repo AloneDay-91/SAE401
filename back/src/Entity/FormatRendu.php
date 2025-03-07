@@ -22,11 +22,11 @@ class FormatRendu
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['format_rendu:write'])]
+    #[Groups(['format_rendu:write', 'devoir:read', 'devoir:write'])]
     private ?string $intitule = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['format_rendu:write'])]
+    #[Groups(['format_rendu:write','devoir:read', 'devoir:write'])]
     private ?string $lien = null;
 
     /**

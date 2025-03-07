@@ -56,7 +56,7 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // Empêche un utilisateur authentifié d'accéder aux pages d'inscription ou de connexion
-    if (isAuthenticated && ['/connexion', '/reset-password', '/mot-de-passe-oublie'].includes(to.path)) {
+    if (isAuthenticated && ['/connexion'].includes(to.path)) {
       return next('/');
     }
 

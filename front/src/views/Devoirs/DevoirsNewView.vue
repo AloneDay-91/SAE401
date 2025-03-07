@@ -13,7 +13,6 @@ const intitule = ref('');
 const desc = ref('');
 const date = ref('');
 const heure = ref('');
-const statusDevoir = ref('');
 const matiere = ref('');
 const categories = ref([]);
 const categorie = ref('');
@@ -156,7 +155,7 @@ const AjouterDevoir = async () => {
             contenu: desc.value,
             date: date.value,
             heure: heure.value,
-            status: statusDevoir.value,
+            status: "A faire",
             id_users: `/api/users/${user.value.id}`,
             id_matieres: `/api/matieres/${matiere.value}`,
             id_categories: `/api/categories/${categorie.value}`,
@@ -206,16 +205,6 @@ const AjouterDevoir = async () => {
         <div>
             <label for="heure">Heure</label>
             <input type="time" id="heure" v-model="heure" required />
-        </div>
-
-        <div>
-            <label for="statusDevoir">Statut</label>
-            <select id="statusDevoir" v-model="statusDevoir" required>
-                <option value="">Sélectionner un statut</option>
-                <option value="A faire">À faire</option>
-                <option value="En cours">En cours</option>
-                <option value="Terminé">Terminé</option>
-            </select>
         </div>
 
         <!-- Matières -->

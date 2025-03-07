@@ -30,7 +30,7 @@ const resetPassword = async () => {
 
     successMessage.value = response.data.message;
     setTimeout(() => {
-      router.push('/login'); // Redirige vers la connexion après succès
+      router.push('/connexion'); // Redirige vers la connexion après succès
     }, 2000);
   } catch (err) {
     error.value = err.response?.data?.message || "Une erreur est survenue.";
