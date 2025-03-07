@@ -86,7 +86,7 @@ const user = ref(store.state.user)
                     <form class="border border-gray-200 bg-white shadow-sm sm:rounded-lg">
                         <div class="w-full">
                             <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                                <div class="text-sm font-normal text-gray-500">Nom</div>
+                                <div class="text-sm font-normal text-gray-500">Intitulé</div>
                                 <div class="mt-1 text-sm text-gray-900 sm:col-span-2">{{user.id_classes.intitule}}</div>
                             </div>
                             <div class="border-t border-gray-200"></div>
