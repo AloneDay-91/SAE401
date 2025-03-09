@@ -2,6 +2,9 @@
 import { ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import axios from 'axios';
+import {RouterLink} from "vue-router";
+import {FilePenLine, Trash2} from "lucide-vue-next";
+import DropdownMenu from "@/components/DropdownMenu.vue";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -56,9 +59,34 @@ onMounted(async () => {
                                     <td class="px-6 py-4 text-xs font-normal w-auto">
                                         <span class="h-4 rounded-lg w-auto py-1 px-2" :class="matiere.couleur">{{matiere.couleur}}</span>
                                     </td>
-                                    <td class="px-6 py-4 text-xs font-normal w-auto">
-                                        <router-link :to="`matieres/${matiere.id}/edit`" class="text-[#00D478] hover:text-[#004319]">Modifier</router-link>
-                                        <router-link :to="`matieres/${matiere.id}/delete`" class="text-[#00D478] hover:text-[#004319]">Supprimer</router-link>
+                                    <td class="px-6 py-4 text-xs font-normal flex items-center gap-2">
+                                        <DropdownMenu>
+                                            <!-- Personnalisation du bouton déclencheur -->
+                                            <template #trigger>
+                                                <button class="flex items-center px-2 py-1.5 text-xs border border-gray-300 text-gray-500 rounded-md">
+                                                    Options
+                                                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                    </svg>
+                                                </button>
+                                            </template>
+
+                                            <div class="px-2">
+<!--                                                <button @click="openModal(matieres)" class="py-2 flex items-center justify-between w-full text-gray-600 font-light hover:bg-gray-200/50 rounded px-2 my-1">
+                                                    <span>Modifier</span>
+                                                    <FilePenLine stroke-width="1.5" size="16"/>
+                                                </button>-->
+                                                <router-link :to="`matieres/${matiere.id}/edit`" class="py-2 flex items-center justify-between text-gray-600 font-light hover:bg-gray-200/50 rounded px-2 my-1">
+                                                    <span>Modifier</span>
+                                                    <FilePenLine stroke-width="1.5" size="16"/>
+                                                </router-link>
+                                                <hr class="text-gray-200">
+                                                <router-link :to="`matieres/${matiere.id}/delete`" class="py-2 flex items-center justify-between text-gray-600 font-light hover:bg-gray-200/50 rounded px-2 my-1">
+                                                    <span class="text-red-600">Supprimer</span>
+                                                    <Trash2 stroke-width="1.5" size="16"/>
+                                                </router-link>
+                                            </div>
+                                        </DropdownMenu>
                                     </td>
                                 </tr>
                             </tbody>

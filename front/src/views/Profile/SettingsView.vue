@@ -2,9 +2,27 @@
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 
-const API_URL = import.meta.env.VITE_API_BASE_URL
 const store = useStore()
 const user = ref(store.state.user)
+
+const getRoleLabel = (user) => {
+    if (!user.roles || user.roles.length === 0) return 'Inconnu';
+
+    if (user.roles.includes('ROLE_ADMIN')) return 'Administrateur';
+    if (user.roles.includes('ROLE_USER')) return 'Utilisateur';
+    if (user.roles.includes('ROLE_PROFESSEUR')) return 'Professeur';
+    if (user.roles.includes('ROLE_ELEVE')) return 'Étudiant';
+
+    return 'Inconnu';
+};
+
+// Fonction corrigée pour utiliser le libellé du rôle
+const CouleurRoles = (roleLabel) => {
+    if (roleLabel === 'Administrateur') return 'bg-purple-200/50 text-purple-500/70';
+    if (roleLabel === 'Professeur') return 'bg-green-200/50 text-green-500/70';
+    if (roleLabel === 'Étudiant') return 'bg-blue-200/50 text-blue-500/70';
+    return 'bg-gray-200/50 text-gray-500';
+};
 
 </script>
 
@@ -58,7 +76,9 @@ const user = ref(store.state.user)
                             <div class="border-t border-gray-200"></div>
                             <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
                                 <div class="text-sm font-normal text-gray-500">Rôles</div>
-                                <div class="mt-1 text-sm text-gray-900 sm:col-span-2">{{ user.roles }}</div>
+                                <div class="mt-1 text-sm text-gray-900 sm:col-span-2">
+                                    <span :class="CouleurRoles(getRoleLabel(user))" class="h-4 rounded-lg w-auto py-1 px-2 ">{{ getRoleLabel(user) }}</span>
+                                </div>
                             </div>
                             <div class="border-t border-gray-200"></div>
                             <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">

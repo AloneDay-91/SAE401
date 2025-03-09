@@ -32,8 +32,15 @@ const router = createRouter({
     { path: '/admin/dashboard', name: 'AdminDashboard', component: () => import('../views/Admin/AdminDashboardView.vue'), meta: { requiresAdminRole: true } },
 
     // ADMIN MATIERES
-    { path: '/admin/matieres/new', name: 'MatiereNew', component: () => import('../views/Admin/Matieres/MatieresNewView.vue'), meta: { requiresAdminRole: true } },
-    { path: '/admin/matieres', name: 'Matieres', component: () => import('../views/Admin/Matieres/MatieresView.vue'), meta: { requiresAdminRole: true } },
+    { path: '/admin/matieres/new', name: 'AdminMatiereNew', component: () => import('../views/Admin/Matieres/MatieresNewView.vue'), meta: { requiresAdminRole: true } },
+    { path: '/admin/matieres', name: 'AdminMatieres', component: () => import('../views/Admin/Matieres/MatieresView.vue'), meta: { requiresAdminRole: true } },
+
+    // ADMIN DEVOIRS
+    { path: '/admin/devoirs/new', name: 'AdminDevoirsNew', component: () => import('../views/Admin/Devoirs/DevoirsNewView.vue'), meta: { requiresAdminRole: true } },
+    { path: '/admin/devoirs', name: 'AdminDevoirs', component: () => import('../views/Admin/Devoirs/DevoirsView.vue'), meta: { requiresAdminRole: true } },
+
+    // ADMIN USERS
+    { path: '/admin/users/new', name: 'AdminUsersNew', component: () => import('../views/Admin/_formUsersView.vue'), meta: { requiresAdminRole: true } },
   ],
 });
 

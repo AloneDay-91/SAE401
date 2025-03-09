@@ -1,6 +1,6 @@
 <script setup>
-import { onMounted, ref } from 'vue';
-import { useStore } from 'vuex';
+import {computed, onMounted, ref} from 'vue';
+import {useStore} from 'vuex';
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
@@ -10,46 +10,34 @@ const user = ref(store.state.user);
 
 const token = localStorage.getItem('token');
 const devoirs = ref([]);
-const matieres = ref([]);
-const categories = ref([]);
 const error = ref('');
 
 onMounted(async () => {
     try {
-        // Récupérer les devoirs
-        const devoirsResponse = await axios.get(`${API_URL}/devoirs`, {
+        const response = await axios.get(`${API_URL}/devoirs`, {
             headers: {
                 "Content-Type": "application/ld+json",
-                "Authorization": `Bearer ${token}`
-            }
+                "Authorization": `Bearer ${store.state.token}`
+            },
         });
-
-        // Filtrer les devoirs pour l'utilisateur actuel
-        devoirs.value = devoirsResponse.data.member.filter(devoir => devoir.id_users === `/api/users/${user.value.id}`);
-
-        // Récupérer les matières
-        const matieresResponse = await axios.get(`${API_URL}/matieres`, {
-            headers: {
-                "Content-Type": "application/ld+json",
-                "Authorization": `Bearer ${token}`
-            }
-        });
-        matieres.value = matieresResponse.data.member;
-
-        // Récupérer les catégories
-        const categoriesResponse = await axios.get(`${API_URL}/categories`, {
-            headers: {
-                "Content-Type": "application/ld+json",
-                "Authorization": `Bearer ${token}`
-            }
-        });
-        categories.value = categoriesResponse.data.member;
-
+        devoirs.value = response.data.member;
     } catch (e) {
-        console.error('Erreur lors de la récupération des données:', e);
-        error.value = 'Impossible de récupérer les données. Veuillez réessayer plus tard.';
+        console.error('Erreur lors de la récupération des devoirs:', e);
+        error.value = 'Impossible de récupérer les devoirs.';
     }
 });
+
+const devoirsUtilisateur = computed(() => {
+    if (!devoirs.value || !user.value || !user.value.id) {
+        return [];
+    }
+    return devoirs.value.filter(devoir => {
+        // Vérification que devoir.id_users existe et que son @id correspond à l'utilisateur connecté
+        return devoir.id_users && devoir.id_users['@id'] === `/api/users/${user.value.id}`;
+    });
+});
+
+
 </script>
 
 
@@ -85,7 +73,7 @@ onMounted(async () => {
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-if="devoirs" v-for="devoir in devoirs" :key="devoir['@id']" class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <tr v-if="devoirsUtilisateur.length > 0" v-for="devoir in devoirsUtilisateur" :key="devoir['@id']" class="border-b border-gray-100 hover:bg-gray-50 transition">
                             <td class="px-6 py-4 text-sm text-gray-700">{{ devoir.intitule }}</td>
                             <td class="px-6 py-4 text-sm text-gray-700">{{ devoir.contenu }}</td>
                             <td class="px-6 py-4 text-sm text-gray-700">{{ new Date(devoir.date).toLocaleDateString('fr-FR') }}</td>
@@ -94,21 +82,23 @@ onMounted(async () => {
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-700">{{ devoir.status }}</td>
                             <td class="px-6 py-4 text-sm text-gray-700">
-                                {{ matieres.find(matiere => matiere['@id'] === devoir.id_matieres)?.nom || 'Non défini' }}
-                                ({{ matieres.find(matiere => matiere['@id'] === devoir.id_matieres)?.code || 'N/A' }})
+                                {{ devoir.id_matieres.nom }}
+                                {{ devoir.id_matieres.code }}
                             </td>
                             <td class="w-auto px-6 py-4">
                                 <div :class="[
-                                `bg-${categories.find(categorie => categorie['@id'] === devoir.id_categories)?.couleur || 'gray'}-200`,
-                                `text-${categories.find(categorie => categorie['@id'] === devoir.id_categories)?.couleur || 'gray'}-500`,
+                                `bg-${devoir.id_categories.couleur || 'gray'}-200`,
+                                `text-${devoir.id_categories.couleur || 'gray'}-500`,
                                 'text-center rounded text-sm font-light py-1 px-3'
                             ]">
-                                    {{ categories.find(categorie => categorie['@id'] === devoir.id_categories)?.nom || 'Non défini' }}
+                                    {{ devoir.id_categories.nom || 'Non défini' }}
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="7" v-if="!devoirs.length" class="text-gray-500 text-center py-4">Aucun devoir disponible pour le moment.</td>
+                            <td colspan="7" v-if="devoirsUtilisateur.length === 0" class="text-gray-500 text-center py-4">
+                                Aucun devoir disponible pour le moment.
+                            </td>
                         </tr>
                         </tbody>
                     </table>

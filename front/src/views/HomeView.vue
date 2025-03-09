@@ -1,7 +1,7 @@
 <script setup>
 import axios from "axios";
-import { onMounted, ref, computed } from "vue";
-import { useStore } from "vuex";
+import {computed, onMounted, ref} from "vue";
+import {useStore} from "vuex";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -14,36 +14,34 @@ const error = ref("");
 
 onMounted(async () => {
     try {
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-            throw new Error("Token d'authentification manquant.");
-        }
-
         const response = await axios.get(`${API_URL}/devoirs`, {
             headers: {
                 "Content-Type": "application/ld+json",
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${store.state.token}`,
             },
         });
-
-        devoirs.value = response.data.member || [];
-        console.log("Devoirs récupérés avec succès:", devoirs.value);
+        devoirs.value = response.data.member;
     } catch (e) {
         console.error("Erreur lors de la récupération des devoirs:", e);
-        error.value =
-            e.response?.data?.detail || "Impossible de récupérer les devoirs.";
+        error.value = e.response?.data?.detail || "Impossible de récupérer les devoirs.";
     } finally {
         loading.value = false;
     }
 });
 
+const devoirsUser = computed(() => {
+    return devoirs.value.filter(
+        (devoir) => devoir.id_users && devoir.id_users['@id'] === `/api/users/${user.value.id}`
+    );
+});
 
-const devoirsUser = computed(() =>
-    devoirs.value.filter(
-        (devoir) => devoir.id_users === `/api/users/${user.value.id}`
-    )
-);
+// Tri des devoirs par date
+const devoirsFiltres = computed(() => {
+    return devoirsUser.value
+        .slice()
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+});
+
 
 const getDateDevoirStatus = (dateRendu) => {
     if (!dateRendu) return "Date inconnue";
@@ -82,12 +80,6 @@ const getDateDevoirClass = (dateRendu) => {
         return "bg-green-500/20 text-green-700"; // Plus de 4 jours
     }
 };
-
-const devoirsFiltres = computed(() => {
-    return devoirsUser.value
-        .slice() // Copie du tableau pour éviter les mutations directes
-        .sort((a, b) => new Date(a.date) - new Date(b.date)); // Tri par date croissante
-})
 
 // Fonctionnalités du calendrier
 const today = new Date();

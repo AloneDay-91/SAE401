@@ -21,38 +21,39 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[Delete(security: "is_granted('ROLE_ADMIN')")]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => ['user:read']],
+    normalizationContext: ['groups' => ['user:read'], 'enable_max_depth' => true],
     denormalizationContext: ['groups' => ['user:write']],
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-#[ORM\Column]
+    #[ORM\Column]
+    #[Groups(['user:read',])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'devoir:read', 'devoir:write'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'devoir:read', 'devoir:write'])]
     private ?string $prenom = null;
 
     #[ORM\Column(length: 255, unique: true)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'devoir:read', 'devoir:write'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'devoir:read', 'devoir:write'])]
     private ?string $password = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'devoir:read', 'devoir:write'])]
     private ?string $avatar = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'devoir:read', 'devoir:write'])]
     private ?string $roleapp = null;
 
     // Relation avec Classes (ManyToOne)

@@ -23,19 +23,19 @@ class Classes
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write', 'classes:read', 'classes:write'])]
+    #[Groups(['user:read', 'user:write', 'classes:read', 'classes:write', 'devoir:read', 'devoir:write'])]
     private ?string $intitule = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write', 'classes:read', 'classes:write'])]
+    #[Groups(['user:read', 'user:write', 'classes:read', 'classes:write', 'devoir:read', 'devoir:write'])]
     private ?string $promo = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write', 'classes:read', 'classes:write'])]
+    #[Groups(['user:read', 'user:write', 'classes:read', 'classes:write', 'devoir:read', 'devoir:write'])]
     private ?string $tp = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write', 'classes:read', 'classes:write'])]
+    #[Groups(['user:read', 'user:write', 'classes:read', 'classes:write', 'devoir:read', 'devoir:write'])]
     private ?string $td = null;
 
     /**
