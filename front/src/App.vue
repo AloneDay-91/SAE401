@@ -74,6 +74,14 @@ const PageName = computed(() => {
     if (path === '/admin/matieres/new') return 'Nouvelle matière';
     if (path === '/admin/devoirs') return 'Devoirs';
     if (path === '/admin/devoirs/new') return 'Nouveau devoir';
+    if (path === '/admin/devoirs/:id') return 'Devoir';
+    if (path === '/admin/categories') return 'Catégories';
+    if (path === '/admin/categories/new') return 'Nouvelle catégorie';
+    if (path === '/admin/classes') return 'Classes';
+    if (path === '/admin/classes/new') return 'Nouvelle classe';
+    if (path === '/admin/users') return 'Utilisateurs';
+    if (path === '/admin/users/new') return 'Nouvel utilisateur';
+    if (path === '/admin/settings') return 'Paramètres';
     return 'Page inconnue';
 });
 
@@ -121,13 +129,13 @@ const handleClickOutside = (event) => {
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="m1 1 4 4 4-4"></path>
                         </svg>
                     </router-link>
-                    <button type="button" class="w-full p-2 hover:bg-gray-50 rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group">
+                    <router-link to="/admin/classes" class="w-full p-2 hover:bg-gray-50 rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group">
                         <List stroke-width="1.5" size="16" class="mr-2" />
                         <span class="flex-1 text-left whitespace-nowrap text-xs">Classes</span>
                         <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="m1 1 4 4 4-4"></path>
                         </svg>
-                    </button>
+                    </router-link>
                     <router-link to="/admin/matieres" class="w-full p-2 hover:bg-gray-50 rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group">
                         <LayoutList stroke-width="1.5" size="16" class="mr-2" />
                         <span class="flex-1 text-left whitespace-nowrap text-xs">Matières</span>
@@ -135,17 +143,20 @@ const handleClickOutside = (event) => {
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="m1 1 4 4 4-4"></path>
                         </svg>
                     </router-link>
-                    <button type="button" class="w-full p-2 hover:bg-gray-50 rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group">
+                    <router-link to="/admin/categories" class="w-full p-2 hover:bg-gray-50 rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group">
                         <ListTree stroke-width="1.5" size="16" class="mr-2" />
                         <span class="flex-1 text-left whitespace-nowrap text-xs">Catégories</span>
                         <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="m1 1 4 4 4-4"></path>
                         </svg>
-                    </button>
-                    <button type="button" class="w-full p-2 hover:bg-gray-50 rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group">
+                    </router-link>
+                    <router-link to="/admin/users" class="w-full p-2 hover:bg-gray-50 rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group">
                         <User stroke-width="1.5" size="16" class="mr-2" />
                         <span class="flex-1 text-left whitespace-nowrap text-xs">Utilisateurs</span>
-                    </button>
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="m1 1 4 4 4-4"></path>
+                        </svg>
+                    </router-link>
                 </div>
                 <div>
                     <div>
@@ -300,7 +311,7 @@ const handleClickOutside = (event) => {
     </div>
 
     <template v-else>
-        <header class="antialiased">
+        <header v-if="route.path !== '/connexion' && route.path !== '/connexion/inscription'" class="antialiased">
             <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5">
                 <div class="flex flex-wrap justify-between items-center">
                     <div class="flex items-center">
@@ -435,7 +446,7 @@ const handleClickOutside = (event) => {
             </nav>
         </header>
         <RouterView class="min-h-screen" />
-        <footer class="bg-white w-full shadow sm:flex sm:items-center sm:justify-between p-4 sm:p-6 xl:px-8 xl:py-6 antialiased">
+        <footer v-if="route.path !== '/connexion' && route.path !== '/connexion/inscription'" class="bg-white w-full shadow sm:flex sm:items-center sm:justify-between p-4 sm:p-6 xl:px-8 xl:py-6 antialiased">
             <p class="mb-4 text-sm text-center text-[#00473e] sm:mb-0">
                 © 2025 <a href="https://flowbite.com/" class="hover:underline" target="_blank">IUT Troyes</a>.
             </p>

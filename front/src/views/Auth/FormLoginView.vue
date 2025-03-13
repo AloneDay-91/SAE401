@@ -40,15 +40,15 @@ const handleLogin = async () => {
 </script>
 
 <template>
-    <p v-if="error" class="error-message border rounded p-3 text-sm font-light border-red-400/20 bg-red-200/10 text-red-900 flex items-center gap-2">
+    <p v-if="error" class="error-message border rounded p-3 text-sm font-light border-red-400/20 bg-red-200/10 text-red-900 flex items-center gap-2 mx-12 mt-4">
         <span v-html="errorIcon"></span> {{ error }}
     </p>
     <br>
-    <form @submit.prevent="handleLogin">
+    <form @submit.prevent="handleLogin" class="px-12">
         <h2 class="text-left text-2xl font-semibold mb-4">Connexion</h2>
         <div class="form-group flex flex-col">
             <label for="email" class="text-sm font-light">Email</label>
-            <input type="email" id="email" v-model="email" class="border rounded border-gray-300 text-sm px-2 py-1 font-light shadow-xs" placeholder="Entrer un email" required />
+            <input type="email" id="email" v-model="email" class="border rounded border-gray-300 text-sm p-2 font-light shadow-xs" placeholder="Entrer un email" required />
         </div>
         <br>
         <div class="form-group flex flex-col">
@@ -56,21 +56,21 @@ const handleLogin = async () => {
                 <label for="password" class="text-sm font-light">Password</label>
                 <router-link to="/mot-de-passe-oublie" class="text-sm font-light text-green-700/70">Mot de passe oublié ?</router-link>
             </div>
-            <input type="password" id="password" v-model="password" class="border rounded border-gray-300 text-sm px-2 py-1 font-light shadow-xs" placeholder="Entrer un mot de passe" required />
+            <input type="password" id="password" v-model="password" class="border rounded border-gray-300 text-sm p-2 font-light shadow-xs" placeholder="Entrer un mot de passe" required />
         </div>
         <div class="flex items-center justify-end gap-4 mt-6 w-full">
-            <a href="/connexion/inscription" class="btn-submit bg-green-600/10 px-2 py-1.5 rounded text-green-700 text-sm">Créer un compte</a>
+            <a href="/connexion/inscription" class="btn-submit bg-green-600/10 px-2 py-1.5 rounded text-green-700 text-xs">Créer un compte</a>
             <button
                 type="submit"
                 :disabled="loading"
                 class="
-                            inline-flex items-center px-3 py-[6px] border border-transparent rounded-md shadow-sm text-xs font-medium
-                            text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500
-                            disabled:opacity-50 disabled:cursor-not-allowed
+                            inline-flex items-center px-3 py-1.5 border border-transparent rounded shadow-sm text-xs font-normal
+                             bg-[#00D478] text-[#004319] border-[#00D478]
+                            disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer
                         "
             >
                 <!-- Spinner -->
-                <svg v-if="loading" class="-ml-[6px] mr-[6px] h-[14px] w-[14px] animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg v-if="loading" class="-ml-[6px] mr-[6px] h-[14px] w-[14px] animate-spin text-[#004319]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="#fff" stroke-width="4"></circle>
                     <path class="opacity-75" fill="#fff" d="
                                 M4 12a8 8 0 018-8V0C5.373

@@ -79,40 +79,40 @@ onMounted(async () => {
 </script>
 
 <template>
-    <p v-if="error" class="error-message border rounded p-3 text-sm font-light border-red-400/20 bg-red-200/10 text-red-900 flex items-center gap-2">
+    <p v-if="error" class="error-message border rounded p-3 text-sm font-light border-red-400/20 bg-red-200/10 text-red-900 flex items-center gap-2 mx-12 mt-4">
         <span v-html="errorIcon"></span> {{ error }}
     </p>
     <br>
-    <form @submit.prevent="register">
+    <form @submit.prevent="register" class="px-12">
         <h2 class="text-left text-2xl font-semibold mb-4">Inscription</h2>
         <div class="form-group flex flex-col">
             <label for="nom" class="text-sm font-light">Nom</label>
-            <input type="text" id="nom" v-model="nom" class="border rounded border-gray-300 text-sm px-2 py-1 font-light shadow-xs" placeholder="Entrer votre nom" required />
+            <input type="text" id="nom" v-model="nom" class="border rounded border-gray-300 text-sm p-2 font-light shadow-xs" placeholder="Entrer votre nom" required />
         </div>
         <br>
         <div class="form-group flex flex-col">
             <label for="prnm" class="text-sm font-light">Prénom</label>
-            <input type="text" id="prnm" v-model="prnm" class="border rounded border-gray-300 text-sm px-2 py-1 font-light shadow-xs" placeholder="Entrer votre prénom" required />
+            <input type="text" id="prnm" v-model="prnm" class="border rounded border-gray-300 text-sm p-2 font-light shadow-xs" placeholder="Entrer votre prénom" required />
         </div>
         <br>
         <div class="form-group flex flex-col">
             <label for="email" class="text-sm font-light">Email</label>
-            <input type="email" id="email" v-model="email" class="border rounded border-gray-300 text-sm px-2 py-1 font-light shadow-xs" placeholder="Entrer votre email" required />
+            <input type="email" id="email" v-model="email" class="border rounded border-gray-300 text-sm p-2 font-light shadow-xs" placeholder="Entrer votre email" required />
         </div>
         <br>
         <div class="form-group flex flex-col">
             <label for="password" class="text-sm font-light">Mot de passe</label>
-            <input type="password" id="password" v-model="password" class="border rounded border-gray-300 text-sm px-2 py-1 font-light shadow-xs" placeholder="Entrer un mot de passe" required />
+            <input type="password" id="password" v-model="password" class="border rounded border-gray-300 text-sm p-2 font-light shadow-xs" placeholder="Entrer un mot de passe" required />
         </div>
         <br>
         <div class="form-group flex flex-col">
             <label for="confirmPassword" class="text-sm font-light">Confirmer le mot de passe</label>
-            <input type="password" id="confirmPassword" v-model="confirmPassword" class="border rounded border-gray-300 text-sm px-2 py-1 font-light shadow-xs" placeholder="Confirmer votre mot de passe" required />
+            <input type="password" id="confirmPassword" v-model="confirmPassword" class="border rounded border-gray-300 text-sm p-2 font-light shadow-xs" placeholder="Confirmer votre mot de passe" required />
         </div>
         <br>
         <div class="form-group flex flex-col">
             <label for="classe" class="text-sm font-light">Classe</label>
-            <select id="classe" v-model="classe" class="border rounded border-gray-300 text-sm px-2 py-1 font-light shadow-xs" required>
+            <select id="classe" v-model="classe" class="border rounded border-gray-300 text-sm p-2 font-light shadow-xs" required>
                 <option value="">Choisir une classe</option>
                 <option v-for="cls in classes" :key="cls.id" :value="cls.id">
                     {{ cls.intitule }} ({{ cls.tp }})
@@ -121,17 +121,18 @@ onMounted(async () => {
         </div>
         <br>
         <div class="flex items-center justify-end gap-4 mt-6 w-full">
-            <a href="/connexion" class="btn-submit bg-green-600/10 px-2 py-1.5 rounded text-green-700 text-sm">Se connecter</a>
+            <a href="/connexion" class="btn-submit bg-green-600/10 px-2 py-1.5 rounded text-green-700 text-xs">Se connecter</a>
             <button
                 type="submit"
                 :disabled="loading"
                 class="
-                            inline-flex items-center px-3 py-[6px] border border-transparent rounded-md shadow-sm text-xs font-medium
-                            text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500
-                            disabled:opacity-50 disabled:cursor-not-allowed
+                            inline-flex items-center px-2 py-1.5 border border-transparent rounded shadow-sm text-xs font-normal
+                             bg-[#00D478] text-[#004319] border-[#00D478]
+                            disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer
                         "
             >
-                <svg v-if="loading" class="-ml-[6px] mr-[6px] h-[14px] w-[14px] animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <!-- Spinner -->
+                <svg v-if="loading" class="-ml-[6px] mr-[6px] h-[14px] w-[14px] animate-spin text-[#004319]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="#fff" stroke-width="4"></circle>
                     <path class="opacity-75" fill="#fff" d="
                                 M4 12a8 8 0 018-8V0C5.373
@@ -139,7 +140,7 @@ onMounted(async () => {
                                 0 h4zm2
                                 A7.962z"></path>
                 </svg>
-                {{ loading ? "Inscription..." : "S'inscrire" }}
+                {{ loading ? "Inscription..." : "S'inscrire"}}
             </button>
         </div>
     </form>

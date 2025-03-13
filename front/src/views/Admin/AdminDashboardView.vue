@@ -338,8 +338,6 @@ const updateUser = async () => {
                         <button type="submit" class="bg-[#00D478] text-[#004319] border-[#00D478] text-sm font-medium hover:bg-[#00C26F] transition px-4 py-2 rounded">Modifier</button>
                     </form>
                 </div>
-
-
             </div>
         </div>
     </div>

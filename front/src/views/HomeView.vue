@@ -11,6 +11,7 @@ const user = computed(() => store.state.user);
 const devoirs = ref([]);
 const loading = ref(true);
 const error = ref("");
+const checkedDevoirs = ref([]);
 
 onMounted(async () => {
     try {
@@ -21,6 +22,9 @@ onMounted(async () => {
             },
         });
         devoirs.value = response.data.member;
+
+        // Optionnel: Récupérer l'état des checkboxes depuis une API
+        await loadCheckboxStatus();
     } catch (e) {
         console.error("Erreur lors de la récupération des devoirs:", e);
         error.value = e.response?.data?.detail || "Impossible de récupérer les devoirs.";
@@ -28,6 +32,85 @@ onMounted(async () => {
         loading.value = false;
     }
 });
+
+// Fonction pour charger les statuts des checkboxes depuis le serveur
+const loadCheckboxStatus = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/checkbox-statuses`, {
+            headers: {
+                "Content-Type": "application/ld+json",
+                "Authorization": `Bearer ${store.state.token}`,
+            }
+        });
+
+        // Supposons que la réponse est un tableau d'objets avec les IDs des devoirs cochés
+        if (response.data && Array.isArray(response.data)) {
+            checkedDevoirs.value = response.data
+                .filter(item => item.status === true)
+                .map(item => {
+                    // Extraire l'ID du devoir de l'URL (ex: "https://example.com/devoirs/123" -> "123")
+                    const id = item.devoirs.split('/').pop();
+                    return id;
+                });
+        }
+    } catch (e) {
+        console.error("Erreur lors du chargement des statuts de checkbox:", e);
+    }
+};
+
+// Fonction pour vérifier si un devoir est coché
+const isDevoirChecked = (devoirId) => {
+    return checkedDevoirs.value.includes(devoirId);
+};
+
+// Fonction pour basculer l'état d'un devoir
+const toggleChecked = async (devoir) => {
+    const devoirId = devoir.id;
+
+    // Basculer l'état dans la liste locale
+    if (isDevoirChecked(devoirId)) {
+        checkedDevoirs.value = checkedDevoirs.value.filter(id => id !== devoirId);
+    } else {
+        checkedDevoirs.value.push(devoirId);
+    }
+
+    // Envoyer la mise à jour au serveur
+    try {
+        await axios.post(`${API_URL}/checkbox-statuses`, {
+            user: `https://example.com/users/${user.value.id}`,
+            devoirs: `https://example.com/devoirs/${devoirId}`,
+            status: isDevoirChecked(devoirId)
+        }, {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${store.state.token}`,
+            }
+        });
+    } catch (e) {
+        console.error("Erreur lors de la mise à jour du statut:", e);
+        // En cas d'erreur, restaurer l'état précédent
+        if (isDevoirChecked(devoirId)) {
+            checkedDevoirs.value = checkedDevoirs.value.filter(id => id !== devoirId);
+        } else {
+            checkedDevoirs.value.push(devoirId);
+        }
+    }
+};
+
+// Fonction pour obtenir les styles d'un devoir en fonction de son état
+const getDevoirStyle = (devoirId) => {
+    if (isDevoirChecked(devoirId)) {
+        return {
+            textDecoration: 'line-through',
+            color: 'gray'
+        };
+    } else {
+        return {
+            textDecoration: 'none',
+            color: 'black'
+        };
+    }
+};
 
 const devoirsUser = computed(() => {
     return devoirs.value.filter(
@@ -205,10 +288,10 @@ const getDevoirsForDay = (date) => {
                             Créer un devoir
                         </router-link>
                         <router-link
-                            to="#"
-                            class="px-3 py-1.5 rounded hover:bg-[#00D478]/20 text-[#00D478] text-sm font-light"
+                            to="/devoirs"
+                            class="px-3 py-1.5 rounded hover:bg-[#00D478]/20 border border-[#00D478] text-[#00D478] text-sm font-light"
                         >
-                            Gérer les classes
+                            Gérer ses devoirs
                         </router-link>
                     </div>
                 </div>
@@ -292,7 +375,12 @@ const getDevoirsForDay = (date) => {
                             <div :class="devoir.id_categories.couleur" class="absolute h-full w-2 rounded-tl-lg rounded-bl-lg left-0"></div>
                             <div class="flex items-center gap-4 pl-4 w-full pr-2">
                                 <div class="flex items-center">
-                                    <input type="checkbox" class="h-4 w-4" />
+                                    <input
+                                        type="checkbox"
+                                        class="h-4 w-4"
+                                        :checked="isDevoirChecked(devoir.id)"
+                                        @change="toggleChecked(devoir)"
+                                    />
                                 </div>
                                 <div class="flex items-start flex-col w-full">
                                     <h3 class="text-lg font-semibold">{{ devoir.intitule }}</h3>
