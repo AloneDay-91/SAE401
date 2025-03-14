@@ -301,46 +301,48 @@ const getDevoirsForDay = (date) => {
         <!-- Section des devoirs -->
         <div class="bg-gray-50 border border-gray-200 w-full">
             <div class="flex flex-col md:flex-row items-start justify-between gap-4 mx-auto py-8 max-w-screen-xl">
-                <div class="w-full p-4">
+                <div class="w-full md:basis-2/3 p-4">
                     <h2 class="text-2xl font-semibold">Calendrier</h2>
 
                     <p v-if="error" class="error-message border rounded p-3 text-sm font-light border-red-400/20 bg-red-200/10 text-red-900 flex items-center gap-2">
                         ⚠ {{ error }}
                     </p>
 
-                    <div class="calendar-container w-full p-4 bg-white rounded-lg shadow space-y-4 mt-4">
-                        <div class="calendar-header flex justify-between items-center mb-4">
+                    <div class="calendar-container w-full p-4 bg-white rounded-lg border border-gray-300 space-y-4 mt-4">
+                        <div class="calendar-header flex justify-between pb-4 border-b border-gray-200 items-center mb-4">
                             <div class="flex items-center gap-2">
-                                <button class="px-3 py-1.5 rounded hover:bg-gray-200" @click="previousWeek">
-                                    &lt; Précédent
+                                <button class="cursor-pointer px-1 py-1 rounded border border-gray-200 hover:bg-gray-200" @click="previousWeek">
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" class="size-6 stroke-gray-600">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                                  </svg>
                                 </button>
-                                <button class="px-3 py-1.5 rounded hover:bg-gray-200" @click="goToToday">
+                              <button class="cursor-pointer px-1 py-1 rounded border border-gray-200 hover:bg-gray-200" @click="nextWeek">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" class="size-6 stroke-gray-600">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                </svg>
+                              </button>
+                                <button class="cursor-pointer px-2 py-1 rounded hover:bg-gray-200" @click="goToToday">
                                     Aujourd'hui
                                 </button>
                             </div>
-                            <div class="text-lg font-semibold">
+                            <div class="font-semibold">
                                 {{ currentWeekLabel }}
-                            </div>
-                            <div>
-                                <button class="px-3 py-1.5 rounded hover:bg-gray-200" @click="nextWeek">
-                                    Suivant &gt;
-                                </button>
                             </div>
                         </div>
 
-                        <div class="calendar-grid grid grid-cols-7 gap-1">
+                        <div class="calendar-grid grid grid-cols-7 gap-x-1">
                             <!-- Jours de la semaine -->
                             <div v-for="(day, index) in daysOfWeek" :key="index"
-                                 class="text-center py-2 font-medium bg-gray-100 rounded-t">
+                                 class="flex items-center justify-between text-left py-2 px-2 font-medium bg-gray-50 rounded-t border-b border-gray-200">
                                 {{ day.shortName }}
-                                <div class="text-sm font-light" :class="isToday(day.date) ? 'text-[#00D478] font-semibold' : ''">
+                                <div class="text-sm text-gray-400 font-semibold" :class="isToday(day.date) ? 'text-[#00D478] font-semibold' : ''">
                                     {{ formatDayNumber(day.date) }}
                                 </div>
                             </div>
 
                             <!-- Cellules du calendrier -->
                             <div v-for="(day, index) in daysOfWeek" :key="'day-'+index"
-                                 class="min-h-[150px] bg-white border border-gray-200 rounded-b p-2"
+                                 class="min-h-[150px] bg-gray-50 rounded-b p-2"
                                  :class="isToday(day.date) ? 'bg-[#00D478]/10 border-[#00D478]/30' : ''">
                                 <!-- Devoirs pour ce jour -->
                                 <div v-for="devoir in getDevoirsForDay(day.date)" :key="devoir['@id']"
@@ -350,13 +352,18 @@ const getDevoirsForDay = (date) => {
                                     <div>{{ formatTime(devoir.heure) }}</div>
                                     <div class="absolute left-0 top-0 bottom-0 w-1 rounded-l"
                                          :class="devoir.id_categories?.couleur"></div>
+                                  <div class="absolute bottom-0 right-0 p-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3">
+                                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25" />
+                                    </svg>
+                                  </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <!-- Liste des devoirs -->
-                <div class="w-full p-4">
+                <div class="w-full md:basis-1/3 p-4">
                     <h2 class="text-2xl font-semibold flex items-center gap-2">Liste des devoirs <span class="bg-white border border-gray-200 text-gray-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded">{{ devoirsFiltres.length }}</span></h2>
 
                     <p v-if="error" class="error-message border rounded p-3 text-sm font-light border-red-400/20 bg-red-200/10 text-red-900 flex items-center gap-2">

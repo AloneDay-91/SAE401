@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
+import {RouterLink, useRouter} from 'vue-router';
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
@@ -186,94 +186,109 @@ const AjouterDevoir = async () => {
 
 
 <template>
-    <form @submit.prevent="AjouterDevoir">
-        <div>
-            <label for="intitule">Intitulé</label>
-            <input type="text" id="intitule" v-model="intitule" required />
+  <main class="min-h-screen pb-8 border border-l-0 border-r-0 border-gray-200">
+    <section class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+      <div class="flex items-center justify-between border border-t-0 border-l-0 border-r-0 border-gray-200">
+        <div class="sm:flex sm:items-start flex flex-col items-center">
+          <h1 class="text-3xl font-extrabold text-gray-900">Ajout</h1>
+          <p class="mt-1 max-w-2xl text-sm text-gray-500 mb-5">Ajouter un devoir</p>
         </div>
-
-        <div>
-            <label for="desc">Description</label>
-            <input type="text" id="desc" v-model="desc" required />
+        <div class="mt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">
+          <router-link to="/devoirs" class="px-3 py-1.5 border rounded bg-[#00D478] text-[#004319] border-[#00D478] text-sm font-medium hover:bg-[#00C26F] transition">Retour</router-link>
         </div>
+      </div>
+        <form class="flex flex-wrap gap-12 mt-6 border border-gray-200 rounded-lg mx-auto px-4 py-8 sm:px-6 sm:py-12 lg:px-8" @submit.prevent="AjouterDevoir">
+            <div class="flex flex-col gap-2 w-xs">
+                <label for="intitule" class="font-medium">Intitulé</label>
+                <input type="text" id="intitule" v-model="intitule" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md" placeholder="Entrer un intitulé" required />
+            </div>
 
-        <div>
-            <label for="date">Date</label>
-            <input type="date" id="date" v-model="date" required />
-        </div>
+            <div class="flex flex-col gap-2 w-xs">
+                <label for="desc" class="font-medium">Description</label>
+                <input type="text" id="desc" v-model="desc" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md" placeholder="Entrer une description" required />
+            </div>
 
-        <div>
-            <label for="heure">Heure</label>
-            <input type="time" id="heure" v-model="heure" required />
-        </div>
+            <div class="flex flex-col gap-2">
+                <label for="date" class="font-medium">Date</label>
+                <input type="date" id="date" v-model="date" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md" required />
+            </div>
 
-        <!-- Matières -->
-        <div>
-            <label for="matiere">Matière</label>
-            <select id="matiere" v-model="matiere" required>
-                <option value="">Sélectionner une matière</option>
-                <option v-for="matiere in matieres" :key="matiere.id" :value="matiere.id">
-                    {{ matiere.nom }}
-                </option>
-            </select>
-        </div>
+            <div class="flex flex-col gap-2">
+                <label for="heure" class="font-medium">Heure</label>
+                <input type="time" id="heure" v-model="heure" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md" required />
+            </div>
 
-        <!-- Catégories -->
-        <div>
-            <label for="categorie">Catégories</label>
-            <select id="categorie" v-model="categorie" required>
-                <option value="">Sélectionner une catégorie</option>
-                <option v-for="categorie in categories" :key="categorie.id" :value="categorie.id">
-                    {{ categorie.nom }}
-                </option>
-            </select>
-        </div>
+            <!-- Matières -->
+            <div class="flex flex-col gap-2">
+                <label for="matiere" class="font-medium">Matière</label>
+                <select id="matiere" v-model="matiere" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md" required>
+                    <option value="">Sélectionner une matière</option>
+                    <option v-for="matiere in matieres" :key="matiere.id" :value="matiere.id">
+                        {{ matiere.nom }}
+                    </option>
+                </select>
+            </div>
 
-        <!-- Nouveau : Type de filtre -->
-        <div>
-            <label for="filterType">Filtrer par :</label>
-            <select id="filterType" v-model="filterType" @change="filterClassesByType">
-                <option value="">Sélectionner un filtre</option>
-                <option value="TP">TP</option>
-                <option value="TD">TD</option>
-                <option value="Promo">Promo</option>
-            </select>
-        </div>
+            <!-- Catégories -->
+            <div class="flex flex-col gap-2">
+                <label for="categorie" class="font-medium">Catégories</label>
+                <select id="categorie" v-model="categorie" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md" required>
+                    <option value="">Sélectionner une catégorie</option>
+                    <option v-for="categorie in categories" :key="categorie.id" :value="categorie.id">
+                        {{ categorie.nom }}
+                    </option>
+                </select>
+            </div>
 
-        <!-- Classes -->
-        <div v-if="classes.length > 0">
-            <label for="classe">Classe</label>
-            <select id="classe" v-model="classe" required>
-                <option value="">Sélectionner une classe</option>
-                <option v-for="classe in classes" :key="classe.id" :value="classe.id">
-                    {{ classe.intitule }} (Promo : {{ classe.promo }}) (TP: {{ classe.tp }}) (TD: {{ classe.td }})
-                </option>
-            </select>
-        </div>
+            <!-- Nouveau : Type de filtre -->
+            <div class="flex flex-col gap-2">
+                <label for="filterType" class="font-medium">Filtrer par :</label>
+                <select id="filterType" v-model="filterType" @change="filterClassesByType" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md">
+                    <option value="">Sélectionner un filtre</option>
+                    <option value="TP">TP</option>
+                    <option value="TD">TD</option>
+                    <option value="Promo">Promo</option>
+                </select>
+            </div>
 
-        <!-- Format rendu -->
-        <br />
-        <span>Format de rendu</span>
+            <!-- Classes -->
+            <div v-if="classes.length > 0" class="flex flex-col gap-2 w-xs">
+                <label for="classe" class="font-medium">Classe</label>
+                <select id="classe" v-model="classe" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md" required>
+                    <option value="">Sélectionner une classe</option>
+                    <option v-for="classe in classes" :key="classe.id" :value="classe.id">
+                        {{ classe.intitule }} (Promo : {{ classe.promo }}) (TP: {{ classe.tp }}) (TD: {{ classe.td }})
+                    </option>
+                </select>
+            </div>
 
-        <!-- Intitulé format rendu -->
-        <div>
-            <label for="intituler">Intitulé format rendu</label>
-            <input type="text" id="intituler" v-model="intituler" required />
-        </div>
+            <!-- Format rendu -->
+<!--            <br />-->
+<!--            <span>Format de rendu</span>-->
 
-        <!-- Lien format rendu -->
-        <div>
-            <label for="lien">Lien format rendu</label>
-            <input type="text" id="lien" v-model="lien" required />
-        </div>
+            <!-- Intitulé format rendu -->
+            <div class="flex flex-col gap-2">
+                <label for="intituler" class="font-medium">Intitulé format rendu</label>
+                <input type="text" id="intituler" v-model="intituler" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md" required />
+            </div>
 
-        <!-- Bouton soumettre -->
-        <button type="submit" :disabled="loading">
-            {{ loading ? 'Ajout en cours...' : 'Ajouter le devoir' }}
-        </button>
+            <!-- Lien format rendu -->
+            <div class="flex flex-col gap-2">
+                <label for="lien" class="font-medium">Lien format rendu</label>
+                <input type="text" id="lien" v-model="lien" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md" required />
+            </div>
 
-        <!-- Message d'erreur -->
-        <p v-if="error" style="color: red;">{{ error }}</p>
-    </form>
+            <!-- Bouton soumettre -->
+            <div class="mt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">
+              <button type="submit" :disabled="loading" class="cursor-pointer px-3 py-1.5 border rounded bg-[#00D478] text-[#004319] border-[#00D478] text-sm font-medium hover:bg-[#00C26F] transition" >
+                {{ loading ? 'Ajout en cours...' : 'Ajouter le devoir' }}
+              </button>
+            </div>
+
+            <!-- Message d'erreur -->
+            <p v-if="error" style="color: red;">{{ error }}</p>
+        </form>
+      </section>
+  </main>
 </template>
 
