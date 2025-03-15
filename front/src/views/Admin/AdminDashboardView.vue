@@ -2,9 +2,10 @@
 import { RouterLink, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import {computed, inject, onBeforeUnmount, onMounted, ref, watch} from 'vue';
-import {CircleUser, Book, Trash2, FilePenLine} from 'lucide-vue-next';
+import {CircleUser, Book, Trash2, FilePenLine, Ellipsis} from 'lucide-vue-next';
 import axios from 'axios';
 import DropdownMenu from "@/components/DropdownMenu.vue";
+import Button from "@/components/Button.vue";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -270,24 +271,21 @@ const updateUser = async () => {
                                                                     <DropdownMenu>
                                                                         <!-- Personnalisation du bouton déclencheur -->
                                                                         <template #trigger>
-                                                                            <button class="flex items-center px-2 py-1.5 text-xs border border-gray-300 text-gray-500 rounded-md">
-                                                                                Options
-                                                                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                                                                </svg>
-                                                                            </button>
+                                                                            <Button class="inline-flex hover:cursor-pointer" variant="ghost" size="small">
+                                                                                <Ellipsis stroke-width="1.5" size="16" />
+                                                                            </Button>
                                                                         </template>
 
                                                                         <div class="px-2">
-                                                                            <button @click="openModal(user)" class="py-2 flex items-center justify-between w-full text-gray-600 font-light hover:bg-gray-200/50 rounded px-2 my-1">
+                                                                            <Button @click="openModal(user)" class="inline-flex justify-between items-center w-full py-2 !px-2 my-1 hover:bg-gray-200/50 text-gray-600" variant="ghost" size="small">
                                                                                 <span>Modifier</span>
                                                                                 <FilePenLine stroke-width="1.5" size="16"/>
-                                                                            </button>
+                                                                            </Button>
                                                                             <hr class="text-gray-200">
-                                                                            <router-link :to="`users/${user.id}/delete`" class="py-2 flex items-center justify-between text-gray-600 font-light hover:bg-gray-200/50 rounded px-2 my-1">
+                                                                            <Button class="inline-flex justify-between items-center w-full py-2 !px-2 my-1 hover:bg-gray-200/50 text-gray-600" tag="a" :href="`users/${user.id}/delete`" variant="ghost" size="small">
                                                                                 <span class="text-red-600">Supprimer</span>
                                                                                 <Trash2 stroke-width="1.5" size="16"/>
-                                                                            </router-link>
+                                                                            </Button>
                                                                         </div>
                                                                     </DropdownMenu>
                                                                 </td>

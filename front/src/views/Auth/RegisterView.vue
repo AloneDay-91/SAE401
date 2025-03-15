@@ -3,6 +3,7 @@ import {onMounted, ref} from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import axios from "axios";
+import Button from "@/components/Button.vue";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -120,28 +121,20 @@ onMounted(async () => {
             </select>
         </div>
         <br>
-        <div class="flex items-center justify-end gap-4 mt-6 w-full">
-            <a href="/connexion" class="btn-submit bg-green-600/10 px-2 py-1.5 rounded text-green-700 text-xs">Se connecter</a>
-            <button
-                type="submit"
-                :disabled="loading"
-                class="
-                            inline-flex items-center px-2 py-1.5 border border-transparent rounded shadow-sm text-xs font-normal
-                             bg-[#00D478] text-[#004319] border-[#00D478]
-                            disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer
-                        "
-            >
-                <!-- Spinner -->
-                <svg v-if="loading" class="-ml-[6px] mr-[6px] h-[14px] w-[14px] animate-spin text-[#004319]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="#fff" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="#fff" d="
-                                M4 12a8 8 0 018-8V0C5.373
-                                0 0 5.373
-                                0 h4zm2
-                                A7.962z"></path>
-                </svg>
+        <div class="flex items-center justify-between gap-4 mt-6 w-full">
+            <div class="inline-flex items-center gap-1">
+                <span class="text-gray-600 font-light text-xs">Vous avez déjà un compte ?</span>
+                <Button class="hover:border-b border-b-green-500 !rounded-none !py-0 !px-0" variant="ghost" size="small" tag="a" href="/connexion">Se connecter</Button>
+            </div>
+            <Button type="submit" class="inline-flex" variant="solid" size="small">
+                <span v-if="loading" class="mr-2">
+                    <svg class="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 0A7.962 7.962 0 014 4.038V0C5.373 0 0 5.373 0 12h4z"></path>
+                    </svg>
+                </span>
                 {{ loading ? "Inscription..." : "S'inscrire"}}
-            </button>
+            </Button>
         </div>
     </form>
 </template>

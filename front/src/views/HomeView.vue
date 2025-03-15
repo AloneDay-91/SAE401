@@ -261,6 +261,12 @@ const getDevoirsForDay = (date) => {
             devoirDate.getFullYear() === date.getFullYear();
     });
 };
+
+import Button from '@/components/Button.vue';
+
+const handleButtonClick = () => {
+    alert('Bouton cliqué !');
+};
 </script>
 
 <template>
@@ -281,18 +287,12 @@ const getDevoirsForDay = (date) => {
 
                     <!-- Boutons d'action -->
                     <div class="mt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">
-                        <router-link
-                            to="/devoirs/new"
-                            class="px-3 py-1.5 border rounded bg-[#00D478] text-[#004319] border-[#00D478] text-sm font-light"
-                        >
+                        <Button variant="solid" size="small" tag="a" href="/devoirs/new">
                             Créer un devoir
-                        </router-link>
-                        <router-link
-                            to="/devoirs"
-                            class="px-3 py-1.5 rounded hover:bg-[#00D478]/20 border border-[#00D478] text-[#00D478] text-sm font-light"
-                        >
+                        </Button>
+                        <Button variant="outline" size="small" tag="a" href="/devoirs">
                             Gérer ses devoirs
-                        </router-link>
+                        </Button>
                     </div>
                 </div>
             </div>
@@ -363,7 +363,7 @@ const getDevoirsForDay = (date) => {
                     </div>
                 </div>
                 <!-- Liste des devoirs -->
-                <div class="w-full md:basis-1/3 p-4">
+                <div class="w-full md:basis-2/5 p-4">
                     <h2 class="text-2xl font-semibold flex items-center gap-2">Liste des devoirs <span class="bg-white border border-gray-200 text-gray-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded">{{ devoirsFiltres.length }}</span></h2>
 
                     <p v-if="error" class="error-message border rounded p-3 text-sm font-light border-red-400/20 bg-red-200/10 text-red-900 flex items-center gap-2">
@@ -397,10 +397,9 @@ const getDevoirsForDay = (date) => {
                                         <div v-if="devoir.id_formatRendu?.intitule && devoir.id_formatRendu.intitule !== 'papier'" class="flex items-start text-sm font-light">
                                             <span>à rendre sur <span class="font-semibold">{{ devoir.id_formatRendu.intitule }}</span></span>
                                         </div>
-                                        <a v-if="devoir.id_formatRendu?.lien" :href="devoir.id_formatRendu.lien"
-                                           class="text-xs font-light border border-gray-300 shadow-xs rounded p-1.5">
+                                        <Button variant="outline" size="small" tag="a" v-if="devoir.id_formatRendu?.lien" :href="devoir.id_formatRendu.lien">
                                             Rendre le devoir
-                                        </a>
+                                        </Button>
                                     </div>
                                     <div class="absolute right-4 text-xs font-light flex items-center gap-2">
                                         <span class="rounded-lg p-1 px-1.5">

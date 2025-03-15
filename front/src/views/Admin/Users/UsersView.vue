@@ -2,9 +2,10 @@
 import { RouterLink, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import {computed, inject, onBeforeUnmount, onMounted, ref, watch} from 'vue';
-import {CircleUser, Book, Trash2, FilePenLine} from 'lucide-vue-next';
+import {CircleUser, Book, Trash2, FilePenLine, ArrowLeft, ArrowRight, Ellipsis} from 'lucide-vue-next';
 import axios from 'axios';
 import DropdownMenu from "@/components/DropdownMenu.vue";
+import Button from "@/components/Button.vue";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -142,10 +143,7 @@ const updateUser = async () => {
             <div class="mt-1 text-sm text-gray-500">Gérer les différentes classes</div>
         </div>
         <div class="">
-            <router-link to="classes/new"
-                         class="px-3 py-1.5 border rounded bg-[#00D478] text-[#004319] border-[#00D478] text-sm font-light">
-                Ajouter une classes
-            </router-link>
+            <Button variant="solid" size="small" tag="a" href="/admin/users/new">Ajouter un utilisateur</Button>
         </div>
     </div>
 
@@ -154,10 +152,10 @@ const updateUser = async () => {
             <div>
                 <div>
                     <div class="max-w-full overflow-x-auto">
-                        <div class="mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                        <div class="mx-auto w-full">
                             <div class="">
                                 <div class="">
-                                    <div class="gap-4 flex flex-col px-4 py-5 sm:p-6">
+                                    <div class="gap-4 flex flex-col">
                                         <div>
                                             <div class="flex items-center justify-between pt-4 first:pt-0 gap-2">
                                                 <div class="w-full">
@@ -201,12 +199,9 @@ const updateUser = async () => {
                                                                             <DropdownMenu>
                                                                                 <!-- Personnalisation du bouton déclencheur -->
                                                                                 <template #trigger>
-                                                                                    <button class="flex items-center px-2 py-1.5 text-xs border border-gray-300 text-gray-500 rounded-md">
-                                                                                        Options
-                                                                                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                                                                        </svg>
-                                                                                    </button>
+                                                                                    <Button class="inline-flex hover:cursor-pointer" variant="ghost" size="small">
+                                                                                        <Ellipsis stroke-width="1.5" size="16" />
+                                                                                    </Button>
                                                                                 </template>
 
                                                                                 <div class="px-2">
@@ -264,12 +259,36 @@ const updateUser = async () => {
                                                     <option value="ROLE_ADMIN">Administrateur</option>
                                                 </select>
                                             </div>
-                                            <button type="submit" class="bg-[#00D478] text-[#004319] border-[#00D478] text-sm font-medium hover:bg-[#00C26F] transition px-4 py-2 rounded">Modifier</button>
+                                            <Button variant="solid" size="small" type="submit">Modifier</Button>
                                         </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="flex items-center w-full justify-between gap-8 mt-24">
+                        <router-link to="/admin/categories" class="w-full border border-gray-200 hover:border-green-400 p-12 rounded-lg hover:bg-gray-100 transition duration-400">
+                            <div>
+                                <div class="flex items-center gap-4 justify-start">
+                                    <ArrowLeft stroke-width="1.5" size="24" class="mr-2" />
+                                    <div class="text-left">
+                                        <p class="text-gray-800 font-normal text-sm">Liste des catégories</p>
+                                        <div class="text-xs text-gray-500 font-light">Gérer les différentes catégories</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </router-link>
+                        <router-link to="/admin/users/new" class="w-full border border-gray-200 hover:border-green-400 p-12 rounded-lg hover:bg-gray-100 transition duration-400">
+                            <div>
+                                <div class="flex items-center gap-4 justify-end">
+                                    <div class="text-right">
+                                        <p class="text-gray-800 font-normal text-sm">Nouvel utilisateur</p>
+                                        <div class="text-xs text-gray-500 font-light">Ajouter un nouvel utilisateur</div>
+                                    </div>
+                                    <ArrowRight stroke-width="1.5" size="24" class="mr-2" />
+                                </div>
+                            </div>
+                        </router-link>
                     </div>
                 </div>
             </div>

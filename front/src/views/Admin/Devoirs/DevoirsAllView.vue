@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import axios from "axios";
 import {RouterLink, useRouter} from 'vue-router'
 import { useStore } from 'vuex'
+import Button from "@/components/Button.vue";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -51,7 +52,7 @@ onMounted(GetDevoir)
             <p class="text-gray-800 font-semibold">Devoir n°{{idDevoir}}</p>
         </div>
         <div class="">
-            <router-link to="/admin/devoirs" class="px-3 py-1.5 border rounded bg-[#00D478] text-[#004319] border-[#00D478] text-sm font-light">Retour</router-link>
+            <Button variant="solid" size="small" tag="a" href="/admin/devoirs">Retour</Button>
         </div>
     </div>
     <div>
@@ -60,7 +61,7 @@ onMounted(GetDevoir)
         </div>
         <div class="mx-4 my-4">
             <section>
-                <div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+                <div class="mx-auto max-w-screen-xl">
                     <div class="">
                         <div class="rounded-lg divide-y divide-gray-200 ring-1 ring-gray-200 shadow bg-white">
                             <div v-if="devoirs" class="gap-4 flex flex-col px-4 py-5 sm:p-6">

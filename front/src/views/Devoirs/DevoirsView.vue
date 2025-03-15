@@ -5,6 +5,7 @@ import axios from 'axios';
 import DropdownMenu from "@/components/DropdownMenu.vue";
 import {RouterLink} from "vue-router";
 import {Eye, FilePenLine, Trash2} from "lucide-vue-next";
+import Button from "@/components/Button.vue";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -94,7 +95,7 @@ const deleteDevoir = async () => {
                     <p class="mt-1 max-w-2xl text-sm text-gray-500 mb-5">Gérez mes devoirs</p>
                 </div>
                 <div class="mt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">
-                    <router-link to="/devoirs/new" class="px-3 py-1.5 border rounded bg-[#00D478] text-[#004319] border-[#00D478] text-sm font-medium hover:bg-[#00C26F] transition">Créer un devoir</router-link>
+                    <Button variant="solid" size="small" tag="a" href="/devoirs/new">Créer un devoir</Button>
                 </div>
             </div>
             <div class="mt-8">
@@ -140,12 +141,12 @@ const deleteDevoir = async () => {
                                 <DropdownMenu>
                                     <!-- Personnalisation du bouton déclencheur -->
                                     <template #trigger>
-                                        <button class="flex items-center px-2 py-1.5 text-xs border border-gray-300 text-gray-500 rounded-md">
+                                        <Button class="inline-flex" variant="outline" size="small">
                                             Options
                                             <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                             </svg>
-                                        </button>
+                                        </Button>
                                     </template>
 
                                     <div class="px-2">

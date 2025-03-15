@@ -3,8 +3,9 @@ import { ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import axios from 'axios';
 import {RouterLink} from "vue-router";
-import {FilePenLine, Trash2, Eye} from "lucide-vue-next";
+import {FilePenLine, Trash2, Eye, ArrowLeft, ArrowRight, Ellipsis} from "lucide-vue-next";
 import DropdownMenu from "@/components/DropdownMenu.vue";
+import Button from "@/components/Button.vue";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -45,7 +46,7 @@ onMounted(async () => {
             <div class="mt-1 text-sm text-gray-500">Gérer les différents devoirs</div>
         </div>
         <div class="">
-            <router-link to="devoirs/new" class="px-3 py-1.5 border rounded bg-[#00D478] text-[#004319] border-[#00D478] text-sm font-light">Ajouter un devoir</router-link>
+            <Button variant="solid" size="small" tag="a" href="devoirs/new">Ajouter un devoir</Button>
         </div>
     </div>
 
@@ -80,12 +81,9 @@ onMounted(async () => {
                                         <DropdownMenu>
                                             <!-- Personnalisation du bouton déclencheur -->
                                             <template #trigger>
-                                                <button class="flex items-center px-2 py-1.5 text-xs border border-gray-300 text-gray-500 rounded-md">
-                                                    Options
-                                                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                                    </svg>
-                                                </button>
+                                                <Button class="inline-flex hover:cursor-pointer" variant="ghost" size="small">
+                                                    <Ellipsis stroke-width="1.5" size="16" />
+                                                </Button>
                                             </template>
 
                                             <div class="px-2">
@@ -108,6 +106,30 @@ onMounted(async () => {
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                    <div class="flex items-center w-full justify-between gap-8 mt-24">
+                        <router-link to="/admin/dashboard" class="w-full border border-gray-200 hover:border-green-400 p-12 rounded-lg hover:bg-gray-100 transition duration-400">
+                            <div>
+                                <div class="flex items-center gap-4 justify-start">
+                                    <ArrowLeft stroke-width="1.5" size="24" class="mr-2" />
+                                    <div class="text-left">
+                                        <p class="text-gray-800 font-normal text-sm">Tableau de bord</p>
+                                        <div class="text-xs text-gray-500 font-light">Accueil de l'administration</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </router-link>
+                        <router-link to="/admin/devoirs/new" class="w-full border border-gray-200 hover:border-green-400 p-12 rounded-lg hover:bg-gray-100 transition duration-400">
+                            <div>
+                                <div class="flex items-center gap-4 justify-end">
+                                    <div class="text-right">
+                                        <p class="text-gray-800 font-normal text-sm">Nouveau devoir</p>
+                                        <div class="text-xs text-gray-500 font-light">Ajouter un nouveau devoir</div>
+                                    </div>
+                                    <ArrowRight stroke-width="1.5" size="24" class="mr-2" />
+                                </div>
+                            </div>
+                        </router-link>
                     </div>
                 </div>
             </div>

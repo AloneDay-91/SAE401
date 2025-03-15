@@ -2,7 +2,10 @@
 import { RouterLink, useRouter, useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 import {computed, inject, onBeforeUnmount, onMounted, ref, watch} from 'vue';
-import {ArrowLeft, LayoutList, List, ListTodo, ListTree, User, Github} from "lucide-vue-next";
+import {ArrowLeft, LayoutList, List, ListTodo, ListTree, User, Github, ExternalLink} from "lucide-vue-next";
+import Button from "@/components/Button.vue";
+
+const API = import.meta.env.VITE_API_BASE_URL;
 
 const store = useStore();
 const router = useRouter();
@@ -106,6 +109,19 @@ const handleClickOutside = (event) => {
     }
 };
 
+// Fonction pour ouvrir ou fermer un sous-menu
+const isOpen = ref({
+    devoirs: false,
+    classes: false,
+    matieres: false,
+    categories: false,
+    users: false
+});
+
+const toggle = (key) => {
+    isOpen.value[key] = !isOpen.value[key];
+};
+
 </script>
 
 <template>
@@ -118,45 +134,111 @@ const handleClickOutside = (event) => {
                             <img class="w-full max-w-32" src="@/assets/LOGO.png" alt="Logo">
                         </a>
                     </div>
-                    <a href="/admin/dashboard" class="p-2 hover:bg-gray-50 rounded-lg text-xs font-normal hover:text-gray-800 flex items-center text-gray-800 bg-gray-50 border border-gray-200">
+
+                    <router-link active-class="text-gray-800 bg-gray-50 border border-gray-200" to="/admin/dashboard" class="w-full p-2 hover:bg-gray-50 rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house mr-2"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-                        Accueil
-                    </a>
-                    <router-link to="/admin/devoirs" class="w-full p-2 hover:bg-gray-50 rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group">
+                        <span class="flex-1 text-left whitespace-nowrap text-xs">Accueil</span>
+                    </router-link>
+                    <button
+                        @click="toggle('devoirs')"
+                        class="w-full p-2 hover:bg-gray-50 rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group"
+                        :class="{ 'text-gray-800 bg-gray-50 border border-gray-200': isOpen.devoirs }"
+                    >
                         <ListTodo stroke-width="1.5" size="16" class="mr-2" />
                         <span class="flex-1 text-left whitespace-nowrap text-xs">Devoirs</span>
-                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <svg :class="{ 'rotate-180': isOpen.devoirs }" class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="m1 1 4 4 4-4"></path>
                         </svg>
-                    </router-link>
-                    <router-link to="/admin/classes" class="w-full p-2 hover:bg-gray-50 rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group">
+                    </button>
+                    <div v-show="isOpen.devoirs" class="pl-4 relative">
+                        <div class="w-0.5 absolute h-full bg-green-400 left-4"></div>
+                        <router-link to="/admin/devoirs" class="block px-4 py-2 text-xs font-light text-gray-600 hover:bg-gray-100">
+                            Liste des devoirs
+                        </router-link>
+                        <router-link to="/admin/devoirs/new" class="block px-4 py-2 text-xs font-light text-gray-600 hover:bg-gray-100">
+                            Ajouter un devoir
+                        </router-link>
+                    </div>
+                    <button
+                        @click="toggle('classes')"
+                        class="w-full p-2 hover:bg-gray-50 rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group"
+                        :class="{ 'text-gray-800 bg-gray-50 border border-gray-200': isOpen.classes }"
+                    >
                         <List stroke-width="1.5" size="16" class="mr-2" />
                         <span class="flex-1 text-left whitespace-nowrap text-xs">Classes</span>
-                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <svg :class="{ 'rotate-180': isOpen.classes }" class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="m1 1 4 4 4-4"></path>
                         </svg>
-                    </router-link>
-                    <router-link to="/admin/matieres" class="w-full p-2 hover:bg-gray-50 rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group">
+                    </button>
+                    <div v-show="isOpen.classes" class="pl-4 relative">
+                        <div class="w-0.5 absolute h-full bg-green-400 left-4"></div>
+                        <router-link to="/admin/classes" class="block px-4 py-2 text-xs font-light text-gray-600 hover:bg-gray-100">
+                            Liste des classes
+                        </router-link>
+                        <router-link to="/admin/classes/new" class="block px-4 py-2 text-xs font-light text-gray-600 hover:bg-gray-100">
+                            Ajouter une classe
+                        </router-link>
+                    </div>
+                    <button
+                        @click="toggle('matieres')"
+                        class="w-full p-2 hover:bg-gray-50 rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group"
+                        :class="{ 'text-gray-800 bg-gray-50 border border-gray-200': isOpen.matieres }"
+                    >
                         <LayoutList stroke-width="1.5" size="16" class="mr-2" />
                         <span class="flex-1 text-left whitespace-nowrap text-xs">Matières</span>
-                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <svg :class="{ 'rotate-180': isOpen.matieres }" class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="m1 1 4 4 4-4"></path>
                         </svg>
-                    </router-link>
-                    <router-link to="/admin/categories" class="w-full p-2 hover:bg-gray-50 rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group">
+                    </button>
+                    <div v-show="isOpen.matieres" class="pl-4 relative">
+                        <div class="w-0.5 absolute h-full bg-green-400 left-4"></div>
+                        <router-link to="/admin/matieres" class="block px-4 py-2 text-xs font-light text-gray-600 hover:bg-gray-100">
+                            Liste des matières
+                        </router-link>
+                        <router-link to="/admin/matieres/new" class="block px-4 py-2 text-xs font-light text-gray-600 hover:bg-gray-100">
+                            Ajouter une matière
+                        </router-link>
+                    </div>
+                    <button
+                        @click="toggle('categories')"
+                        class="w-full p-2 hover:bg-gray-50 rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group"
+                        :class="{ 'text-gray-800 bg-gray-50 border border-gray-200': isOpen.categories }"
+                    >
                         <ListTree stroke-width="1.5" size="16" class="mr-2" />
                         <span class="flex-1 text-left whitespace-nowrap text-xs">Catégories</span>
-                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <svg :class="{ 'rotate-180': isOpen.categories }" class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="m1 1 4 4 4-4"></path>
                         </svg>
-                    </router-link>
-                    <router-link to="/admin/users" class="w-full p-2 hover:bg-gray-50 rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group">
+                    </button>
+                    <div v-show="isOpen.categories" class="pl-4 relative">
+                        <div class="w-0.5 absolute h-full bg-green-400 left-4"></div>
+                        <router-link to="/admin/categories" class="block px-4 py-2 text-xs font-light text-gray-600 hover:bg-gray-100">
+                            Liste des catégories
+                        </router-link>
+                        <router-link to="/admin/categories/new" class="block px-4 py-2 text-xs font-light text-gray-600 hover:bg-gray-100">
+                            Ajouter une catégorie
+                        </router-link>
+                    </div>
+                    <button
+                        @click="toggle('users')"
+                        class="w-full p-2 hover:bg-gray-50 rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group"
+                        :class="{ 'text-gray-800 bg-gray-50 border border-gray-200': isOpen.users }"
+                    >
                         <User stroke-width="1.5" size="16" class="mr-2" />
                         <span class="flex-1 text-left whitespace-nowrap text-xs">Utilisateurs</span>
-                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <svg :class="{ 'rotate-180': isOpen.users }" class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="m1 1 4 4 4-4"></path>
                         </svg>
-                    </router-link>
+                    </button>
+                    <div v-show="isOpen.users" class="pl-4 relative">
+                        <div class="w-0.5 absolute h-full bg-green-400 left-4"></div>
+                        <router-link to="/admin/users" class="block px-4 py-2 text-xs font-light text-gray-600 hover:bg-gray-100">
+                            Liste des utilisateurs
+                        </router-link>
+                        <router-link to="/admin/users/new" class="block px-4 py-2 text-xs font-light text-gray-600 hover:bg-gray-100">
+                            Ajouter un utilisateur
+                        </router-link>
+                    </div>
                 </div>
                 <div>
                     <div>
@@ -170,11 +252,11 @@ const handleClickOutside = (event) => {
                         </div>
                     </div>
                     <div>
-                        <div class="p-4">
-                            <a href="/" class="p-2 hover:bg-gray-50 rounded-lg text-xs font-light text-gray-400 hover:text-gray-800 flex items-center">
+                        <div class="pt-4">
+                            <Button class="inline-flex w-full items-center text-center justify-center" variant="outline" size="small" tag="a" href="/">
                                 <ArrowLeft stroke-width="1.5" size="16" class="mr-2" />
                                 Retour à l'accueil
-                            </a>
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -186,7 +268,11 @@ const handleClickOutside = (event) => {
                         <p class="text-gray-700 font-light">{{ PageName }}</p>
                     </div>
                     <div>
-                        <div class="flex items-center lg:order-2 relative">
+                        <div class="flex items-center lg:order-2 relative gap-4">
+                            <a class="inline-flex items-center text-left rounded text-xs font-light gap-x-1.5 px-3 py-0.5 bg-gray-50 border border-gray-300 text-gray-900" :href="API + '/docs'" target="_blank">
+                                <span> API </span>
+                                <ExternalLink stroke-width="2" size="12" />
+                            </a>
                             <!-- Bouton de profil -->
                             <button
                                 @click="toggleProfile"
@@ -241,6 +327,7 @@ const handleClickOutside = (event) => {
                                                 to="/settings"
                                                 role="menuitem"
                                                 tabindex="0"
+                                                active-class="bg-gray-300/50"
                                             >
                                                 Mon profil
                                             </RouterLink>
@@ -251,6 +338,7 @@ const handleClickOutside = (event) => {
                                                 to="/devoirs"
                                                 role="menuitem"
                                                 tabindex="0"
+                                                active-class="bg-gray-300/50"
                                             >
                                                 Mes devoirs
                                             </RouterLink>
@@ -261,6 +349,7 @@ const handleClickOutside = (event) => {
                                                 to="/badges"
                                                 role="menuitem"
                                                 tabindex="0"
+                                                active-class="bg-gray-300/50"
                                             >
                                                 Mes badges
                                             </RouterLink>
@@ -271,6 +360,7 @@ const handleClickOutside = (event) => {
                                                 to="/classe"
                                                 role="menuitem"
                                                 tabindex="0"
+                                                active-class="bg-gray-300/50"
                                             >
                                                 Ma classe
                                             </RouterLink>
@@ -281,6 +371,7 @@ const handleClickOutside = (event) => {
                                                 to="/admin/dashboard"
                                                 role="menuitem"
                                                 tabindex="0"
+                                                active-class="bg-gray-300/50"
                                             >
                                                 Administration
                                             </RouterLink>
@@ -320,10 +411,10 @@ const handleClickOutside = (event) => {
                         </RouterLink>
                         <nav v-if="isAuthenticated" class="mr-6">
                             <ul class="flex items-center gap-4 text-sm">
-                                <li><RouterLink class="p-2 font-light text-black" to="/">Tableau de bord</RouterLink></li>
-                                <li><RouterLink class="p-2 font-light text-gray-400" to="/devoirs">Mes devoirs</RouterLink></li>
-                                <li><RouterLink class="p-2 font-light text-gray-400" to="/badges">Mes badges</RouterLink></li>
-                                <li><RouterLink class="p-2 font-light text-gray-400" to="/settings">Mon profil</RouterLink></li>
+                                <li><RouterLink class="p-2 font-light text-gray-400" to="/" active-class="!text-black border-b border-b-green-500">Tableau de bord</RouterLink></li>
+                                <li><RouterLink class="p-2 font-light text-gray-400" to="/devoirs" active-class="!text-black border-b border-b-green-500">Mes devoirs</RouterLink></li>
+                                <li><RouterLink class="p-2 font-light text-gray-400" to="/badges" active-class="!text-black border-b border-b-green-500">Mes badges</RouterLink></li>
+                                <li><RouterLink class="p-2 font-light text-gray-400" to="/settings" active-class="!text-black border-b border-b-green-500">Mon profil</RouterLink></li>
                             </ul>
                         </nav>
                     </div>
@@ -382,6 +473,7 @@ const handleClickOutside = (event) => {
                                             to="/settings"
                                             role="menuitem"
                                             tabindex="0"
+                                            active-class="bg-gray-300/50"
                                         >
                                             Mon profil
                                         </RouterLink>
@@ -392,6 +484,7 @@ const handleClickOutside = (event) => {
                                             to="/devoirs"
                                             role="menuitem"
                                             tabindex="0"
+                                            active-class="bg-gray-300/50"
                                         >
                                             Mes devoirs
                                         </RouterLink>
@@ -402,6 +495,7 @@ const handleClickOutside = (event) => {
                                             to="/badges"
                                             role="menuitem"
                                             tabindex="0"
+                                            active-class="bg-gray-300/50"
                                         >
                                             Mes badges
                                         </RouterLink>
@@ -412,6 +506,7 @@ const handleClickOutside = (event) => {
                                             to="/classe"
                                             role="menuitem"
                                             tabindex="0"
+                                            active-class="bg-gray-300/50"
                                         >
                                             Ma classe
                                         </RouterLink>
@@ -422,6 +517,7 @@ const handleClickOutside = (event) => {
                                             to="/admin/dashboard"
                                             role="menuitem"
                                             tabindex="0"
+                                            active-class="bg-gray-300/50"
                                         >
                                             Administration
                                         </RouterLink>

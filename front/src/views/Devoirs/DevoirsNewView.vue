@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 import {RouterLink, useRouter} from 'vue-router';
 import axios from 'axios';
+import Button from "@/components/Button.vue";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -190,11 +191,11 @@ const AjouterDevoir = async () => {
     <section class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <div class="flex items-center justify-between border border-t-0 border-l-0 border-r-0 border-gray-200">
         <div class="sm:flex sm:items-start flex flex-col items-center">
-          <h1 class="text-3xl font-extrabold text-gray-900">Ajout</h1>
-          <p class="mt-1 max-w-2xl text-sm text-gray-500 mb-5">Ajouter un devoir</p>
+          <h1 class="text-3xl font-extrabold text-gray-900">Nouveau devoir</h1>
+          <p class="mt-1 max-w-2xl text-sm text-gray-500 mb-5">Création d'un nouveau devoir</p>
         </div>
         <div class="mt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">
-          <router-link to="/devoirs" class="px-3 py-1.5 border rounded bg-[#00D478] text-[#004319] border-[#00D478] text-sm font-medium hover:bg-[#00C26F] transition">Retour</router-link>
+            <Button variant="solid" size="small" tag="a" href="/devoirs">Retour</Button>
         </div>
       </div>
         <form class="flex flex-wrap gap-12 mt-6 border border-gray-200 rounded-lg mx-auto px-4 py-8 sm:px-6 sm:py-12 lg:px-8" @submit.prevent="AjouterDevoir">
@@ -280,9 +281,9 @@ const AjouterDevoir = async () => {
 
             <!-- Bouton soumettre -->
             <div class="mt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">
-              <button type="submit" :disabled="loading" class="cursor-pointer px-3 py-1.5 border rounded bg-[#00D478] text-[#004319] border-[#00D478] text-sm font-medium hover:bg-[#00C26F] transition" >
-                {{ loading ? 'Ajout en cours...' : 'Ajouter le devoir' }}
-              </button>
+                <Button variant="solid" size="small" tag="button" type="submit" :disabled="loading">
+                    {{ loading ? 'Ajout en cours...' : 'Ajouter le devoir' }}
+                </Button>
             </div>
 
             <!-- Message d'erreur -->

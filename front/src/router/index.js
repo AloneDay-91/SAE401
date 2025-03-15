@@ -80,6 +80,11 @@ router.beforeEach(async (to, from, next) => {
       return next('/'); // Redirige vers la page d'accueil si l'utilisateur n'a pas le rôle admin
     }
 
+    if (to.path === '/admin') {
+      if (userRoles.includes('ROLE_ADMIN')) return next();
+      return next('/admin/dashboard');
+    }
+
     return next(); // Autorise la navigation
   } catch (error) {
     console.error('Erreur dans le garde de navigation:', error);
