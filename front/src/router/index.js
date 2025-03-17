@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import ConnexionView from '../views/Auth/ConnexionView.vue'; // Import direct
 import store from '../store';
+import ProfileView from "@/views/Profile/ProfileView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,34 +22,43 @@ const router = createRouter({
     { path: '/reset-password', name: 'ResetPassword', component: () => import('../views/Auth/ResetPasswordView.vue') },
 
     // PROFILE
-    { path: '/settings', name: 'settings', component: () => import('../views/Profile/SettingsView.vue'), meta: { requiresAuth: true } },
-    { path: '/badges', name: 'Badges', component: () => import('../views/Badges/BadgesView.vue') },
+    {
+      path: '/profil',
+      component: ProfileView,
+      meta: { requiresAuth: true },
+      children: [
+        { path: '', name: 'profil', component: () => import('../views/Profile/ProfilesViews/ProfileInfosView.vue') },
+        { path: 'classe', name: 'classe', component: () => import('../views/Profile/ProfilesViews/ProfileClasseView.vue') },
+        { path: 'devoirs', name: 'devoirs', component: () => import('../views/Profile/ProfilesViews/ProfileDevoirsView.vue') },
+        { path: 'settings', name: 'settings', component: () => import('../views/Profile/ProfilesViews/ProfileSettingsView.vue') },
+      ],
+    },
 
     // DEVOIRS
-    { path: '/devoirs', name: 'Devoirs', component: () => import('../views/Devoirs/DevoirsView.vue') },
-    { path: '/devoirs/new', name: 'DevoirsNew', component: () => import('../views/Devoirs/DevoirsNewView.vue') },
+    { path: '/devoirs', name: 'Devoirs', component: () => import('../views/Devoirs/DevoirsView.vue'), meta: { requiresAuth: true } },
+    { path: '/devoirs/new', name: 'DevoirsNew', component: () => import('../views/Devoirs/DevoirsNewView.vue'), meta: { requiresAuth: true } },
 
     // ADMIN
-    { path: '/admin/dashboard', name: 'AdminDashboard', component: () => import('../views/Admin/AdminDashboardView.vue'), meta: { requiresAdminRole: true } },
+    { path: '/admin/dashboard', name: 'AdminDashboard', component: () => import('../views/Admin/AdminDashboardView.vue'), meta: { requiresAdminRole: true, requiresAuth: true} },
 
     // ADMIN MATIERES
-    { path: '/admin/matieres/new', name: 'AdminMatiereNew', component: () => import('../views/Admin/Matieres/MatieresNewView.vue'), meta: { requiresAdminRole: true } },
-    { path: '/admin/matieres', name: 'AdminMatieres', component: () => import('../views/Admin/Matieres/MatieresView.vue'), meta: { requiresAdminRole: true } },
+    { path: '/admin/matieres/new', name: 'AdminMatiereNew', component: () => import('../views/Admin/Matieres/MatieresNewView.vue'), meta: { requiresAdminRole: true, requiresAuth: true } },
+    { path: '/admin/matieres', name: 'AdminMatieres', component: () => import('../views/Admin/Matieres/MatieresView.vue'), meta: { requiresAdminRole: true, requiresAuth: true } },
 
     // ADMIN DEVOIRS
-    { path: '/admin/devoirs/new', name: 'AdminDevoirsNew', component: () => import('../views/Admin/Devoirs/DevoirsNewView.vue'), meta: { requiresAdminRole: true } },
-    { path: '/admin/devoirs/:id', name: 'AdminDevoirsAllView', component: () => import('../views/Admin/Devoirs/DevoirsAllView.vue'), meta: { requiresAdminRole: true } },
-    { path: '/admin/devoirs', name: 'AdminDevoirs', component: () => import('../views/Admin/Devoirs/DevoirsView.vue'), meta: { requiresAdminRole: true } },
+    { path: '/admin/devoirs/new', name: 'AdminDevoirsNew', component: () => import('../views/Admin/Devoirs/DevoirsNewView.vue'), meta: { requiresAdminRole: true, requiresAuth: true } },
+    { path: '/admin/devoirs/:id', name: 'AdminDevoirsAllView', component: () => import('../views/Admin/Devoirs/DevoirsAllView.vue'), meta: { requiresAdminRole: true, requiresAuth: true } },
+    { path: '/admin/devoirs', name: 'AdminDevoirs', component: () => import('../views/Admin/Devoirs/DevoirsView.vue'), meta: { requiresAdminRole: true, requiresAuth: true } },
 
     // ADMIN USERS
-    { path: '/admin/users/new', name: 'AdminUsersNew', component: () => import('../views/Admin/_formUsersView.vue'), meta: { requiresAdminRole: true } },
-    { path: '/admin/users', name: 'AdminUsers', component: () => import('../views/Admin/Users/UsersView.vue'), meta: { requiresAdminRole: true } },
+    // { path: '/admin/users/new', name: 'AdminUsersNew', component: () => import('../views/Admin/_formUsersView.vue'), meta: { requiresAdminRole: true } },
+    { path: '/admin/users', name: 'AdminUsers', component: () => import('../views/Admin/Users/UsersView.vue'), meta: { requiresAdminRole: true, requiresAuth: true } },
 
     // ADMIN CATEGORIES
-    { path: '/admin/categories', name: 'AdminCategories', component: () => import('../views/Admin/Categories/CategoriesView.vue'), meta: { requiresAdminRole: true } },
+    { path: '/admin/categories', name: 'AdminCategories', component: () => import('../views/Admin/Categories/CategoriesView.vue'), meta: { requiresAdminRole: true, requiresAuth: true } },
 
     // ADMIN CLASSES
-    { path: '/admin/classes', name: 'AdminClasses', component: () => import('../views/Admin/Classes/ClassesView.vue'), meta: { requiresAdminRole: true } },
+    { path: '/admin/classes', name: 'AdminClasses', component: () => import('../views/Admin/Classes/ClassesView.vue'), meta: { requiresAdminRole: true, requiresAuth: true } },
   ],
 });
 
