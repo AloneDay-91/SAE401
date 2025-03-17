@@ -1,9 +1,11 @@
 <script setup>
 import { RouterLink, useRouter, useRoute } from 'vue-router';
 import { useStore } from 'vuex';
-import {computed, inject, onBeforeUnmount, onMounted, ref, watch} from 'vue';
+import {computed, onBeforeUnmount, onMounted, ref, watch, provide} from 'vue';
 import {ArrowLeft, LayoutList, List, ListTodo, ListTree, User, Github, ExternalLink} from "lucide-vue-next";
 import Button from "@/components/Button.vue";
+import Footer from "@/components/Footer.vue";
+import Toast from "@/components/Toast.vue";
 
 const API = import.meta.env.VITE_API_BASE_URL;
 
@@ -121,6 +123,23 @@ const isOpen = ref({
 const toggle = (key) => {
     isOpen.value[key] = !isOpen.value[key];
 };
+
+const showToast = ref(false);
+const toastMessage = ref('');
+const toastTitle = ref('');
+const toastType = ref('info');
+
+const triggerToast = (title, message, type = 'info') => {
+    toastTitle.value = title;
+    toastMessage.value = message;
+    toastType.value = type;
+    showToast.value = true;
+    setTimeout(() => {
+        showToast.value = false;
+    }, 500000); // 3000 valeurs par défaut
+};
+
+provide('triggerToast', triggerToast);
 
 </script>
 
@@ -323,55 +342,55 @@ const toggle = (key) => {
                                     <ul class="py-1 text-black">
                                         <li>
                                             <RouterLink
-                                                class="block py-2 px-4 text-sm font-light hover:bg-gray-300/50 rounded-lg mx-2"
-                                                to="/settings"
+                                                class="block py-2 px-4 text-sm font-light hover:bg-gray-300/20 rounded-lg mx-2"
+                                                to="/profil"
                                                 role="menuitem"
                                                 tabindex="0"
-                                                active-class="bg-gray-300/50"
+                                                active-class="border border-gray-200 shadow-sm bg-gray-300/20"
                                             >
                                                 Mon profil
                                             </RouterLink>
                                         </li>
                                         <li>
                                             <RouterLink
-                                                class="block py-2 px-4 text-sm font-light hover:bg-gray-300/50 rounded-lg mx-2"
+                                                class="block py-2 px-4 text-sm font-light hover:bg-gray-300/20 rounded-lg mx-2"
                                                 to="/devoirs"
                                                 role="menuitem"
                                                 tabindex="0"
-                                                active-class="bg-gray-300/50"
+                                                active-class="border border-gray-200 shadow-sm bg-gray-300/20"
                                             >
                                                 Mes devoirs
                                             </RouterLink>
                                         </li>
                                         <li>
                                             <RouterLink
-                                                class="block py-2 px-4 text-sm font-light hover:bg-gray-300/50 rounded-lg mx-2"
-                                                to="/badges"
+                                                class="block py-2 px-4 text-sm font-light hover:bg-gray-300/20 rounded-lg mx-2"
+                                                to="/succes"
                                                 role="menuitem"
                                                 tabindex="0"
-                                                active-class="bg-gray-300/50"
+                                                active-class="border border-gray-200 shadow-sm bg-gray-300/20"
                                             >
                                                 Mes badges
                                             </RouterLink>
                                         </li>
                                         <li v-if="isDelegue">
                                             <RouterLink
-                                                class="block py-2 px-4 text-sm font-light hover:bg-gray-300/50 rounded-lg mx-2"
+                                                class="block py-2 px-4 text-sm font-light hover:bg-gray-300/20 rounded-lg mx-2"
                                                 to="/classe"
                                                 role="menuitem"
                                                 tabindex="0"
-                                                active-class="bg-gray-300/50"
+                                                active-class="border border-gray-200 shadow-sm bg-gray-300/20"
                                             >
                                                 Ma classe
                                             </RouterLink>
                                         </li>
                                         <li v-if="isAdmin">
                                             <RouterLink
-                                                class="block py-2 px-4 text-sm font-light hover:bg-gray-300/50 rounded-lg mx-2"
+                                                class="block py-2 px-4 text-sm font-light hover:bg-gray-300/20 rounded-lg mx-2"
                                                 to="/admin/dashboard"
                                                 role="menuitem"
                                                 tabindex="0"
-                                                active-class="bg-gray-300/50"
+                                                active-class="border border-gray-200 shadow-sm bg-gray-300/20"
                                             >
                                                 Administration
                                             </RouterLink>
@@ -399,6 +418,14 @@ const toggle = (key) => {
                 </div>
             </div>
         </div>
+        <Toast
+            v-if="showToast"
+            :title="toastTitle"
+            :message="toastMessage"
+            :type="toastType"
+            position="topRight"
+            duration="5000"
+        />
     </div>
 
     <template v-else>
@@ -411,10 +438,10 @@ const toggle = (key) => {
                         </RouterLink>
                         <nav v-if="isAuthenticated" class="mr-6">
                             <ul class="flex items-center gap-4 text-sm">
-                                <li><RouterLink class="p-2 font-light text-gray-400" to="/" active-class="!text-black border-b border-b-green-500">Tableau de bord</RouterLink></li>
-                                <li><RouterLink class="p-2 font-light text-gray-400" to="/devoirs" active-class="!text-black border-b border-b-green-500">Mes devoirs</RouterLink></li>
-                                <li><RouterLink class="p-2 font-light text-gray-400" to="/badges" active-class="!text-black border-b border-b-green-500">Mes badges</RouterLink></li>
-                                <li><RouterLink class="p-2 font-light text-gray-400" to="/settings" active-class="!text-black border-b border-b-green-500">Mon profil</RouterLink></li>
+                                <li><RouterLink class="p-2 font-light text-gray-600" to="/" active-class="!text-black border-b border-b-green-500">Tableau de bord</RouterLink></li>
+                                <li><RouterLink class="p-2 font-light text-gray-600" to="/devoirs" active-class="!text-black border-b border-b-green-500">Mes devoirs</RouterLink></li>
+                                <li><RouterLink class="p-2 font-light text-gray-600" to="/succes" active-class="!text-black border-b border-b-green-500">Mes succès</RouterLink></li>
+                                <li><RouterLink class="p-2 font-light text-gray-600" to="/profil" active-class="!text-black border-b border-b-green-500">Mon profil</RouterLink></li>
                             </ul>
                         </nav>
                     </div>
@@ -469,55 +496,55 @@ const toggle = (key) => {
                                 <ul class="py-1 text-black">
                                     <li>
                                         <RouterLink
-                                            class="block py-2 px-4 text-sm font-light hover:bg-gray-300/50 rounded-lg mx-2"
-                                            to="/settings"
+                                            class="block py-2 px-4 text-sm font-light hover:bg-gray-300/20 rounded-lg mx-2"
+                                            to="/profil"
                                             role="menuitem"
                                             tabindex="0"
-                                            active-class="bg-gray-300/50"
+                                            active-class="border border-gray-200 shadow-sm bg-gray-300/20"
                                         >
                                             Mon profil
                                         </RouterLink>
                                     </li>
                                     <li>
                                         <RouterLink
-                                            class="block py-2 px-4 text-sm font-light hover:bg-gray-300/50 rounded-lg mx-2"
+                                            class="block py-2 px-4 text-sm font-light hover:bg-gray-300/20 rounded-lg mx-2"
                                             to="/devoirs"
                                             role="menuitem"
                                             tabindex="0"
-                                            active-class="bg-gray-300/50"
+                                            active-class="border border-gray-200 shadow-sm bg-gray-300/20"
                                         >
                                             Mes devoirs
                                         </RouterLink>
                                     </li>
                                     <li>
                                         <RouterLink
-                                            class="block py-2 px-4 text-sm font-light hover:bg-gray-300/50 rounded-lg mx-2"
-                                            to="/badges"
+                                            class="block py-2 px-4 text-sm font-light hover:bg-gray-300/20 rounded-lg mx-2"
+                                            to="/succes"
                                             role="menuitem"
                                             tabindex="0"
-                                            active-class="bg-gray-300/50"
+                                            active-class="border border-gray-200 shadow-sm bg-gray-300/20"
                                         >
-                                            Mes badges
+                                            Mes succès
                                         </RouterLink>
                                     </li>
                                     <li v-if="isDelegue">
                                         <RouterLink
-                                            class="block py-2 px-4 text-sm font-light hover:bg-gray-300/50 rounded-lg mx-2"
+                                            class="block py-2 px-4 text-sm font-light hover:bg-gray-300/20 rounded-lg mx-2"
                                             to="/classe"
                                             role="menuitem"
                                             tabindex="0"
-                                            active-class="bg-gray-300/50"
+                                            active-class="border border-gray-200 shadow-sm bg-gray-300/20"
                                         >
                                             Ma classe
                                         </RouterLink>
                                     </li>
                                     <li v-if="isAdmin">
                                         <RouterLink
-                                            class="block py-2 px-4 text-sm font-light hover:bg-gray-300/50 rounded-lg mx-2"
+                                            class="block py-2 px-4 text-sm font-light hover:bg-gray-300/20 rounded-lg mx-2"
                                             to="/admin/dashboard"
                                             role="menuitem"
                                             tabindex="0"
-                                            active-class="bg-gray-300/50"
+                                            active-class="border border-gray-200 shadow-sm bg-gray-300/20"
                                         >
                                             Administration
                                         </RouterLink>
@@ -542,19 +569,15 @@ const toggle = (key) => {
             </nav>
         </header>
         <RouterView class="min-h-screen" />
-        <footer v-if="route.path !== '/connexion' && route.path !== '/connexion/inscription'" class="bg-white w-full shadow sm:flex sm:items-center sm:justify-between p-4 sm:p-6 xl:px-8 xl:py-6 antialiased">
-            <p class="mb-4 text-sm text-center text-[#00473e] sm:mb-0">
-                © 2025 <a href="https://flowbite.com/" class="hover:underline" target="_blank">IUT Troyes</a>.
-            </p>
-            <div class="flex justify-center items-center space-x-1">
-                <a href="/contact" data-tooltip-target="tooltip-facebook" class="inline-flex justify-center p-2  text-[#475d5b] rounded-lg cursor-pointer hover:text-[#faae2b]">
-                    <span class="text-sm">Contact</span>
-                </a>
-                <a href="https://github.com/AloneDay-91/SAE401">
-                    <Github stroke-width="1.5" size="20" color="#475d5b" />
-                </a>
-            </div>
-        </footer>
+        <Footer/>
+        <Toast
+            v-if="showToast"
+            :title="toastTitle"
+            :message="toastMessage"
+            :type="toastType"
+            position="topRight"
+            duration="5000"
+        />
     </template>
 </template>
 

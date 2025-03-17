@@ -21,6 +21,9 @@ const errorIcon = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill=
 const classe = ref('')
 const classes = ref([])
 
+import { inject } from 'vue';
+const triggerToast = inject('triggerToast');
+
 const register = async () => {
     loading.value = true;
     error.value = "";
@@ -50,10 +53,12 @@ const register = async () => {
 
     try {
         await store.dispatch("register", userData);
+        triggerToast("Inscription réussie","Veuillez vous connecter.", 'success');
         router.push("/connexion");
     } catch (err) {
         console.error("Erreur API :", err.response?.data || err);
         error.value = err.response?.data?.detail || "Erreur lors de l'inscription";
+        triggerToast("Une erreur est survenue",error.value, 'error');
     }
 
     loading.value = false;

@@ -2,6 +2,7 @@
 import axios from "axios";
 import {computed, onMounted, ref} from "vue";
 import {useStore} from "vuex";
+import Button from '@/components/Button.vue';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -260,12 +261,6 @@ const getDevoirsForDay = (date) => {
             devoirDate.getMonth() === date.getMonth() &&
             devoirDate.getFullYear() === date.getFullYear();
     });
-};
-
-import Button from '@/components/Button.vue';
-
-const handleButtonClick = () => {
-    alert('Bouton cliqué !');
 };
 </script>
 

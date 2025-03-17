@@ -34,6 +34,9 @@ const router = createRouter({
       ],
     },
 
+    // BADGES
+    { path: '/succes', name: 'Succes', component: () => import('../views/Badges/BadgesView.vue'), meta: { requiresAuth: true } },
+
     // DEVOIRS
     { path: '/devoirs', name: 'Devoirs', component: () => import('../views/Devoirs/DevoirsView.vue'), meta: { requiresAuth: true } },
     { path: '/devoirs/new', name: 'DevoirsNew', component: () => import('../views/Devoirs/DevoirsNewView.vue'), meta: { requiresAuth: true } },
