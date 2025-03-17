@@ -31,12 +31,14 @@ const register = async () => {
     if (!classe.value) {
         error.value = "Veuillez sélectionner une classe";
         loading.value = false;
+        triggerToast("Attention","Veuillez sélectionner une classe", 'warning');
         return;
     }
 
     if (password.value !== confirmPassword.value) {
         error.value = "Les mots de passe ne correspondent pas";
         loading.value = false;
+        triggerToast("Attention","Les mots de passe ne correspondent pas", 'warning');
         return;
     }
 
@@ -89,8 +91,8 @@ onMounted(async () => {
         <span v-html="errorIcon"></span> {{ error }}
     </p>
     <br>
-    <form @submit.prevent="register" class="px-12">
-        <h2 class="text-left text-2xl font-semibold mb-4">Inscription</h2>
+    <form @submit.prevent="register" class="px-12 max-w-xl mx-auto">
+        <h1 class="text-xl font-light mb-6">Création d'un compte</h1>
         <div class="form-group flex flex-col">
             <label for="nom" class="text-sm font-light">Nom</label>
             <input type="text" id="nom" v-model="nom" class="border rounded border-gray-300 text-sm p-2 font-light shadow-xs" placeholder="Entrer votre nom" required />

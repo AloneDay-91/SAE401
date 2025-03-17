@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import Button from "@/components/Button.vue";
@@ -13,7 +13,6 @@ const loading = ref(false)
 const error = ref('')
 const errorIcon = ref('')
 
-import { inject } from 'vue';
 const triggerToast = inject('triggerToast');
 
 const handleLogin = async () => {
@@ -37,7 +36,7 @@ const handleLogin = async () => {
           <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
         </svg>
       `
-            triggerToast("Connexion échouée","L'email ou le mot de passe est incorrect.", 'error');
+            triggerToast("Connexion échouée","L'email ou le mot de passe est incorrect.", 'error', 'topRight', 5000);
         }
     }
 
@@ -46,12 +45,17 @@ const handleLogin = async () => {
 </script>
 
 <template>
-    <p v-if="error" class="error-message border rounded p-3 text-sm font-light border-red-400/20 bg-red-200/10 text-red-900 flex items-center gap-2 mx-12 mt-4">
+    <p v-if="error" class="error-message border rounded p-3 text-sm font-light border-red-400/20 bg-red-200/10 text-red-900 flex items-center gap-2 mx-12 mt-4 max-w-lg mx-auto">
         <span v-html="errorIcon"></span> {{ error }}
     </p>
     <br>
-    <form @submit.prevent="handleLogin" class="px-12">
-        <h2 class="text-left text-2xl font-semibold mb-4">Connexion</h2>
+    <form @submit.prevent="handleLogin" class="px-12 max-w-xl mx-auto">
+        <div class="text-center">
+            <h1 class="text-2xl font-bold sm:text-3xl">Commencer aujourd'hui !</h1>
+            <p class="mt-4 text-gray-500">
+                Connectez-vous pour accéder à votre compte utilisateur et profiter de nos services.
+            </p>
+        </div>
         <div class="form-group flex flex-col">
             <label for="email" class="text-sm font-light">Email</label>
             <input type="email" id="email" v-model="email" class="border rounded border-gray-300 text-sm p-2 font-light shadow-xs" placeholder="Entrer un email" required />
@@ -67,7 +71,7 @@ const handleLogin = async () => {
         <div class="flex items-center justify-between gap-4 mt-6 w-full">
             <div class="inline-flex items-center gap-1">
                 <span class="text-gray-600 font-light text-xs">Pas de compte ?</span>
-                <Button class="hover:border-b border-b-green-500 !rounded-none !py-0 !px-0" variant="ghost" size="small" tag="a" href="/connexion/inscription">Créer un compte</Button>
+                <Button class="hover:border-b border-b-green-500 !rounded-none !py-0 !px-0" variant="ghost" size="small" tag="a" href="/inscription">Créer un compte</Button>
             </div>
             <Button type="submit" class="inline-flex" variant="solid" size="small">
                 <span v-if="loading" class="mr-2">

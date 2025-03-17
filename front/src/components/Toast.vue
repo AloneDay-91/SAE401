@@ -42,7 +42,7 @@ const props = defineProps({
     },
     duration: {
         type: Number,
-        default: 500000 // 3000 valeurs par défaut
+        default: 7000
     }
 });
 

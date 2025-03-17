@@ -37,7 +37,6 @@ class AuthService {
                 return { token, user };
             }
         } catch (error) {
-            console.error("Login error:", error.response);
             throw new Error(error.response?.data?.message || "Erreur de connexion");
         }
     }

@@ -136,7 +136,7 @@ const triggerToast = (title, message, type = 'info') => {
     showToast.value = true;
     setTimeout(() => {
         showToast.value = false;
-    }, 500000); // 3000 valeurs par défaut
+    }, 7000);
 };
 
 provide('triggerToast', triggerToast);
@@ -429,7 +429,7 @@ provide('triggerToast', triggerToast);
     </div>
 
     <template v-else>
-        <header v-if="route.path !== '/connexion' && route.path !== '/connexion/inscription'" class="antialiased">
+        <header v-if="route.path !== '/connexion' && route.path !== '/inscription' && route.path !== '/mot-de-passe-oublie' && route.path !== '/reset-password'" class="antialiased">
             <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5">
                 <div class="flex flex-wrap justify-between items-center">
                     <div class="flex items-center">
@@ -576,7 +576,6 @@ provide('triggerToast', triggerToast);
             :message="toastMessage"
             :type="toastType"
             position="topRight"
-            duration="5000"
         />
     </template>
 </template>

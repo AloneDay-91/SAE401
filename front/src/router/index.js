@@ -15,11 +15,11 @@ const router = createRouter({
       component: ConnexionView,
       children: [
         { path: '', name: 'connexion', component: () => import('../views/Auth/FormLoginView.vue') },
-        { path: 'inscription', name: 'inscription', component: () => import('../views/Auth/RegisterView.vue') },
+        { path: '/inscription', name: 'inscription', component: () => import('../views/Auth/RegisterView.vue') },
+        { path: '/mot-de-passe-oublie', name: 'ForgotPassword', component: () => import('../views/Auth/ForgotPasswordView.vue') },
+        { path: '/reset-password', name: 'ResetPassword', component: () => import('../views/Auth/ResetPasswordView.vue') },
       ],
     },
-    { path: '/mot-de-passe-oublie', name: 'ForgotPassword', component: () => import('../views/Auth/ForgotPasswordView.vue') },
-    { path: '/reset-password', name: 'ResetPassword', component: () => import('../views/Auth/ResetPasswordView.vue') },
 
     // PROFILE
     {
