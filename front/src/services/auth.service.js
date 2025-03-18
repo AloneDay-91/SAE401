@@ -20,6 +20,8 @@ class AuthService {
                 // Décoder le token pour récupérer les infos utilisateur
                 const decodedUser = jwtDecode(token);
 
+                console.log("decodedUser", decodedUser);
+
                 // Vérifier que les champs nécessaires sont bien présents
                 const user = {
                     id: decodedUser.id || null,
@@ -27,6 +29,9 @@ class AuthService {
                     prenom: decodedUser.prenom || "Inconnu",
                     email: decodedUser.username || "Inconnu",
                     roles: decodedUser.roles || [],
+                    tp: decodedUser.tp || null,
+                    td: decodedUser.td || null,
+                    promo: decodedUser.promo || null,
                 };
 
                 /*// Stocker les infos de l'utilisateur dans localStorage
@@ -39,6 +44,7 @@ class AuthService {
         } catch (error) {
             throw new Error(error.response?.data?.message || "Erreur de connexion");
         }
+        console.log("Erreur lors de la connexion :", error);
     }
 
     async requestPasswordReset(email) {
@@ -88,11 +94,11 @@ class AuthService {
         }
     }
 
-    async register({ email, roles, password, nom, prenom, id_classes, roleapp }) {
+    async register({ email, roles, password, nom, prenom, roleapp, td, tp, promo }) {
         try {
             const response = await axios.post(
                 `${API_URL}/users`,
-                { email, roles, password, nom, prenom, id_classes, roleapp },
+                { email, roles, password, nom, prenom, roleapp, td, tp, promo },
                 {
                     headers: { "Content-Type": "application/ld+json" }
                 }

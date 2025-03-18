@@ -1,8 +1,9 @@
 <script setup>
 import axios from "axios";
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import Button from '@/components/Button.vue';
+import {Check} from "lucide-vue-next";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -12,7 +13,6 @@ const user = computed(() => store.state.user);
 const devoirs = ref([]);
 const loading = ref(true);
 const error = ref("");
-const checkedDevoirs = ref([]);
 
 onMounted(async () => {
     try {
@@ -24,8 +24,6 @@ onMounted(async () => {
         });
         devoirs.value = response.data.member;
 
-        // Optionnel: Récupérer l'état des checkboxes depuis une API
-        await loadCheckboxStatus();
     } catch (e) {
         console.error("Erreur lors de la récupération des devoirs:", e);
         error.value = e.response?.data?.detail || "Impossible de récupérer les devoirs.";
@@ -33,85 +31,6 @@ onMounted(async () => {
         loading.value = false;
     }
 });
-
-// Fonction pour charger les statuts des checkboxes depuis le serveur
-const loadCheckboxStatus = async () => {
-    try {
-        const response = await axios.get(`${API_URL}/checkbox-statuses`, {
-            headers: {
-                "Content-Type": "application/ld+json",
-                "Authorization": `Bearer ${store.state.token}`,
-            }
-        });
-
-        // Supposons que la réponse est un tableau d'objets avec les IDs des devoirs cochés
-        if (response.data && Array.isArray(response.data)) {
-            checkedDevoirs.value = response.data
-                .filter(item => item.status === true)
-                .map(item => {
-                    // Extraire l'ID du devoir de l'URL (ex: "https://example.com/devoirs/123" -> "123")
-                    const id = item.devoirs.split('/').pop();
-                    return id;
-                });
-        }
-    } catch (e) {
-        console.error("Erreur lors du chargement des statuts de checkbox:", e);
-    }
-};
-
-// Fonction pour vérifier si un devoir est coché
-const isDevoirChecked = (devoirId) => {
-    return checkedDevoirs.value.includes(devoirId);
-};
-
-// Fonction pour basculer l'état d'un devoir
-const toggleChecked = async (devoir) => {
-    const devoirId = devoir.id;
-
-    // Basculer l'état dans la liste locale
-    if (isDevoirChecked(devoirId)) {
-        checkedDevoirs.value = checkedDevoirs.value.filter(id => id !== devoirId);
-    } else {
-        checkedDevoirs.value.push(devoirId);
-    }
-
-    // Envoyer la mise à jour au serveur
-    try {
-        await axios.post(`${API_URL}/checkbox-statuses`, {
-            user: `https://example.com/users/${user.value.id}`,
-            devoirs: `https://example.com/devoirs/${devoirId}`,
-            status: isDevoirChecked(devoirId)
-        }, {
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${store.state.token}`,
-            }
-        });
-    } catch (e) {
-        console.error("Erreur lors de la mise à jour du statut:", e);
-        // En cas d'erreur, restaurer l'état précédent
-        if (isDevoirChecked(devoirId)) {
-            checkedDevoirs.value = checkedDevoirs.value.filter(id => id !== devoirId);
-        } else {
-            checkedDevoirs.value.push(devoirId);
-        }
-    }
-};
-
-// Fonction pour obtenir les styles d'un devoir en fonction de son état
-const getDevoirStyle = (devoirId) => {
-    if (isDevoirChecked(devoirId)) {
-        return {
-            textDecoration: 'line-through',
-            color: 'gray'
-        };
-    } else {
-        return {
-            textDecoration: 'none',
-            color: 'black'
-        };
-    }
-};
 
 const devoirsUser = computed(() => {
     return devoirs.value.filter(
@@ -220,12 +139,12 @@ const currentWeekLabel = computed(() => {
 
     // Si le début et la fin sont dans des mois différents
     if (start.getMonth() !== end.getMonth()) {
-        const startMonth = start.toLocaleDateString('fr-FR', { month: 'long' });
-        const endMonth = end.toLocaleDateString('fr-FR', { month: 'long' });
+        const startMonth = start.toLocaleDateString('fr-FR', {month: 'long'});
+        const endMonth = end.toLocaleDateString('fr-FR', {month: 'long'});
         return `${startDay} ${startMonth} - ${endDay} ${endMonth} ${end.getFullYear()}`;
     }
 
-    const month = end.toLocaleDateString('fr-FR', { month: 'long' });
+    const month = end.toLocaleDateString('fr-FR', {month: 'long'});
     return `${startDay} - ${endDay} ${month} ${end.getFullYear()}`;
 });
 
@@ -250,7 +169,7 @@ const goToToday = () => {
 const formatTime = (timeString) => {
     if (!timeString) return '';
     const date = new Date(timeString);
-    return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'});
 };
 
 // Obtenir les devoirs pour un jour spécifique
@@ -262,6 +181,107 @@ const getDevoirsForDay = (date) => {
             devoirDate.getFullYear() === date.getFullYear();
     });
 };
+
+// État local des cases cochées
+const checkboxStatuses = ref({});
+const loadingStatuses = ref({});
+
+// Fonction pour récupérer le statut actuel d'un devoir
+const getCheckboxStatus = (devoirId) => {
+    return checkboxStatuses.value[devoirId]?.status || false;
+};
+
+
+// Fonction pour mettre à jour le statut
+const updateDevoirStatus = async (devoirId, isChecked) => {
+    try {
+        loadingStatuses.value[devoirId] = true;
+        const devoirsId = devoirId.split('/').pop();
+
+        const existingStatus = checkboxStatuses.value[devoirId];
+        const method = existingStatus?.id ? 'patch' : 'post';
+        const url = existingStatus?.id
+            ? `/checkbox_statuses/${existingStatus.id}`
+            : '/checkbox_statuses';
+
+        // Formatage correct pour API Platform
+        const data = existingStatus?.id
+            ? { status: !!isChecked }
+            : {
+                user: `${API_URL}/users/${user.value.id}`,
+                devoirs: `${API_URL}/devoirs/${devoirsId}`,
+                status: !!isChecked
+            };
+
+        const response = await axios({
+            method,
+            url: `${API_URL}${url}`,
+            data,
+            headers: {
+                'Content-Type': method === 'patch'
+                    ? 'application/merge-patch+json'
+                    : 'application/ld+json',
+                'Authorization': `Bearer ${store.state.token}`
+            }
+        });
+
+        checkboxStatuses.value[devoirId] = {
+            id: response.data.id,
+            status: isChecked
+        };
+
+    } catch (error) {
+        console.error("Erreur:", error.response?.data || error.message);
+        checkboxStatuses.value[devoirId].status = !isChecked;
+    } finally {
+        loadingStatuses.value[devoirId] = false;
+    }
+};
+
+
+
+// Charger les statuts existants lors du montage du composant
+const loadCheckboxStatuses = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/checkbox_statuses`, {
+            params: {
+                user: `${API_URL}/users/${user.value.id}`, // Utilisation du format IRI
+                'devoirs.id[]': devoirsFiltres.value.map(d => d.id)
+            },
+            headers: {
+                'Content-Type': 'application/ld+json',
+                'Authorization': `Bearer ${store.state.token}`
+            }
+        });
+
+        const statuses = {};
+        (response.data.member || []).forEach(item => {
+            // Extraction de l'ID depuis l'IRI du devoir
+            const devoirId = item.devoirs.split('/').pop();
+            statuses[`/api/devoirs/${devoirId}`] = {
+                id: item.id,
+                status: item.status
+            };
+        });
+
+        checkboxStatuses.value = statuses;
+    } catch (error) {
+        console.error("Erreur:", error.response?.data || error.message);
+    }
+};
+
+watch(devoirsFiltres, (newDevoirs) => {
+    if (newDevoirs.length > 0) {
+        loadCheckboxStatuses();
+    }
+});
+
+
+// Charger les statuts au montage du composant
+onMounted(() => {
+    loadCheckboxStatuses();
+});
+
 </script>
 
 <template>
@@ -330,7 +350,7 @@ const getDevoirsForDay = (date) => {
                             <div v-for="(day, index) in daysOfWeek" :key="index"
                                  class="flex items-center justify-between text-left py-2 px-2 font-medium bg-gray-50 rounded-t border-b border-gray-200">
                                 {{ day.shortName }}
-                                <div class="text-sm text-gray-400 font-semibold" :class="isToday(day.date) ? 'text-[#00D478] font-semibold' : ''">
+                                <div class="text-sm text-gray-400 font-semibold" :class="isToday(day.date) ? '!text-[#00D478] font-semibold' : ''">
                                     {{ formatDayNumber(day.date) }}
                                 </div>
                             </div>
@@ -377,27 +397,33 @@ const getDevoirsForDay = (date) => {
                             <div :class="devoir.id_categories.couleur" class="absolute h-full w-2 rounded-tl-lg rounded-bl-lg left-0"></div>
                             <div class="flex items-center gap-4 pl-4 w-full pr-2">
                                 <div class="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        class="h-4 w-4"
-                                        :checked="isDevoirChecked(devoir.id)"
-                                        @change="toggleChecked(devoir)"
-                                    />
+                                    <label class="flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            class="peer hidden"
+                                            :checked="getCheckboxStatus(devoir['@id'])"
+                                            @change="updateDevoirStatus(devoir['@id'], $event.target.checked)"
+                                            :disabled="loadingStatuses[devoir['@id']]"
+                                        />
+                                        <div class="h-4 w-4 border-2 border-gray-400 peer-checked:bg-green-400 peer-checked:border-green-400 rounded flex items-center justify-center">
+                                            <Check size="12" color="black" stroke-width="2" class="hidden peer-checked:block" />
+                                        </div>
+                                    </label>
                                 </div>
                                 <div class="flex items-start flex-col w-full">
-                                    <h3 class="text-lg font-semibold">{{ devoir.intitule }}</h3>
-                                    <span class="text-xs font-light uppercase">{{devoir.id_matieres.nom}}</span>
-                                    <p class="text-sm font-light">{{ devoir.contenu }}</p>
+                                    <h3 :class="{ 'opacity-50 line-through': getCheckboxStatus(devoir['@id']) }" class="text-lg font-semibold" >{{ devoir.intitule }}</h3>
+                                    <span :class="{ 'opacity-50 line-through': getCheckboxStatus(devoir['@id']) }" class="text-xs font-light uppercase">{{devoir.id_matieres.nom}}</span>
+                                    <p :class="{ 'opacity-50 line-through': getCheckboxStatus(devoir['@id']) }" class="text-sm font-light">{{ devoir.contenu }}</p>
                                     <div class="flex items-center justify-between w-full">
                                         <div v-if="devoir.id_formatRendu?.intitule && devoir.id_formatRendu.intitule !== 'papier'" class="flex items-start text-sm font-light">
-                                            <span>à rendre sur <span class="font-semibold">{{ devoir.id_formatRendu.intitule }}</span></span>
+                                            <span :class="{ 'opacity-50 line-through': getCheckboxStatus(devoir['@id']) }">à rendre sur <span class="font-semibold">{{ devoir.id_formatRendu.intitule }}</span></span>
                                         </div>
-                                        <Button variant="outline" size="small" tag="a" v-if="devoir.id_formatRendu?.lien" :href="devoir.id_formatRendu.lien">
+                                        <Button :class="{ 'opacity-50 line-through': getCheckboxStatus(devoir['@id']) }" variant="outline" size="small" tag="a" v-if="devoir.id_formatRendu?.lien" :href="devoir.id_formatRendu.lien">
                                             Rendre le devoir
                                         </Button>
                                     </div>
                                     <div class="absolute right-4 text-xs font-light flex items-center gap-2">
-                                        <span class="rounded-lg p-1 px-1.5">
+                                        <span :class="{ 'opacity-50 line-through': getCheckboxStatus(devoir['@id']) }" class="rounded-lg p-1 px-1.5">
                                             {{ new Date(devoir.date).toLocaleDateString("fr-FR") }} | {{
                                                 new Date(devoir.heure).toLocaleTimeString("fr-FR", {
                                                     hour: "2-digit",
@@ -405,8 +431,11 @@ const getDevoirsForDay = (date) => {
                                                 })
                                             }}
                                         </span>
-                                        <p :class="getDateDevoirClass(devoir.date)" class="text-xs font-light p-1 px-2 rounded-lg">
+                                        <p :class="{'opacity-50 line-through': getCheckboxStatus(devoir['@id']),[getDateDevoirClass(devoir.date)]: true}" class="text-xs font-light p-1 px-2 rounded-lg" v-if="!getCheckboxStatus(devoir['@id'])">
                                             {{ getDateDevoirStatus(devoir.date) }}
+                                        </p>
+                                        <p class="text-xs font-light p-1 px-2 rounded-lg bg-gray-200" v-else>
+                                            Terminé
                                         </p>
                                     </div>
                                     <div class="absolute right-4 bottom-0 text-xs font-light flex items-center gap-2">

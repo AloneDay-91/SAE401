@@ -56,11 +56,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read', 'user:write', 'devoir:read', 'devoir:write'])]
     private ?string $roleapp = null;
 
-    // Relation avec Classes (ManyToOne)
-    #[ORM\ManyToOne(targetEntity: Classes::class, inversedBy: 'users')]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['user:read', 'user:write'])]
-    private ?Classes $id_classes = null;
+    #[ORM\Column(length: 255)]
+    #[Groups(['user:read', 'user:write', 'devoir:read', 'devoir:write'])]
+    private ?string $td = null;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(['user:read', 'user:write', 'devoir:read', 'devoir:write'])]
+    private ?string $tp = null;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(['user:read', 'user:write', 'devoir:read', 'devoir:write'])]
+    private ?string $promo = null;
 
     // Relation avec Badges via la table pivot UserBadges (OneToMany)
     #[ORM\OneToMany(targetEntity: UserBadges::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
@@ -168,15 +174,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // Relation avec Classes
-    public function getIdClasses(): ?Classes
+    public function getTd(): ?string
     {
-        return $this->id_classes;
+        return $this->td;
     }
 
-    public function setIdClasses(?Classes $id_classes): static
+    public function setTd(string $td): static
     {
-        $this->id_classes = $id_classes;
+        $this->td = $td;
+
+        return $this;
+    }
+
+    public function getTp(): ?string
+    {
+        return $this->tp;
+    }
+
+    public function setTp(string $tp): static
+    {
+        $this->tp = $tp;
+
+        return $this;
+    }
+
+    public function getPromo(): ?string
+    {
+        return $this->promo;
+    }
+
+    public function setPromo(string $promo): static
+    {
+        $this->promo = $promo;
 
         return $this;
     }

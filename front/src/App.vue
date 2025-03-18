@@ -313,7 +313,7 @@ provide('triggerToast', triggerToast);
                                         <span class="block text-sm font-medium text-gray-900">{{ user.nom || 'Nom' }}</span>
                                     </div>
                                     <div>
-                                        <span class="block text-xs font-light text-gray-500">{{user.id_classes?.promo}} {{ user.id_classes?.tp }}</span>
+                                        <span class="block text-xs font-light text-gray-500">{{user.promo}} {{ user.tp }}</span>
                                     </div>
                                 </div>
                             </button>
@@ -467,7 +467,7 @@ provide('triggerToast', triggerToast);
                                     <span class="block text-sm font-medium text-gray-900">{{ user.nom || 'Nom' }}</span>
                                 </div>
                                 <div>
-                                    <span class="block text-xs font-light text-gray-500">{{user.id_classes?.promo}} {{ user.id_classes?.tp }}</span>
+                                    <span class="block text-xs font-light text-gray-500">{{user.promo}} {{ user.tp }}</span>
                                 </div>
                             </div>
                         </button>
@@ -575,7 +575,7 @@ provide('triggerToast', triggerToast);
             :title="toastTitle"
             :message="toastMessage"
             :type="toastType"
-            position="topRight"
+            position="topCenter"
         />
     </template>
 </template>

@@ -23,8 +23,9 @@ class JWTCreatedListener
         $payload['roles'] = $user->getRoles();
         $payload['email'] = $user->getEmail();
         $payload['avatar'] = $user->getAvatar();
-        $classe = $user->getIdClasses();
-        $payload['classes'] = $classe ? ['id' => $classe->getId(), 'intitule' => $classe->getIntitule(), 'promo' => $classe->getPromo(), 'td' => $classe->getTd(), 'tp' => $classe->getTp()] : null;
+        $payload['tp'] = $user->getTp();
+        $payload['td'] = $user->getTd();
+        $payload['promo'] = $user->getPromo();
 
         $event->setData($payload);
     }

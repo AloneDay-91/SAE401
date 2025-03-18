@@ -18,8 +18,10 @@ const confirmPassword = ref('')
 const loading = ref(false)
 const error = ref('')
 const errorIcon = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c-2.404 0-4.635-.94-6.364-2.636-1.73-1.696-2.69-3.946-2.69-6.364 0-2.418.96-4.668 2.69-6.364C16.025 5.94 13.794 5 11.39 5H4.436"></path></svg>';
-const classe = ref('')
-const classes = ref([])
+const tp = ref('')
+const td = ref('')
+const promo = ref('')
+
 
 import { inject } from 'vue';
 const triggerToast = inject('triggerToast');
@@ -27,13 +29,6 @@ const triggerToast = inject('triggerToast');
 const register = async () => {
     loading.value = true;
     error.value = "";
-
-    if (!classe.value) {
-        error.value = "Veuillez sélectionner une classe";
-        loading.value = false;
-        triggerToast("Attention","Veuillez sélectionner une classe", 'warning');
-        return;
-    }
 
     if (password.value !== confirmPassword.value) {
         error.value = "Les mots de passe ne correspondent pas";
@@ -49,9 +44,13 @@ const register = async () => {
         password: password.value,
         nom: nom.value,
         prenom: prnm.value,
-        id_classes: `/api/classes/${classe.value}`,
-        roleapp: "ROLE_ELEVE"
+        roleapp: "ROLE_ELEVE",
+        td: td.value,
+        tp: tp.value,
+        promo: promo.value
     };
+
+    console.log(userData);
 
     try {
         await store.dispatch("register", userData);
@@ -72,17 +71,6 @@ const hash = async (password) => {
   const salt = await bcrypt.genSalt(10);
   return await bcrypt.hash(password, salt);
 };
-
-// fonction pour recuperer la liste des classes
-onMounted(async () => {
-    try {
-        const response = await axios.get(`${API_URL}/classes`);
-        classes.value = response.data.member;
-    } catch (err) {
-        console.error("Erreur lors de la récupération des classes:", err);
-    }
-});
-
 
 </script>
 
@@ -119,12 +107,22 @@ onMounted(async () => {
         </div>
         <br>
         <div class="form-group flex flex-col">
-            <label for="classe" class="text-sm font-light">Classe</label>
-            <select id="classe" v-model="classe" class="border rounded border-gray-300 text-sm p-2 font-light shadow-xs" required>
-                <option value="">Choisir une classe</option>
-                <option v-for="cls in classes" :key="cls.id" :value="cls.id">
-                    {{ cls.intitule }} ({{ cls.tp }})
-                </option>
+            <label for="tp" class="text-sm font-light">TP</label>
+            <input type="text" id="tp" max="3" v-model="tp" class="border rounded border-gray-300 text-sm p-2 font-light shadow-xs" placeholder="Entrer votre TP" required />
+        </div>
+        <br>
+        <div class="form-group flex flex-col">
+            <label for="td" class="text-sm font-light">TD</label>
+            <input type="text" id="td" max="4" v-model="td" class="border rounded border-gray-300 text-sm p-2 font-light shadow-xs" placeholder="Entrer votre TD" required />
+        </div>
+        <br>
+        <div class="form-group flex flex-col">
+            <label for="promo" class="text-sm font-light">Promo</label>
+            <select id="promo" v-model="promo" class="border rounded border-gray-300 text-sm p-2 font-light shadow-xs" required>
+                <option selected>Choisir un promo</option>
+                <option value="S1/S2">S1/S2</option>
+                <option value="S3/S4">S3/S4</option>
+                <option value="S5/S6">S5/S6</option>
             </select>
         </div>
         <br>

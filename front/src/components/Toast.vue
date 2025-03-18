@@ -17,6 +17,8 @@ const toast = tv({
             topLeft: "top-4 left-4",
             bottomRight: "bottom-4 right-4",
             bottomLeft: "bottom-4 left-4",
+            topCenter: "top-4 left-1/2 transform -translate-x-1/2",
+            bottomCenter: "bottom-4 left-1/2 transform -translate-x-1/2",
         },
     },
 });

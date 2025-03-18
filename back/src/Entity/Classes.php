@@ -32,17 +32,13 @@ class Classes
 
     #[ORM\Column(length: 255)]
     #[Groups(['user:read', 'user:write', 'classes:read', 'classes:write', 'devoir:read', 'devoir:write'])]
-    private ?string $tp = null;
-
-    #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write', 'classes:read', 'classes:write', 'devoir:read', 'devoir:write'])]
-    private ?string $td = null;
+    private ?string $type = null;
 
     /**
      * @var Collection<int, User>
      */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'id_classes')]
-    private Collection $users;
+/*    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'id_classes')]
+    private Collection $users;*/
 
     /**
      * @var Collection<int, Devoirs>
@@ -52,7 +48,7 @@ class Classes
 
     public function __construct()
     {
-        $this->users = new ArrayCollection();
+        /*$this->users = new ArrayCollection();*/
         $this->devoirs = new ArrayCollection();
     }
 
@@ -85,26 +81,14 @@ class Classes
         return $this;
     }
 
-    public function getTp(): ?string
+    public function getType(): ?string
     {
-        return $this->tp;
+        return $this->type;
     }
 
-    public function setTp(string $tp): static
+    public function setType(string $type): static
     {
-        $this->tp = $tp;
-
-        return $this;
-    }
-
-    public function getTd(): ?string
-    {
-        return $this->td;
-    }
-
-    public function setTd(string $td): static
-    {
-        $this->td = $td;
+        $this->type = $type;
 
         return $this;
     }
@@ -112,7 +96,7 @@ class Classes
     /**
      * @return Collection<int, User>
      */
-    public function getUsers(): Collection
+    /*public function getUsers(): Collection
     {
         return $this->users;
     }
@@ -137,7 +121,7 @@ class Classes
         }
 
         return $this;
-    }
+    }*/
 
     /**
      * @return Collection<int, Devoirs>
