@@ -16,6 +16,15 @@ const error = ref('')
 const router = useRouter()
 const store = useStore()
 
+
+const openModal = (user) => {
+  modifierUser.value = { ...user };
+  isModalOpen.value = true;
+};
+const closeModal = () => {
+  isModalOpen.value = false;
+};
+
 const AjouterClasses = async () => {
     loading.value = true;
     error.value = "";

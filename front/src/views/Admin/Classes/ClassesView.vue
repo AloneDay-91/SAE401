@@ -34,8 +34,8 @@ onMounted(async () => {
         });
         classes.value = response.data.member;
     } catch (e) {
-        console.error('Erreur lors de la récupération des matières:', e);
-        error.value = 'Impossible de récupérer les matières.';
+        console.error('Erreur lors de la récupération des classes:', e);
+        error.value = 'Impossible de récupérer les classes.';
     }
 });
 
@@ -52,14 +52,14 @@ const updateClasse = async () => {
 
   try {
     // Créer un nouvel objet avec seulement les propriétés à mettre à jour
-    const userData = JSON.stringify({
+    const classeData = JSON.stringify({
       intitule: modifierClasse.value.intitule,
       promo: modifierClasse.value.promo,
       td: modifierClasse.value.td,
       tp: modifierClasse.value.tp
     });
 
-    await axios.patch(`${API_URL}/classes/${modifierClasse.value.id}`, userData, {
+    await axios.patch(`${API_URL}/classes/${modifierClasse.value.id}`, classeData, {
       headers: {
         "Content-Type": "application/merge-patch+json",
         "Authorization": `Bearer ${store.state.token}`
@@ -150,7 +150,7 @@ const updateClasse = async () => {
                           <div class="">
                               <form @submit.prevent="updateClasse" class="px-4 py-5 sm:px-6">
                                   <div class="mb-6">
-                                    <label for="role" class="block mb-2 text-sm font-medium text-gray-900">Année en cours</label>
+                                    <label for="intitule" class="block mb-2 text-sm font-medium text-gray-900">Année en cours</label>
                                     <select v-model="modifierClasse.intitule" id="intitule" name="intitule" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
                                       <option value="1ère année">1ère année</option>
                                       <option value="2ème année">2ème année</option>
@@ -158,7 +158,7 @@ const updateClasse = async () => {
                                     </select>
                                   </div>
                                   <div class="mb-6">
-                                    <label for="role" class="block mb-2 text-sm font-medium text-gray-900">Promo</label>
+                                    <label for="promo" class="block mb-2 text-sm font-medium text-gray-900">Promo</label>
                                     <select v-model="modifierClasse.promo" id="promo" name="promo" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
                                       <option value="S1/S2">S1/S2</option>
                                       <option value="S3/S4">S3/S4</option>
@@ -166,7 +166,7 @@ const updateClasse = async () => {
                                     </select>
                                   </div>
                                   <div class="mb-6">
-                                    <label for="role" class="block mb-2 text-sm font-medium text-gray-900">TD</label>
+                                    <label for="td" class="block mb-2 text-sm font-medium text-gray-900">TD</label>
                                     <select v-model="modifierClasse.td" id="td" name="td" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
                                       <option value="TD AB">TD AB</option>
                                       <option value="TD CD">TD CD</option>
@@ -175,7 +175,7 @@ const updateClasse = async () => {
                                     </select>
                                   </div>
                                   <div class="mb-6">
-                                    <label for="role" class="block mb-2 text-sm font-medium text-gray-900">TP</label>
+                                    <label for="tp" class="block mb-2 text-sm font-medium text-gray-900">TP</label>
                                     <select v-model="modifierClasse.tp" id="tp" name="tp" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
                                       <option value="TPA">TPA</option>
                                       <option value="TPB">TPB</option>

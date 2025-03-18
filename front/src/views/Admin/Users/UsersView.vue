@@ -266,6 +266,7 @@ const updateUser = async () => {
                             </div>
                         </div>
                     </div>
+
                     <div class="flex items-center w-full justify-between gap-8 mt-24">
                         <router-link to="/admin/categories" class="w-full border border-gray-200 hover:border-green-400 p-12 rounded-lg hover:bg-gray-100 transition duration-400">
                             <div>

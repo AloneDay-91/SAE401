@@ -149,7 +149,7 @@ onMounted(GetDevoir)
                                             <div class="flex content-center items-center justify-between text-sm">
                                                 <label for="maintenance_toggle" class="block font-medium text-gray-700">Catégorie</label>
                                             </div>
-                                            <p class="text-gray-500 text-sm">La catégorie du devoir</p>
+                                            <p class="text-gray-500 text-sm">Le type du devoir</p>
                                         </div>
                                     </div>
                                     <div class="relative flex items-center">
@@ -162,7 +162,7 @@ onMounted(GetDevoir)
                                             <div class="flex content-center items-center justify-between text-sm">
                                                 <label for="maintenance_toggle" class="block font-medium text-gray-700">Classe</label>
                                             </div>
-                                            <p class="text-gray-500 text-sm">La classe du devoir</p>
+                                            <p class="text-gray-500 text-sm">La classe concernée par le devoir</p>
                                         </div>
                                     </div>
                                     <div class="relative flex items-center">

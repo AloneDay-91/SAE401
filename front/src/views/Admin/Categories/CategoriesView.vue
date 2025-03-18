@@ -12,6 +12,16 @@ const API_URL = import.meta.env.VITE_API_BASE_URL;
 const store = useStore();
 const categories = ref([]);
 const error = ref('');
+const isModalOpen = ref(false);
+const modifierCategorie = ref(null);
+
+const openModal = (categorie) => {
+  modifierCategorie.value = { ...categorie };
+  isModalOpen.value = true;
+};
+const closeModal = () => {
+  isModalOpen.value = false;
+};
 
 onMounted(async () => {
     try {
@@ -27,6 +37,36 @@ onMounted(async () => {
         error.value = 'Impossible de récupérer les matières.';
     }
 });
+
+const updateCategorie = async () => {
+  if (!modifierCategorie.value) return;
+
+  try {
+    // Créer un nouvel objet avec seulement les propriétés à mettre à jour
+    const categorieData = JSON.stringify({
+      nom: modifierCategorie.value.nom,
+      couleur: modifierCategorie.value.couleur
+    });
+
+    await axios.patch(`${API_URL}/categories/${modifierCategorie.value.id}`, categorieData, {
+      headers: {
+        "Content-Type": "application/merge-patch+json",
+        "Authorization": `Bearer ${store.state.token}`
+      }
+    });
+
+    // Mettre à jour la categorie dans le tableau local
+    const index = categories.value.findIndex(u => u.id === modifierCategorie.value.id);
+    if (index !== -1) {
+      categories.value[index] = { ...modifierCategorie.value };
+    }
+
+    closeModal();
+
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour de la catégorie:', error);
+  }
+};
 </script>
 <template>
     <div class="flex items-center justify-between text-left w-full border-b border-gray-200 mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -71,15 +111,10 @@ onMounted(async () => {
                                         </template>
 
                                         <div class="px-2">
-                                            <!--                                                <button @click="openModal(matieres)" class="py-2 flex items-center justify-between w-full text-gray-600 font-light hover:bg-gray-200/50 rounded px-2 my-1">
-                                                                                                <span>Modifier</span>
-                                                                                                <FilePenLine stroke-width="1.5" size="16"/>
-                                                                                            </button>-->
-                                            <router-link :to="`categorie/${categorie.id}/edit`"
-                                                         class="py-2 flex items-center justify-between text-gray-600 font-light hover:bg-gray-200/50 rounded px-2 my-1">
+                                            <button @click="openModal(categorie)" class="py-2 flex items-center justify-between w-full text-gray-600 font-light hover:bg-gray-200/50 rounded px-2 my-1">
                                                 <span>Modifier</span>
                                                 <FilePenLine stroke-width="1.5" size="16"/>
-                                            </router-link>
+                                            </button>
                                             <hr class="text-gray-200">
                                             <router-link :to="`categorie/${categorie.id}/delete`"
                                                          class="py-2 flex items-center justify-between text-gray-600 font-light hover:bg-gray-200/50 rounded px-2 my-1">
@@ -93,6 +128,30 @@ onMounted(async () => {
                             </tbody>
                         </table>
                     </div>
+
+                  <div v-if="isModalOpen" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+                    <div class="bg-white p-6 rounded-lg shadow-lg w-96 relative">
+                      <button @click="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
+                      <h2 class="text-lg font-light mb-4">Modifier une catégorie</h2>
+                      <div>
+
+                        <div class="">
+                          <form @submit.prevent="updateCategorie" class="px-4 py-5 sm:px-6">
+                            <div class="mb-6">
+                              <label for="nom" class="block mb-2 text-sm font-medium text-gray-900">Nom</label>
+                              <input type="text" id="nom" name="nom" v-model="modifierCategorie.nom" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" placeholder="Le nom de la catégorie" required>
+                            </div>
+                            <div class="mb-6">
+                              <label for="couleur" class="block mb-2 text-sm font-medium text-gray-900">Couleur</label>
+                              <input type="text" id="couleur" name="couleur" v-model="modifierCategorie.couleur" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" placeholder="La couleur de la catégorie" required>
+                            </div>
+                            <Button variant="solid" size="small" type="submit">Modifier</Button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                     <div class="flex items-center w-full justify-between gap-8 mt-24">
                         <router-link to="/admin/matieres" class="w-full border border-gray-200 hover:border-green-400 p-12 rounded-lg hover:bg-gray-100 transition duration-400">
                             <div>

@@ -12,6 +12,16 @@ const API_URL = import.meta.env.VITE_API_BASE_URL;
 const store = useStore();
 const devoirs = ref([]);
 const error = ref('');
+const isModalOpen = ref(false);
+const modifierDevoir = ref(null);
+
+const openModal = (devoir) => {
+  modifierDevoir.value = { ...devoir };
+  isModalOpen.value = true;
+};
+const closeModal = () => {
+  isModalOpen.value = false;
+};
 
 // formater la date et l'heure
 const formatDate = (date) => {
@@ -38,6 +48,38 @@ onMounted(async () => {
         error.value = 'Impossible de récupérer les matières.';
     }
 });
+
+const updateDevoir = async () => {
+  try {
+    // Créer un nouvel objet avec seulement les propriétés à mettre à jour
+    const userData = JSON.stringify({
+      intitule: modifierDevoir.value.intitule,
+      contenu: modifierDevoir.value.contenu,
+      date: modifierDevoir.value.date,
+      heure: modifierDevoir.value.heure,
+      id_matiere: modifierDevoir.value.id_matiere,
+      categorie: modifierDevoir.value.categorie,
+    });
+
+    await axios.patch(`${API_URL}/devoirs/${modifierDevoir.value.id}`, userData, {
+      headers: {
+        "Content-Type": "application/merge-patch+json",
+        "Authorization": `Bearer ${store.state.token}`
+      }
+    });
+
+    // Mettre à jour le devoir dans le tableau local
+    const index = devoirs.value.findIndex(u => u.id === modifierDevoir.value.id);
+    if (index !== -1) {
+      devoirs.value[index] = { ...modifierDevoir.value };
+    }
+
+    closeModal();
+
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour du devoir:', error);
+  }
+};
 </script>
 <template>
     <div class="flex items-center justify-between text-left w-full border-b border-gray-200 mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -91,10 +133,10 @@ onMounted(async () => {
                                                     <span>Voir</span>
                                                     <Eye stroke-width="1.5" size="16" />
                                                 </router-link>
-                                                <router-link :to="`devoirs/${devoir.id}/edit`" class="py-2 flex items-center justify-between text-gray-600 font-light hover:bg-gray-200/50 rounded px-2 my-1">
-                                                    <span>Modifier</span>
-                                                    <FilePenLine stroke-width="1.5" size="16"/>
-                                                </router-link>
+                                              <button @click="openModal(devoir)" class="py-2 flex items-center justify-between w-full text-gray-600 font-light hover:bg-gray-200/50 rounded px-2 my-1">
+                                                <span>Modifier</span>
+                                                <FilePenLine stroke-width="1.5" size="16"/>
+                                              </button>
                                                 <hr class="text-gray-200">
                                                 <router-link :to="`devoirs/${devoir.id}/delete`" class="py-2 flex items-center justify-between text-gray-600 font-light hover:bg-gray-200/50 rounded px-2 my-1">
                                                     <span class="text-red-600">Supprimer</span>
@@ -107,6 +149,55 @@ onMounted(async () => {
                             </tbody>
                         </table>
                     </div>
+
+                  <div v-if="isModalOpen" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+                    <div class="bg-white p-6 rounded-lg shadow-lg w-96 relative">
+                      <button @click="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
+                      <h2 class="text-lg font-light mb-4">Modifier un devoir</h2>
+                      <div>
+
+                        <div class="">
+                          <form @submit.prevent="updateDevoir" class="px-4 py-5 sm:px-6">
+                            <div class="mb-6">
+                              <label for="intitule" class="block mb-2 text-sm font-medium text-gray-900">Intitulé</label>
+                              <input type="text" id="intitule" name="intitule" v-model="modifierDevoir.intitule" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" placeholder="Nom du devoir" required>
+                            </div>
+                            <div class="mb-6">
+                              <label for="contenu" class="block mb-2 text-sm font-medium text-gray-900">Contenu</label>
+                              <input type="text" id="contenu" name="contenu" v-model="modifierDevoir.contenu" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" placeholder="Description du contenu du devoir" required>
+                            </div>
+                            <div class="mb-6">
+                              <label for="date" class="block mb-2 text-sm font-medium text-gray-900">A faire/rendre pour le :</label>
+                              <input type="date" id="date" name="date" v-model="modifierDevoir.date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
+<!--                            </div>
+                            <div class="mb-6">-->
+                              <label for="heure" class="block mb-2 text-sm font-medium text-gray-900">à</label>
+                              <input type="time" id="heure" name="heure" v-model="modifierDevoir.heure" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
+                            </div>
+                            <div class="mb-6">
+                              <label for="nom" class="block mb-2 text-sm font-medium text-gray-900">Matière</label>
+                              <select v-model="modifierDevoir.id_matiere" id="matiere" name="matiere" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
+                                <option value="Intégration">Intégration</option>
+                                <option value="Développement front">Développement front</option>
+                              </select>
+                            </div>
+                            <div class="mb-6">
+                              <label for="nom" class="block mb-2 text-sm font-medium text-gray-900">Catégorie</label>
+                              <select v-model="modifierDevoir.categorie" id="categorie" name="categorie" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
+                                <option value="SAE">SAE</option>
+                                <option value="Partiel">Partiel</option>
+                                <option value="TD noté">TD noté</option>
+                                <option value="TP noté">TP noté</option>
+                              </select>
+                            </div>
+
+                            <Button variant="solid" size="small" type="submit">Modifier</Button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                     <div class="flex items-center w-full justify-between gap-8 mt-24">
                         <router-link to="/admin/dashboard" class="w-full border border-gray-200 hover:border-green-400 p-12 rounded-lg hover:bg-gray-100 transition duration-400">
                             <div>
