@@ -54,9 +54,7 @@ const updateClasse = async () => {
     // Créer un nouvel objet avec seulement les propriétés à mettre à jour
     const classeData = JSON.stringify({
       intitule: modifierClasse.value.intitule,
-      promo: modifierClasse.value.promo,
-      td: modifierClasse.value.td,
-      tp: modifierClasse.value.tp
+      promo: modifierClasse.value.promo
     });
 
     await axios.patch(`${API_URL}/classes/${modifierClasse.value.id}`, classeData, {
@@ -101,8 +99,6 @@ const updateClasse = async () => {
                                 <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">ID</th>
                                 <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Intitulé</th>
                                 <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Promo</th>
-                                <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">TD</th>
-                                <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">TP</th>
                                 <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Actions</th>
                             </tr>
                             </thead>
@@ -111,8 +107,6 @@ const updateClasse = async () => {
                                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ classe.id }}</td>
                                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ classe.intitule }}</td>
                                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ classe.promo }}</td>
-                                <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ classe.td }}</td>
-                                <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ classe.tp }}</td>
                                 <td class="px-6 py-4 text-xs font-normal flex items-center gap-2">
                                     <DropdownMenu>
                                         <!-- Personnalisation du bouton déclencheur -->
@@ -163,28 +157,6 @@ const updateClasse = async () => {
                                       <option value="S1/S2">S1/S2</option>
                                       <option value="S3/S4">S3/S4</option>
                                       <option value="S5/S6">S5/S6</option>
-                                    </select>
-                                  </div>
-                                  <div class="mb-6">
-                                    <label for="td" class="block mb-2 text-sm font-medium text-gray-900">TD</label>
-                                    <select v-model="modifierClasse.td" id="td" name="td" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
-                                      <option value="TD AB">TD AB</option>
-                                      <option value="TD CD">TD CD</option>
-                                      <option value="TD EF">TD EF</option>
-                                      <option value="TD GH">TD GH</option>
-                                    </select>
-                                  </div>
-                                  <div class="mb-6">
-                                    <label for="tp" class="block mb-2 text-sm font-medium text-gray-900">TP</label>
-                                    <select v-model="modifierClasse.tp" id="tp" name="tp" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
-                                      <option value="TPA">TPA</option>
-                                      <option value="TPB">TPB</option>
-                                      <option value="TPC">TPC</option>
-                                      <option value="TPD">TPD</option>
-                                      <option value="TPE">TPE</option>
-                                      <option value="TPF">TPF</option>
-                                      <option value="TPG">TPG</option>
-                                      <option value="TPH">TPH</option>
                                     </select>
                                   </div>
                               <Button variant="solid" size="small" type="submit">Modifier</Button>

@@ -139,8 +139,8 @@ const updateUser = async () => {
 <template>
     <div class="flex items-center justify-between text-left w-full border-b border-gray-200 mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div>
-            <p class="text-gray-800 font-semibold">Liste des classes</p>
-            <div class="mt-1 text-sm text-gray-500">Gérer les différentes classes</div>
+            <p class="text-gray-800 font-semibold">Liste des utilisateurs</p>
+            <div class="mt-1 text-sm text-gray-500">Gérer les différents utilisateurs</div>
         </div>
         <div class="">
             <Button variant="solid" size="small" tag="a" href="/admin/users/new">Ajouter un utilisateur</Button>
@@ -194,7 +194,7 @@ const updateUser = async () => {
                                                                                             {{ getRoleLabel(user) }}
                                                                                         </span>
                                                                         </td>
-                                                                        <td class="px-4 py-4 text-gray-500 text-xs font-normal">{{ user.id_classes.promo }} {{ user.id_classes.td }} {{ user.id_classes.tp }}</td>
+                                                                        <td class="px-4 py-4 text-gray-500 text-xs font-normal">{{ user.promo }} {{ user.td }} {{ user.tp }}</td>
                                                                         <td class="px-4 py-4 text-xs font-normal flex items-center gap-2">
                                                                             <DropdownMenu>
                                                                                 <!-- Personnalisation du bouton déclencheur -->
