@@ -3,6 +3,9 @@ import { ref, inject } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import Button from "@/components/Button.vue";
+import { ring } from 'ldrs'
+
+ring.register()
 
 const store = useStore()
 const router = useRouter()
@@ -75,10 +78,13 @@ const handleLogin = async () => {
             </div>
             <Button type="submit" class="inline-flex" variant="solid" size="small">
                 <span v-if="loading" class="mr-2">
-                    <svg class="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 0A7.962 7.962 0 014 4.038V0C5.373 0 0 5.373 0 12h4z"></path>
-                    </svg>
+                  <l-ring
+                      size="14"
+                      stroke="2"
+                      bg-opacity="0"
+                      speed="2"
+                      color="black"
+                  ></l-ring>
                 </span>
                 {{ loading ? "Connexion..." : "Connexion" }}
             </Button>

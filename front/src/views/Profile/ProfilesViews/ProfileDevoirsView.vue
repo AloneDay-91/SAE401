@@ -92,14 +92,14 @@ const deleteDevoir = async () => {
 
 <template>
   <div>
-    <div class="bg-white shadow-sm sm:rounded-lg border border-gray-200">
+    <div class="bg-white shadow-sm sm:rounded-lg border border-b-0 border-gray-200">
       <div class="px-4 py-5 sm:px-6 md:flex md:items-center md:justify-between block">
         <div class="md:mb-10">
           <h3 class="text-lg font-medium leading-6 text-gray-900">Informations les devoirs ajoutés</h3>
           <p class="mt-1 max-w-2xl text-sm text-gray-500">Gérez les devoirs que vous avez ajoutés.</p>
         </div>
       </div>
-      <div class="border-t border-gray-200 w-full">
+      <div class="w-full">
         <section class="border border-l-0 border-r-0 border-gray-200">
             <div >
               <div v-if="error" class="text-red-500 mt-4">

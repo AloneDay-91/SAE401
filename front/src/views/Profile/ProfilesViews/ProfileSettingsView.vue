@@ -1,52 +1,147 @@
 <script setup>
-import { ref } from 'vue'
+import {inject, ref, watch} from 'vue'
 import { useStore } from 'vuex'
+import Button from '@/components/Button.vue'
+import axios from "axios";
+import router from "@/router/index.js";
+import {FilePenLine} from "lucide-vue-next";
 
 const store = useStore()
 const user = ref(store.state.user)
+const error = ref(null)
+const isModalOpen = ref(false)
+const updatedEmail = ref(user.value.email);
+
+const openModal = () => {
+  updatedEmail.value = user.value.email;
+  isModalOpen.value = true;
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
+};
+
+const triggerToast = inject('triggerToast');
+
+
+const API_URL = import.meta.env.VITE_API_BASE_URL;
+const token = store.state.token;
+
+const deleteUser = async () => {
+  if (!user.value) return;
+
+  try {
+    await axios.delete(`${API_URL}/users/${user.value.id}`, {
+      headers: {
+        "Content-Type": "application/ld+json",
+        "Authorization": `Bearer ${token}`
+      },
+    });
+
+    // Vider le store après suppression
+    store.dispatch('logout');
+
+    // Rediriger vers la connexion
+    triggerToast("Suppression réussie","Vôtre compte à bien été supprimé.", 'success');
+    router.push('/connexion')
+
+  } catch (e) {
+    triggerToast("Echec de la suppression","Impossible de supprimer le compte.", 'error');
+  }
+};
+
+const updateMail = async () => {
+  if (!user.value || !updatedEmail.value) return;
+
+  try {
+    await axios.patch(`${API_URL}/users/${user.value.id}`,
+        { email: updatedEmail.value },
+        {
+          headers: {
+            "Content-Type": "application/merge-patch+json",
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+    // Loguer pour déboguer
+    console.log('Avant mise à jour dans le store:', user.value);
+
+    // Mettre à jour l'email localement dans le store
+    store.commit('setUser', { ...user.value, email: updatedEmail.value });
+    localStorage.setItem('email', updatedEmail.value );
+    // Loguer après mise à jour
+    console.log('Après mise à jour dans le store:', store.state.user);
+
+    triggerToast("Succès", "Adresse e-mail mise à jour.", "success");
+
+    store.dispatch('logout');
+    closeModal();
+    window.location.reload();
+
+  } catch (error) {
+    triggerToast("Erreur", "Impossible de mettre à jour l'adresse e-mail.", "error");
+  }
+};
 
 </script>
 
+
 <template>
-  <section class="min-h-screen pb-8 border border-l-0 border-r-0 border-gray-200">
-    <div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-      <div class="sm:flex sm:items-start flex flex-col items-center border border-t-0 border-l-0 border-r-0 border-gray-200">
-        <h1 class="text-3xl font-extrabold text-gray-900">Mon compte</h1>
-        <p class="mt-1 max-w-2xl text-sm text-gray-500 mb-5">Gérez les paramètres de votre compte</p>
+  <div>
+    <div class="bg-white shadow-sm sm:rounded-lg border border-b-0 border-gray-200">
+      <div class="px-4 py-5 sm:px-6 md:flex md:items-center md:justify-between block">
+        <div class="md:mb-10">
+          <h3 class="text-lg font-medium leading-6 text-gray-900">Settings</h3>
+          <p class="mt-1 max-w-2xl text-sm text-gray-500">Gérez les paramètres liés au compte.</p>
+        </div>
       </div>
-    </div>
-    <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
-      <div class="mt-8 md:flex md:justify-between block w-full gap-4">
+      <div class="border-t border-gray-200 md:flex block">
         <div class="w-full">
-          <div class="px-4 py-5 sm:px-6 items-center">
-            <div>
-              <h3 class="text-lg font-medium leading-6 text-gray-900">Devoirs ajoutés</h3>
-              <p class="mt-1 max-w-2xl text-sm text-gray-500">Gérez les devoirs ajoutés</p>
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
+            <div class="text-sm font-normal text-gray-500">Modifier l'adresse mail</div>
+            <p @click="openModal" class="mt-1 max-w-2xl text-sm text-gray-500 hover:underline transition duration-200 cursor-pointer">Changer l'adresse mail</p>
+            <div v-if="isModalOpen" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+              <div class="bg-white p-6 rounded-lg shadow-lg w-96 relative">
+                <button @click="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
+                <h2 class="text-lg font-light mb-4">Modifier l'adresse mail</h2>
+                <div>
+                  <div class="">
+                    <form @submit.prevent="updateMail" class="px-4 py-5 sm:px-6">
+                      <div class="mb-6">
+                        <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Nouvelle adresse mail</label>
+                        <input type="text" id="email" name="email" v-model="updatedEmail" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" placeholder="Votre adresse mail" required>
+                      </div>
+                      <Button variant="solid" size="small" type="submit">Modifier</Button>
+                    </form>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="w-full">
-          <form class="border border-gray-200 bg-white shadow-sm sm:rounded-lg">
-            <div class="w-full">
-              <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                <div class="text-sm font-normal text-gray-500">Intitulé</div>
-                <div class="mt-1 text-sm text-gray-900 sm:col-span-2">{{user.id_classes.intitule}}</div>
-              </div>
-              <div class="border-t border-gray-200"></div>
-              <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                <div class="text-sm font-normal text-gray-500">Promo</div>
-                <div class="mt-1 text-sm text-gray-900 sm:col-span-2">{{user.id_classes.promo}}</div>
-              </div>
-            </div>
-          </form>
+          <div class="border-t border-gray-200"></div>
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
+            <div class="text-sm font-normal text-gray-500">Modifier le mot de passe</div>
+            <a href="/mot-de-passe-oublie" class="mt-1 max-w-2xl text-sm text-gray-500 hover:underline transition duration-200">Changer de mot de passe</a>
+          </div>
+          <div class="border-t border-gray-200"></div>
+<!--          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">-->
+<!--            <div class="text-sm font-normal text-gray-500">Report un bug</div>-->
+<!--            <a href="/mot-de-passe-oublie" class="mt-1 max-w-2xl text-sm text-gray-500 hover:underline transition duration-200">Report un bug</a>-->
+<!--          </div>-->
         </div>
       </div>
-      <router-view></router-view>
     </div>
-  </section>
-</template>
+    <div class="bg-linear-160 from-red-50/10 to-red-200/30 shadow-sm sm:rounded-lg border border-b-0 border-gray-200 mt-5">
+      <div class="px-4 py-5 sm:px-6 md:flex md:items-center md:justify-between block">
+        <div class="md:mb-2">
+          <h3 class="text-lg font-medium leading-6 text-gray-900">Supprimer le compte</h3>
+          <p class="mt-1 max-w-2xl text-sm text-gray-500">Tu ne veux plus utiliser nos services ? Tu peux supprimer ton compte en cliquant sur ce bouton. Attention, cette action est irréversible. Toutes les informations liées à ton compte seront supprimées.</p>
+          <Button @click="deleteUser" variant="solid" size="small" color="danger" class="mt-4">Supprimer</Button>
+        </div>
+      </div>
+      <div class="border-t border-gray-200 md:flex block">
 
-Modifier Adresse mail
-Modif MDP
-Report bug
-Supprimer Utilisateur
+      </div>
+    </div>
+  </div>
+</template>

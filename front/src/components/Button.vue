@@ -17,6 +17,7 @@ const button = tv({
             success: "text-white bg-green-500 hover:bg-green-600",
             danger: "text-white bg-red-500 hover:bg-red-600",
             warning: "text-black bg-yellow-500 hover:bg-yellow-600",
+            grey: "text-grey-200 bg-grey-50 hover:bg-grey-200",
         },
         size: {
             small: "text-xs py-1.5 px-3",
