@@ -4,6 +4,9 @@ import {computed, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import Button from '@/components/Button.vue';
 import {Check} from "lucide-vue-next";
+import {ping} from "ldrs";
+
+ping.register();
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -379,7 +382,26 @@ onMounted(() => {
                 </div>
                 <!-- Liste des devoirs -->
                 <div class="w-full md:basis-2/5 p-4">
-                    <h2 class="text-2xl font-semibold flex items-center gap-2">Liste des devoirs <span class="bg-white border border-gray-200 text-gray-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded">{{ devoirsFiltres.length }}</span></h2>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-semibold flex items-center gap-2">
+                                Liste des devoirs
+                                <span class="bg-white border border-gray-200 text-gray-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded">{{ devoirsFiltres.length }}</span>
+                            </h2>
+                        </div>
+                        <div>
+                            <Button class="hover:border-b border-b-green-500 !rounded-none !py-0 !px-0" variant="ghost" size="small" tag="a" href="/devoirs">En attente de vérification
+                                <span class="relative bg-white border border-gray-200 text-gray-800 text-xs font-light px-1.5 py-0.5 rounded">{{ devoirsFiltres.length }}
+                                    <l-ping
+                                        size="12"
+                                        speed="5"
+                                        color="red"
+                                        class="absolute right-[-1.5] top-[-1]"
+                                    ></l-ping>
+                                </span>
+                            </Button>
+                        </div>
+                    </div>
 
                     <p v-if="error" class="error-message border rounded p-3 text-sm font-light border-red-400/20 bg-red-200/10 text-red-900 flex items-center gap-2">
                         ⚠ {{ error }}

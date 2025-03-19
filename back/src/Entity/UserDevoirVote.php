@@ -5,27 +5,36 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserDevoirVoteRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: UserDevoirVoteRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['userDevoirVote:read'],'enable_circular_reference_handler' => true],
+    denormalizationContext: ['groups' => ['userDevoirVote:write']]
+)]
 class UserDevoirVote
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['userDevoirVote:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(['userDevoirVote:read', 'userDevoirVote:write'])]
     private ?int $vote = null;
 
     #[ORM\Column]
+    #[Groups(['userDevoirVote:read', 'userDevoirVote:write'])]
     private ?bool $verif = null;
 
     #[ORM\ManyToOne(inversedBy: 'id_userDevoirVote')]
+    #[Groups(['userDevoirVote:read', 'devoir:read'])]
     private ?Devoirs $devoirs = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'userDevoirVotes')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['userDevoirVote:read'])]
     private ?User $user = null;
 
 
