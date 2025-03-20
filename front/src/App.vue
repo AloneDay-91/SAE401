@@ -147,7 +147,7 @@ provide('triggerToast', triggerToast);
     <div v-if="isAdminMode">
         <div class="fixed inset-0 flex">
             <nav class="flex flex-col justify-between w-72 h-full text-black bg-white border border-gray-200 p-4 space-y-2">
-                <div class="p-4 space-y-2">
+                <div class="p-4 space-y-2 overflow-y-auto">
                     <div class="mb-6">
                         <a href="/" class="w-full">
                             <img class="w-full max-w-32" src="@/assets/LOGO.png" alt="Logo">
@@ -193,9 +193,6 @@ provide('triggerToast', triggerToast);
                         <div class="w-0.5 absolute h-full bg-green-400 left-4"></div>
                         <router-link to="/admin/classes" class="block px-4 py-2 text-xs font-light text-gray-600 hover:bg-gray-100">
                             Liste des classes
-                        </router-link>
-                        <router-link to="/admin/classes/new" class="block px-4 py-2 text-xs font-light text-gray-600 hover:bg-gray-100">
-                            Ajouter une classe
                         </router-link>
                     </div>
                     <button

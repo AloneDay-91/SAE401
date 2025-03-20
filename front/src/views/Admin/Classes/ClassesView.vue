@@ -83,9 +83,6 @@ const updateClasse = async () => {
             <p class="text-gray-800 font-semibold">Liste des classes</p>
             <div class="mt-1 text-sm text-gray-500">Gérer les différentes classes</div>
         </div>
-        <div class="">
-            <Button variant="solid" size="small" tag="a" href="classes/new">Ajouter une classes</Button>
-        </div>
     </div>
 
     <div class="mx-4 my-4">
@@ -178,12 +175,12 @@ const updateClasse = async () => {
                                 </div>
                             </div>
                         </router-link>
-                        <router-link to="/admin/classes/new" class="w-full border border-gray-200 hover:border-green-400 p-12 rounded-lg hover:bg-gray-100 transition duration-400">
+                        <router-link to="/admin/matieres" class="w-full border border-gray-200 hover:border-green-400 p-12 rounded-lg hover:bg-gray-100 transition duration-400">
                             <div>
                                 <div class="flex items-center gap-4 justify-end">
                                     <div class="text-right">
-                                        <p class="text-gray-800 font-normal text-sm">Nouvelle classe</p>
-                                        <div class="text-xs text-gray-500 font-light">Ajouter une nouvelle classe</div>
+                                        <p class="text-gray-800 font-normal text-sm">Liste des matières</p>
+                                        <div class="text-xs text-gray-500 font-light">Gérer les différentes matières</div>
                                     </div>
                                     <ArrowRight stroke-width="1.5" size="24" class="mr-2" />
                                 </div>

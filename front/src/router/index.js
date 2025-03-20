@@ -54,10 +54,11 @@ const router = createRouter({
     { path: '/admin/devoirs', name: 'AdminDevoirs', component: () => import('../views/Admin/Devoirs/DevoirsView.vue'), meta: { requiresAdminRole: true, requiresAuth: true } },
 
     // ADMIN USERS
-    // { path: '/admin/users/new', name: 'AdminUsersNew', component: () => import('../views/Admin/_formUsersView.vue'), meta: { requiresAdminRole: true } },
+    { path: '/admin/users/new', name: 'AdminUsersNew', component: () => import('../views/Admin/Users/UsersNewView.vue'), meta: { requiresAdminRole: true } },
     { path: '/admin/users', name: 'AdminUsers', component: () => import('../views/Admin/Users/UsersView.vue'), meta: { requiresAdminRole: true, requiresAuth: true } },
 
     // ADMIN CATEGORIES
+    { path: '/admin/categories/new', name: 'AdminCategoriesNew', component: () => import('../views/Admin/Categories/CategoriesNewView.vue'), meta: { requiresAdminRole: true } },
     { path: '/admin/categories', name: 'AdminCategories', component: () => import('../views/Admin/Categories/CategoriesView.vue'), meta: { requiresAdminRole: true, requiresAuth: true } },
 
     // ADMIN CLASSES

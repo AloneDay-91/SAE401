@@ -153,7 +153,7 @@ const updateDevoir = async () => {
                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.id_matieres.nom }}</td>
                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.id_categories.nom }}</td>
                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.id_users.nom }} {{ devoir.id_users.prenom }}</td>
-                <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.id_classes.promo }} {{ devoir.id_users.td }} {{ devoir.id_users.tp }}</td>
+                <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.id_classes.promo }} {{ devoir.id_classes.type }}</td>
                 <td class="px-6 py-4 text-xs font-normal flex items-center gap-2">
                   <DropdownMenu>
                     <!-- Personnalisation du bouton déclencheur -->
@@ -213,8 +213,7 @@ const updateDevoir = async () => {
                     </div>
                     <div class="mb-6">
                       <label for="td" class="block mb-2 text-sm font-medium text-gray-900">Matière</label>
-                      <select v-model="modifierDevoir.id_matieres.nom" id="matiere" name="matiere"
-                              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
+                      <select v-model="modifierDevoir.id_matieres.nom" id="matiere" name="matiere" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
                         <option v-for="matiere in matieres" :value="matiere.nom">
                           {{ matiere.nom }}
                         </option>
