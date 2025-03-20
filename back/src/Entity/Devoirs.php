@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\DevoirsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -15,6 +17,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     normalizationContext: ['groups' => ['devoir:read']],
     denormalizationContext: ['groups' => ['devoir:write']],
 )]
+#[ApiFilter(SearchFilter::class, properties: ['id_users' => 'exact'])]
 class Devoirs
 {
     #[ORM\Id]
