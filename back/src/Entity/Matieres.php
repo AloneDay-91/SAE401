@@ -19,11 +19,11 @@ class Matieres
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['devoir:read', 'devoir:write'])]
+    #[Groups(['devoir:read', 'devoir:write', 'userDevoirVote:read'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['devoir:read', 'devoir:write'])]
+    #[Groups(['devoir:read', 'devoir:write', 'userDevoirVote:read'])]
     private ?string $code = null;
 
     #[ORM\Column(length: 255)]

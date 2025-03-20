@@ -62,12 +62,56 @@ const devoirsUser = computed(() => {
     );
 });
 
+const verifDevoir = ref([]);
+
+const getVerifDevoir = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/user_devoir_votes`, {
+            headers: {
+                "Content-Type": "application/ld+json",
+                "Authorization": `Bearer ${store.state.token}`
+            },
+        });
+        verifDevoir.value = response.data.member;
+    } catch (e) {
+        console.error('Erreur lors de la récupération des votes:', e);
+        error.value = 'Impossible de récupérer les votes.';
+        return [];
+    }
+}
+
+getVerifDevoir();
+
 // Tri des devoirs par date
 const devoirsFiltres = computed(() => {
     return devoirsUser.value
         .slice()
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 });
+
+const devoirsUtilisateur = computed(() => {
+    if (!devoirs.value || !user.value || !user.value.id) {
+        return [];
+    }
+    return devoirs.value.filter(devoir => {
+        const { id_classes } = devoir;
+        if (!id_classes) return false;
+
+        // Vérification de la promo
+        const promoCorrespond = id_classes.promo === user.value.promo;
+
+        // Vérification du type de groupe (TD ou TP)
+        const tdCorrespond = id_classes.type === user.value.td;
+        const tpCorrespond = id_classes.type === user.value.tp;
+
+        // Vérification si le devoir est vérifié (vous devrez ajouter cette propriété à votre modèle de devoir)
+        const estVerifie = verifDevoir.verif === true;
+
+        // Le devoir est valide si la promo correspond, soit le TD ou TP correspond ou aucun type spécifique n'est requis, et le devoir est vérifié
+        return promoCorrespond && (!id_classes.type || tdCorrespond || tpCorrespond) && estVerifie;
+    });
+});
+
 
 
 const getDateDevoirStatus = (dateRendu) => {

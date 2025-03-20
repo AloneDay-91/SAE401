@@ -19,7 +19,7 @@ class Categories
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['devoir:read', 'devoir:write'])]
+    #[Groups(['devoir:read', 'devoir:write', 'userDevoirVote:read'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]

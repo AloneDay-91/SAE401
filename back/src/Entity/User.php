@@ -29,7 +29,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:read',])]
+    #[Groups(['user:read','userDevoirVote:read', 'userDevoirVote:write'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -45,7 +45,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write', 'devoir:read', 'devoir:write'])]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $password = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -85,7 +85,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     // Relation avec userDevoirVote (OneToMany)
     #[ORM\OneToMany(targetEntity: UserDevoirVote::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'userDevoirVote:read'])]
     private Collection $userDevoirVotes;
 
 

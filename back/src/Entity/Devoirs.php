@@ -23,11 +23,11 @@ class Devoirs
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['devoir:read'])]
+    #[Groups(['devoir:read', 'userDevoirVote:read', 'userDevoirVote:write'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['devoir:read', 'devoir:write'])]
+    #[Groups(['devoir:read', 'devoir:write', 'userDevoirVote:read'])]
     private ?string $intitule = null;
 
     #[ORM\Column(length: 255)]
@@ -35,11 +35,11 @@ class Devoirs
     private ?string $contenu = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[Groups(['devoir:read', 'devoir:write'])]
+    #[Groups(['devoir:read', 'devoir:write', 'userDevoirVote:read'])]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    #[Groups(['devoir:read', 'devoir:write'])]
+    #[Groups(['devoir:read', 'devoir:write', 'userDevoirVote:read'])]
     private ?\DateTimeInterface $heure = null;
 
     #[ORM\Column(length: 255)]
@@ -55,13 +55,13 @@ class Devoirs
     // Relation avec Matieres (ManyToOne)
     #[ORM\ManyToOne(targetEntity: Matieres::class, inversedBy: 'devoirs')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['devoir:read', 'devoir:write'])]
+    #[Groups(['devoir:read', 'devoir:write', 'userDevoirVote:read'])]
     private ?Matieres $id_matieres = null;
 
     // Relation avec Categories (ManyToOne)
     #[ORM\ManyToOne(targetEntity: Categories::class, inversedBy: 'devoirs')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['devoir:read', 'devoir:write'])]
+    #[Groups(['devoir:read', 'devoir:write', 'userDevoirVote:read'])]
     private ?Categories $id_categories = null;
 
     // Relation avec FormatRendu (ManyToOne)
@@ -77,12 +77,12 @@ class Devoirs
 
     // Relation avec UserDevoirVote (OneToMany)
     #[ORM\OneToMany(mappedBy: 'devoirs', targetEntity: UserDevoirVote::class, cascade: ['persist', 'remove'])]
-    #[Groups(['devoir:read', 'devoir:write'])]
+    #[Groups(['devoir:read', 'devoir:write', 'userDevoirVote:read', 'userDevoirVote:write'])]
     private Collection $userDevoirVotes;
 
     #[ORM\ManyToOne(targetEntity: Classes::class, inversedBy: 'devoirs')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['devoir:read', 'devoir:write'])]
+    #[Groups(['devoir:read', 'devoir:write', 'userDevoirVote:read'])]
     private ?Classes $id_classes = null;
 
     public function __construct()

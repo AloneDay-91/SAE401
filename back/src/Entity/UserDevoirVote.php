@@ -3,13 +3,33 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\UserDevoirVoteRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 
-#[ORM\Entity(repositoryClass: UserDevoirVoteRepository::class)]
+#[
+ORM\Entity(repositoryClass: UserDevoirVoteRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => ['userDevoirVote:read'],'enable_circular_reference_handler' => true],
+    operations: [
+        new GetCollection(
+            normalizationContext: ['groups' => ['userDevoirVote:read']],
+            forceEager: false,
+        ),
+        new Post(
+            denormalizationContext: ['groups' => ['userDevoirVote:write']],
+            forceEager: false,
+        ),
+        new Patch(
+            denormalizationContext: ['groups' => ['userDevoirVote:write']],
+            forceEager: false,
+        ),
+        new Delete()
+    ],
+    normalizationContext: ['groups' => ['userDevoirVote:read']],
     denormalizationContext: ['groups' => ['userDevoirVote:write']]
 )]
 class UserDevoirVote
@@ -28,13 +48,13 @@ class UserDevoirVote
     #[Groups(['userDevoirVote:read', 'userDevoirVote:write'])]
     private ?bool $verif = null;
 
-    #[ORM\ManyToOne(inversedBy: 'id_userDevoirVote')]
-    #[Groups(['userDevoirVote:read', 'devoir:read'])]
+    #[ORM\ManyToOne(inversedBy: 'userDevoirVotes', fetch: 'EAGER')]
+    #[Groups(['userDevoirVote:read', 'userDevoirVote:write'])]
     private ?Devoirs $devoirs = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'userDevoirVotes')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'userDevoirVotes', fetch: 'EAGER')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['userDevoirVote:read'])]
+    #[Groups(['userDevoirVote:read', 'userDevoirVote:write'])]
     private ?User $user = null;
 
 

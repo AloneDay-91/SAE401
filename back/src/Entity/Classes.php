@@ -19,7 +19,7 @@ class Classes
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['classes:read'])]
+    #[Groups(['classes:read', 'userDevoirVote:read', 'userDevoirVote:write'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -27,11 +27,11 @@ class Classes
     private ?string $intitule = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write', 'classes:read', 'classes:write', 'devoir:read', 'devoir:write'])]
+    #[Groups(['user:read', 'user:write', 'classes:read', 'classes:write', 'devoir:read', 'devoir:write', 'userDevoirVote:read'])]
     private ?string $promo = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write', 'classes:read', 'classes:write', 'devoir:read', 'devoir:write'])]
+    #[Groups(['user:read', 'user:write', 'classes:read', 'classes:write', 'devoir:read', 'devoir:write', 'userDevoirVote:read'])]
     private ?string $type = null;
 
     /**
