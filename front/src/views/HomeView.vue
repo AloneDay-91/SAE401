@@ -16,6 +16,27 @@ const user = computed(() => store.state.user);
 const devoirs = ref([]);
 const loading = ref(true);
 const error = ref("");
+const selectedDevoir = ref(null);
+const isModalOpen = ref(false)
+
+const openModal = (devoir) => {
+  selectedDevoir.value = devoir;
+  isModalOpen.value = true;
+};
+
+const closeModal = () => {
+  selectedDevoir.value = null;
+  isModalOpen.value = false;
+};
+
+// Fermer la modale avec la touche Escape
+onMounted(() => {
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isModalOpen.value) {
+      closeModal();
+    }
+  });
+});
 
 onMounted(async () => {
     try {
@@ -363,7 +384,7 @@ onMounted(() => {
                                  class="min-h-[150px] bg-gray-50 rounded-b p-2"
                                  :class="isToday(day.date) ? 'bg-[#00D478]/10 border-[#00D478]/30' : ''">
                                 <!-- Devoirs pour ce jour -->
-                                <div v-for="devoir in getDevoirsForDay(day.date)" :key="devoir['@id']"
+                                <div v-for="devoir in getDevoirsForDay(day.date)" :key="devoir['@id']" @click="openModal(devoir)"
                                      class="text-xs p-1.5 mb-1 rounded-sm cursor-pointer relative"
                                      :class="getDateDevoirClass(devoir.date)">
                                     <div class="font-medium">{{ devoir.intitule }}</div>
@@ -379,6 +400,55 @@ onMounted(() => {
                             </div>
                         </div>
                     </div>
+                </div>
+                <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                  <div class="fixed inset-0 bg-black/50" @click="closeModal"></div>
+                  <div class="relative bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+                    <div class="p-6">
+                      <button
+                          @click="closeModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+
+                      <div v-if="selectedDevoir">
+                        <!-- Titre du devoir -->
+                        <img class="w-12 mb-4" src="@/assets/LogoSeul.png" alt="Logo">
+                        <h3 class="text-lg font-semibold">{{ selectedDevoir.intitule }}</h3>
+                        <p class="text-sm text-gray-400 mb-1">{{ selectedDevoir.contenu }}</p>
+                        <p :class="{'opacity-50 line-through': getCheckboxStatus(selectedDevoir['@id']),[getDateDevoirClass(selectedDevoir.date)]: true}" class="text-xs font-light p-1 px-2 rounded-lg inline" v-if="!getCheckboxStatus(selectedDevoir['@id'])">
+                          {{ getDateDevoirStatus(selectedDevoir.date) }}</p>
+                        <!-- Informations du devoir -->
+                        <div class="mt-8 space-y-3 text-sm text-gray-700">
+                          <div class="flex justify-between">
+                            <span class="font-medium">Matière</span>
+                            <span>{{ selectedDevoir.id_matieres?.nom }}</span>
+                          </div>
+                          <div class="flex justify-between">
+                            <span class="font-medium">Catégorie</span>
+                            <span>{{ selectedDevoir.id_categories?.nom }}</span>
+                          </div>
+                          <div class="flex justify-between">
+                            <span class="font-medium">À rendre avant le</span>
+                            <span>
+                              {{ new Date(selectedDevoir.date).toLocaleDateString("fr-FR") }} à
+                              {{ formatTime(selectedDevoir.heure) }}
+                            </span>
+                          </div>
+                          <div class="flex justify-between">
+                            <span class="font-medium">À rendre sur</span>
+                            <span>{{ selectedDevoir.id_formatRendu?.intitule }}</span>
+                          </div>
+                        </div>
+                        <div class="mt-4 flex justify-end">
+                          <Button variant="solid" size="small" class="mt-4" v-if="selectedDevoir.id_formatRendu?.lien" :href="selectedDevoir.id_formatRendu.lien">
+                            Rendre le devoir
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <!-- Liste des devoirs -->
                 <div class="w-full md:basis-2/5 p-4">

@@ -1,5 +1,5 @@
 <script setup>
-import {inject, ref, watch} from 'vue'
+import {inject, onMounted, ref, watch} from 'vue'
 import { useStore } from 'vuex'
 import Button from '@/components/Button.vue'
 import axios from "axios";
@@ -10,6 +10,7 @@ const store = useStore()
 const user = ref(store.state.user)
 const error = ref(null)
 const isModalOpen = ref(false)
+const isModalDeleteOpen = ref(false)
 const updatedEmail = ref(user.value.email);
 
 const openModal = () => {
@@ -17,9 +18,23 @@ const openModal = () => {
   isModalOpen.value = true;
 };
 
+const openDeleteModal = () => {
+  isModalDeleteOpen.value = true;
+};
+
 const closeModal = () => {
   isModalOpen.value = false;
+  isModalDeleteOpen.value = false;
 };
+
+// Fermer la modale avec la touche Escape
+onMounted(() => {
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isModalOpen.value) {
+      closeModal();
+    }
+  });
+});
 
 const triggerToast = inject('triggerToast');
 
@@ -136,7 +151,19 @@ const updateMail = async () => {
         <div class="md:mb-2">
           <h3 class="text-lg font-medium leading-6 text-gray-900">Supprimer le compte</h3>
           <p class="mt-1 max-w-2xl text-sm text-gray-500">Tu ne veux plus utiliser nos services ? Tu peux supprimer ton compte en cliquant sur ce bouton. Attention, cette action est irréversible. Toutes les informations liées à ton compte seront supprimées.</p>
-          <Button @click="deleteUser" variant="solid" size="small" color="danger" class="mt-4">Supprimer</Button>
+          <Button @click="openDeleteModal" variant="solid" size="small" color="danger" class="mt-4">Supprimer</Button>
+          <transition name="modal-fade">
+            <div v-if="isModalDeleteOpen" class="fixed inset-0 bg-black/70 flex items-center justify-center">
+              <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+                <h2 class="text-lg mb-2">Supprimer le compte</h2>
+                <p class="text-xs font-light">Êtes-vous sûr de vouloir supprimer votre compte ?</p>
+                <div class="mt-4 flex justify-end gap-2">
+                  <button @click="closeModal" class="bg-gray-200 px-3 py-1.5 text-xs font-light rounded cursor-pointer hover:bg-gray-300 transition">Annuler</button>
+                  <button @click="deleteUser" class="bg-red-600 text-white px-3 py-1.5 text-xs font-light rounded cursor-pointer hover:bg-red-700 transition">Supprimer</button>
+                </div>
+              </div>
+            </div>
+          </transition>
         </div>
       </div>
       <div class="border-t border-gray-200 md:flex block">
@@ -145,3 +172,13 @@ const updateMail = async () => {
     </div>
   </div>
 </template>
+
+<style>
+.modal-fade-enter-active, .modal-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.modal-fade-enter-from, .modal-fade-leave-to {
+  opacity: 0;
+}
+
+</style>
