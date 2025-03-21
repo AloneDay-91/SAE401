@@ -131,7 +131,7 @@ const updateDevoir = async () => {
     <section>
       <div>
         <div>
-          <div class="max-w-full overflow-x-auto border border-gray-200 border-b-0 rounded-lg">
+          <div class="max-w-full border border-gray-200 border-b-0 rounded-lg">
             <table class="w-full text-left text-gray-500">
               <thead class="border-b border-gray-200">
               <tr class="uppercase">

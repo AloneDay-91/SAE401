@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import {RouterLink, useRouter} from 'vue-router';
 import axios from 'axios';
@@ -204,11 +204,14 @@ const AjouterDevoir = async () => {
         loading.value = false;
     }
 };
+
+const afficherLien = ref(false);
+
 </script>
 
 
 <template>
-  <main class="min-h-screen pb-8 border border-l-0 border-r-0 border-gray-200">
+  <main class="min-h-screen pb-8 border border-l-0 border-r-0 border-gray-200 bg-white">
     <section class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <div class="flex items-center justify-between border border-t-0 border-l-0 border-r-0 border-gray-200">
         <div class="sm:flex sm:items-start flex flex-col items-center">
@@ -222,33 +225,33 @@ const AjouterDevoir = async () => {
         <form class="flex-column gap-12 mt-6 border border-gray-200 rounded-lg mx-auto px-4 py-8 sm:px-6 sm:py-12 lg:px-8" @submit.prevent="AjouterDevoir">
           <div class="flex flex-row gap-12 mb-4">
               <div class="flex flex-col gap-2 w-xs">
-                  <label for="intitule" class="font-medium">Intitulé</label>
-                  <input type="text" id="intitule" v-model="intitule" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80" placeholder="Entrer un intitulé" required />
+                  <label for="intitule" class="font-light text-gray-500 text-sm">Intitulé</label>
+                  <input type="text" id="intitule" v-model="intitule" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80 text-gray-500 font-light text-sm" placeholder="Entrer un intitulé" required />
               </div>
 
               <div class="flex flex-col gap-2 w-xs">
-                  <label for="desc" class="font-medium">Description</label>
-                  <input type="text" id="desc" v-model="desc" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80" placeholder="Entrer une description" required />
+                  <label for="desc" class="font-light text-gray-500 text-sm">Description</label>
+                  <input type="text" id="desc" v-model="desc" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80 text-gray-500 font-light text-sm" placeholder="Entrer une description" required />
               </div>
           </div>
 
           <div class="flex flex-row gap-12 mb-4">
               <div class="flex flex-col gap-2">
-                  <label for="date" class="font-medium">Date</label>
-                  <input type="date" id="date" v-model="date" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80" required />
+                  <label for="date" class="font-light text-gray-500 text-sm">Date</label>
+                  <input type="date" id="date" v-model="date" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80 text-gray-500 font-light text-sm" required />
               </div>
 
               <div class="flex flex-col gap-2">
-                  <label for="heure" class="font-medium">Heure</label>
-                  <input type="time" id="heure" v-model="heure" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80" required />
+                  <label for="heure" class="font-light text-gray-500 text-sm">Heure</label>
+                  <input type="time" id="heure" v-model="heure" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80 text-gray-500 font-light text-sm" required />
               </div>
           </div>
 
             <!-- Matières -->
           <div class="flex flex-row gap-12 mb-4">
               <div class="flex flex-col gap-2">
-                  <label for="matiere" class="font-medium">Matière</label>
-                  <select id="matiere" v-model="matiere" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80" required>
+                  <label for="matiere" class="font-light text-gray-500 text-sm">Matière</label>
+                  <select id="matiere" v-model="matiere" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80 text-gray-500 font-light text-sm" required>
                       <option value="">Sélectionner une matière</option>
                       <option v-for="matiere in matieres" :key="matiere.id" :value="matiere.id">
                           {{ matiere.nom }}
@@ -258,8 +261,8 @@ const AjouterDevoir = async () => {
 
               <!-- Catégories -->
               <div class="flex flex-col gap-2">
-                  <label for="categorie" class="font-medium">Catégorie</label>
-                  <select id="categorie" v-model="categorie" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80" required>
+                  <label for="categorie" class="font-light text-gray-500 text-sm">Catégorie</label>
+                  <select id="categorie" v-model="categorie" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80 text-gray-500 font-light text-sm" required>
                       <option value="">Sélectionner une catégorie</option>
                       <option v-for="categorie in categories" :key="categorie.id" :value="categorie.id">
                           {{ categorie.nom }}
@@ -270,8 +273,8 @@ const AjouterDevoir = async () => {
           <div class="flex flex-row gap-12 mb-4">
               <!-- Classes -->
               <div v-if="classes.length > 0" class="flex flex-col gap-2 w-xs">
-                  <label for="classe" class="font-medium">Classe</label>
-                  <select id="classe" v-model="classe" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80" required>
+                  <label for="classe" class="font-light text-gray-500 text-sm">Classe</label>
+                  <select id="classe" v-model="classe" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80 text-gray-500 font-light text-sm" required>
                       <option value="">Sélectionner une classe</option>
                       <option v-for="classe in classes" :key="classe.id" :value="classe.id">
                           {{ classe.intitule }} ({{ classe.type }})
@@ -280,20 +283,32 @@ const AjouterDevoir = async () => {
               </div>
 
               <div class="flex flex-col gap-2">
-                  <label for="rendu" class="font-medium">Format de rendu : </label>
-                  <select v-model="rendu" id="rendu" name="rendu" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80" required>
+                  <label for="rendu" class="font-light text-gray-500 text-sm">Format de rendu : </label>
+                  <select v-model="rendu" id="rendu" name="rendu" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80 text-gray-500 font-light text-sm" required>
+                      <option value="">Sélectionner un format</option>
                       <option v-for="rendu in format_rendus" :key="rendu.id" :value="rendu.id">
                           {{ rendu.intitule }}
                       </option>
                   </select>
               </div>
-
-              <!-- Lien format rendu -->
-              <div class="flex flex-col gap-2">
-                  <label for="lien" class="font-medium">Lien format rendu</label>
-                  <input type="text" id="lien" v-model="lien" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80" required />
-              </div>
           </div>
+
+            <div class="flex flex-row gap-12 mb-4">
+
+                <div class="flex flex-col gap-2">
+                    <!-- Checkbox pour afficher le champ du lien -->
+                    <label class="flex items-center gap-2 text-gray-500 text-sm">
+                        <input type="checkbox" v-model="afficherLien" class="form-checkbox border-gray-300">
+                        <span class="text-sm font-light">Ajouter un lien</span>
+                    </label>
+
+                    <!-- Champ du lien, affiché uniquement si la checkbox est cochée -->
+                    <div v-show="afficherLien" class="flex flex-col gap-2">
+                        <label for="lien" class="font-light text-gray-500 text-sm">Lien du rendu du devoir</label>
+                        <input type="text" id="lien" v-model="lien" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80 text-gray-500 font-light text-sm" placeholder="Entrer un lien"/>
+                    </div>
+                </div>
+            </div>
 
             <!-- Bouton soumettre -->
             <div class="mt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">

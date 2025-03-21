@@ -27,7 +27,7 @@ const route = useRoute()
                       <RouterLink class="p-2 font-light text-gray-400" to="/profil/devoirs" :class="{ '!text-black border-b-2 border-b-green-500': route.path === '/profil/devoirs' }">Devoirs ajoutés</RouterLink>
                     </li>
                     <li>
-                      <RouterLink class="p-2 font-light text-gray-400" to="/profil/settings" :class="{ '!text-black border-b-2 border-b-green-500': route.path === '/profil/settings' }">Settings</RouterLink>
+                      <RouterLink class="p-2 font-light text-gray-400" to="/profil/settings" :class="{ '!text-black border-b-2 border-b-green-500': route.path === '/profil/settings' }">Sécurité</RouterLink>
                     </li>
                   </ul>
                 </nav>

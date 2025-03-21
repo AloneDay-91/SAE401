@@ -48,11 +48,11 @@ class UserDevoirVote
     #[Groups(['userDevoirVote:read', 'userDevoirVote:write'])]
     private ?bool $verif = null;
 
-    #[ORM\ManyToOne(inversedBy: 'userDevoirVotes', fetch: 'EAGER')]
+    #[ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'userDevoirVotes')]
     #[Groups(['userDevoirVote:read', 'userDevoirVote:write'])]
     private ?Devoirs $devoirs = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'userDevoirVotes', fetch: 'EAGER')]
+    #[ORM\ManyToOne(targetEntity: User::class, fetch: 'EAGER', inversedBy: 'userDevoirVotes')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['userDevoirVote:read', 'userDevoirVote:write'])]
     private ?User $user = null;

@@ -565,7 +565,7 @@ provide('triggerToast', triggerToast);
                 </div>
             </nav>
         </header>
-        <RouterView class="min-h-screen" />
+        <RouterView />
         <Footer/>
         <Toast
             v-if="showToast"

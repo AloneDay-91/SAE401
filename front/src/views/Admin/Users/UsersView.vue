@@ -151,7 +151,7 @@ const updateUser = async () => {
         <section>
             <div>
                 <div>
-                    <div class="max-w-full overflow-x-auto">
+                    <div class="max-w-full">
                         <div class="mx-auto w-full">
                             <div class="">
                                 <div class="">

@@ -5,6 +5,10 @@ import axios from 'axios';
 import {Check, X, BadgeCheck} from "lucide-vue-next";
 import Button from "@/components/Button.vue";
 import DropdownMenu from "@/components/DropdownMenu.vue";
+import 'ldrs/ring'
+import { pulsar } from 'ldrs'
+
+pulsar.register()
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -14,6 +18,7 @@ const user = ref(store.state.user);
 const token = localStorage.getItem('token');
 const devoirs = ref([]);
 const error = ref('');
+const isLoading = ref(true);
 
 const maxVote = 5;
 
@@ -35,7 +40,7 @@ onMounted(async () => {
 });
 
 const devoirsUtilisateur = computed(() => {
-    if (!devoirs.value || !user.value || !user.value.id) {
+    if (!devoirs.value || !user.value || !user.value.id || !votes.value) {
         return [];
     }
     return devoirs.value.filter(devoir => {
@@ -74,6 +79,7 @@ const formatTime = (date) => {
 };
 
 const getVotes = async () => {
+    isLoading.value = true;
     try {
         const response = await axios.get(`${API_URL}/user_devoir_votes`, {
             headers: {
@@ -86,16 +92,18 @@ const getVotes = async () => {
         console.error('Erreur lors de la récupération des votes:', e);
         error.value = 'Impossible de récupérer les votes.';
         return [];
+    } finally {
+        isLoading.value = false;
     }
 }
 
 const verifDevoir = async (devoirId) => {
-    if (await checkExistingVote(devoirId)) {
-        triggerToast("Erreur", "Vous avez déjà voté pour ce devoir", 'error');
-        return;
-    }
-
     try {
+        if (await checkExistingVote(devoirId)) {
+            triggerToast("Erreur", "Vous avez déjà voté pour ce devoir", 'error');
+            return;
+        }
+
         const response = await axios.post(`${API_URL}/user_devoir_votes`, {
             vote: 1,
             verif: false,
@@ -107,11 +115,10 @@ const verifDevoir = async (devoirId) => {
                 "Authorization": `Bearer ${store.state.token}`
             },
         });
-        console.log('Devoir vérifié:', response.data);
-        triggerToast("Vote ajouté","Votre vote à été pris en compte", 'success');
+        triggerToast("Vote ajouté", "Votre vote a été pris en compte", 'success');
         await refreshVotes();
     } catch (e) {
-        triggerToast("Erreur","Impossible de vérifier le devoir", 'error');
+        triggerToast("Erreur", "Impossible de vérifier le devoir", 'error');
         console.error('Erreur lors de la vérification du devoir:', e);
         error.value = 'Impossible de vérifier le devoir.';
     }
@@ -151,7 +158,12 @@ const votes = ref([]);
 
 // Récupération initiale des votes
 onMounted(async () => {
-    votes.value = await getVotes();
+    try {
+        votes.value = await getVotes();
+    } catch (error) {
+        console.error('Erreur lors de la récupération des votes:', error);
+        votes.value = [];
+    }
 });
 
 // Fonction de rafraîchissement des votes
@@ -160,26 +172,33 @@ const refreshVotes = async () => {
 };
 
 const countVotes = (devoirId) => {
-    if (!votes.value.length) return 0;
+    if (!votes.value || !votes.value.length) return 0;
 
     return votes.value.reduce((total, vote) => {
+        if (!votes.devoirs || !vote.devoirs['@id']) return total;
         const voteDevoirId = vote.devoirs['@id'].split('/').pop();
         return (voteDevoirId === devoirId.toString()) ? total + vote.vote : total;
     }, 0);
 };
 
 const checkExistingVote = async (devoirId) => {
-    return votes.value.some(vote =>
-        vote.devoirs['@id'] === `/api/devoirs/${devoirId}` &&
-        vote.user['@id'] === `/api/users/${user.value.id}`
-    );
+    if (!votes.value || !votes.value.length) return false;
+
+    return votes.value.some(vote => {
+        if (!vote.devoirs || !vote.user) return false;
+        return vote.devoirs['@id'] === `/api/devoirs/${devoirId}` &&
+            vote.user['@id'] === `/api/users/${user.value.id}`;
+    });
 };
 
 const hasVoted = (devoirId) => {
-    return votes.value.some(vote =>
-        vote.devoirs['@id'] === `/api/devoirs/${devoirId}` &&
-        vote.user['@id'] === `/api/users/${user.value.id}`
-    );
+    if (!votes.value || !votes.value.length) return false;
+
+    return votes.value.some(vote => {
+        if (!vote.devoirs || !vote.user) return false;
+        return vote.devoirs['@id'] === `/api/devoirs/${devoirId}` &&
+            vote.user['@id'] === `/api/users/${user.value.id}`;
+    });
 };
 
 // filtrer les devoirs vérifiés ou le vote est supérieur à 5 pour les afficher dans la section devoirs vérifiés
@@ -191,8 +210,6 @@ const devoirsVerifies = computed(() => {
         return countVotes(devoir.id) >= maxVote;
     });
 });
-
-// si le vote est vérifier supprimer le devoir de la liste des devoirs en attente
 
 </script>
 
@@ -206,7 +223,8 @@ const devoirsVerifies = computed(() => {
                     <p class="mt-1 max-w-2xl text-sm text-gray-500 mb-5">Gérez les devoirs en attentes de vérification</p>
                 </div>
                 <div class="mt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">
-                    <Button variant="solid" size="small" tag="a" href="/devoirs/new">Créer un devoir</Button>
+                    <Button variant="solid" size="small" tag="a" href="/devoirs/new">Nouveau devoir</Button>
+                    <Button variant="outline" size="small" tag="a" href="/">Retour</Button>
                 </div>
             </div>
             <div class="mt-8">
@@ -214,9 +232,13 @@ const devoirsVerifies = computed(() => {
                     {{ error }}
                 </div>
 
+                <div v-if="isLoading" class="flex justify-center items-center py-6">
+                    <l-pulsar size="40" speed="1.75" color="#05df72"></l-pulsar>
+                </div>
+
                 <!-- Tableau des devoirs -->
                 <div v-else class="mt-4">
-                    <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md text-left">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm text-left">
                         <thead class="border-b border-gray-200">
                         <tr class="uppercase bg-gray-100">
                             <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Intitulé</th>
@@ -225,7 +247,7 @@ const devoirsVerifies = computed(() => {
                             <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Matière</th>
                             <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Catégorie</th>
                             <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Classes</th>
-                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Actions</th>
+                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal"></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -243,7 +265,7 @@ const devoirsVerifies = computed(() => {
                                 <DropdownMenu>
                                     <!-- Personnalisation du bouton déclencheur -->
                                     <template #trigger>
-                                        <Button class="inline-flex" variant="outline" size="small"
+                                        <Button class="inline-flex hover:cursor-pointer" variant="outline" size="small"
                                                 :disabled="hasVoted(devoir.id)">
                                             {{ hasVoted(devoir.id) ? 'Déjà voté' : 'Vérifier' }}
                                             <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -253,11 +275,11 @@ const devoirsVerifies = computed(() => {
                                     </template>
 
                                     <div class="px-2">
-                                        <Button @click="verifDevoir(devoir.id)" variant="ghost" :to="`devoirs/${devoir.id}`" class="w-full py-2 flex items-center justify-between text-gray-600 font-light hover:bg-gray-200/50 rounded my-1">
+                                        <Button @click="verifDevoir(devoir.id)" variant="ghost" :to="`devoirs/${devoir.id}`" class="hover:cursor-pointer w-full py-2 flex items-center justify-between text-gray-600 font-light hover:bg-gray-200/50 rounded my-1">
                                             <span>Valider</span>
                                             <Check class="text-green-600" stroke-width="1.5" size="16" />
                                         </Button>
-                                        <Button @click="refusDevoir(devoir.id)" variant="ghost" :to="`devoirs/${devoir.id}`" class="w-full py-2 flex items-center justify-between text-gray-600 font-light hover:bg-gray-200/50 rounded my-1">
+                                        <Button @click="refusDevoir(devoir.id)" variant="ghost" :to="`devoirs/${devoir.id}`" class="hover:cursor-pointer w-full py-2 flex items-center justify-between text-gray-600 font-light hover:bg-gray-200/50 rounded my-1">
                                             <span>Refuser</span>
                                             <X class="text-red-400" stroke-width="1.5" size="16" />
                                         </Button>
@@ -287,9 +309,13 @@ const devoirsVerifies = computed(() => {
                     {{ error }}
                 </div>
 
+                <div v-if="isLoading" class="flex justify-center items-center py-6">
+                    <l-pulsar size="40" speed="1.75" color="#05df72"></l-pulsar>
+                </div>
+
                 <!-- Tableau des devoirs -->
                 <div v-else class=" mt-4">
-                    <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md text-left">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm text-left">
                         <thead class="border-b border-gray-200">
                         <tr class="uppercase bg-gray-100">
                             <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Intitulé</th>

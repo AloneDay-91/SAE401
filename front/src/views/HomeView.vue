@@ -3,7 +3,7 @@ import axios from "axios";
 import {computed, onMounted, ref, watch} from "vue";
 import {useStore} from "vuex";
 import Button from '@/components/Button.vue';
-import {Check} from "lucide-vue-next";
+import {Check, ArrowRight} from "lucide-vue-next";
 import {ping} from "ldrs";
 
 ping.register();
@@ -327,23 +327,6 @@ const getVerifDevoir = async () => {
     }
 }
 
-
-// faire une fonction qui permet de mettre le nombre de devoir à vérifier en passant par verifDevoir. il faut que le nombre de vote soit inférieur à 5 et que le devoir soit de la promo de l'utilisateur
-/*const countVerifDevoir = computed(() => {
-    if (!verifDevoir.value || !user.value) {
-        return [];
-    }
-
-    return verifDevoir.value.filter(votes => {
-        const { id_devoirs } = votes;
-
-        if (!id_devoirs || !id_devoirs.id_classes) return false;
-
-        // Vérification de la promo
-        return id_devoirs.id_classes.promo === user.value.promo;
-    });
-});*/
-
 const maxVote = 5;
 const votes = ref([]);
 
@@ -544,15 +527,14 @@ const devoirsVerifies = computed(() => {
                             </h2>
                         </div>
                         <div>
-                            <Button class="hover:border-b border-b-green-500 !rounded-none !py-0 !px-0" variant="ghost" size="small" tag="a" href="/devoirs">En attente de vérification
-                                <span class="relative bg-white border border-gray-200 text-gray-800 text-xs font-light px-1.5 py-0.5 rounded">{{ countVerifDevoir.length }}
-                                    <l-ping
-                                        size="12"
-                                        speed="5"
-                                        color="red"
-                                        class="absolute right-[-1.5] top-[-1]"
-                                    ></l-ping>
-                                </span>
+                            <Button class="hover:border-b border-b-green-500 !rounded-none !py-0 !px-0 inline-flex items-center relative" variant="ghost" size="small" tag="a" href="/devoirs">
+                                En attente de vérification <ArrowRight size="14" stroke-width="1" />
+                                <l-ping
+                                    size="12"
+                                    speed="5"
+                                    color="red"
+                                    class="absolute right-[-8px] top-[-8px]"
+                                ></l-ping>
                             </Button>
                         </div>
                     </div>
@@ -569,7 +551,7 @@ const devoirsVerifies = computed(() => {
                     </div>
 
                     <div v-else-if="devoirsUtilisateur.length > 0" class="space-y-4 mt-4 max-h-150 overflow-y-auto ">
-                        <div v-for="devoir in devoirsUtilisateur" :key="devoir['@id']" @click="openModal(devoir)" class=" hover:bg-gray-200/20 transition duration-200 flex items-center p-2 rounded-lg border border-gray-300 gap-2 relative bg-white">
+                        <div v-for="devoir in devoirsUtilisateur" :key="devoir['@id']" class=" hover:bg-gray-200/20 transition duration-200 flex items-center p-2 rounded-lg border border-gray-300 gap-2 relative bg-white">
                             <div :class="devoir.id_categories.couleur" class="absolute h-full w-2 rounded-tl-lg rounded-bl-lg left-0"></div>
                             <div class="flex items-center gap-4 pl-4 w-full pr-2">
                                 <div class="flex items-center">

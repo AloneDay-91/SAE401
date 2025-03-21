@@ -106,7 +106,7 @@ const updateMail = async () => {
     <div class="bg-white shadow-sm sm:rounded-lg border border-b-0 border-gray-200">
       <div class="px-4 py-5 sm:px-6 md:flex md:items-center md:justify-between block">
         <div class="md:mb-10">
-          <h3 class="text-lg font-medium leading-6 text-gray-900">Settings</h3>
+          <h3 class="text-lg font-medium leading-6 text-gray-900">Sécurité</h3>
           <p class="mt-1 max-w-2xl text-sm text-gray-500">Gérez les paramètres liés au compte.</p>
         </div>
       </div>
@@ -180,5 +180,4 @@ const updateMail = async () => {
 .modal-fade-enter-from, .modal-fade-leave-to {
   opacity: 0;
 }
-
 </style>
