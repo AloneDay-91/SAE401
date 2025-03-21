@@ -18,6 +18,7 @@ const loading = ref(true);
 const error = ref("");
 const selectedDevoir = ref(null);
 const isModalOpen = ref(false)
+const verifDevoir = ref([]);
 
 const openModal = (devoir) => {
   selectedDevoir.value = devoir;
@@ -28,15 +29,6 @@ const closeModal = () => {
   selectedDevoir.value = null;
   isModalOpen.value = false;
 };
-
-// Fermer la modale avec la touche Escape
-onMounted(() => {
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && isModalOpen.value) {
-      closeModal();
-    }
-  });
-});
 
 onMounted(async () => {
     try {
@@ -54,64 +46,32 @@ onMounted(async () => {
     } finally {
         loading.value = false;
     }
-});
 
-const devoirsUser = computed(() => {
-    return devoirs.value.filter(
-        (devoir) => devoir.id_users && devoir.id_users['@id'] === `/api/users/${user.value.id}`
-    );
-});
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isModalOpen.value) {
+            closeModal();
+        }
+    });
 
-const verifDevoir = ref([]);
-
-const getVerifDevoir = async () => {
-    try {
-        const response = await axios.get(`${API_URL}/user_devoir_votes`, {
-            headers: {
-                "Content-Type": "application/ld+json",
-                "Authorization": `Bearer ${store.state.token}`
-            },
-        });
-        verifDevoir.value = response.data.member;
-    } catch (e) {
-        console.error('Erreur lors de la récupération des votes:', e);
-        error.value = 'Impossible de récupérer les votes.';
-        return [];
-    }
-}
-
-getVerifDevoir();
-
-// Tri des devoirs par date
-const devoirsFiltres = computed(() => {
-    return devoirsUser.value
-        .slice()
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
 });
 
 const devoirsUtilisateur = computed(() => {
-    if (!devoirs.value || !user.value || !user.value.id) {
+    if (!devoirs.value || !user.value) {
         return [];
     }
-    return devoirs.value.filter(devoir => {
-        const { id_classes } = devoir;
-        if (!id_classes) return false;
+    return devoirs.value
+        .filter(devoir => {
+            const { id_classes } = devoir;
+            if (!id_classes) return false;
 
-        // Vérification de la promo
-        const promoCorrespond = id_classes.promo === user.value.promo;
+            const promoCorrespond = id_classes.promo === user.value.promo;
+            const tdCorrespond = id_classes.type === user.value.td;
+            const tpCorrespond = id_classes.type === user.value.tp;
 
-        // Vérification du type de groupe (TD ou TP)
-        const tdCorrespond = id_classes.type === user.value.td;
-        const tpCorrespond = id_classes.type === user.value.tp;
-
-        // Vérification si le devoir est vérifié (vous devrez ajouter cette propriété à votre modèle de devoir)
-        const estVerifie = verifDevoir.verif === true;
-
-        // Le devoir est valide si la promo correspond, soit le TD ou TP correspond ou aucun type spécifique n'est requis, et le devoir est vérifié
-        return promoCorrespond && (!id_classes.type || tdCorrespond || tpCorrespond) && estVerifie;
-    });
+            return promoCorrespond && (!id_classes.type || tdCorrespond || tpCorrespond);
+        })
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
 });
-
 
 
 const getDateDevoirStatus = (dateRendu) => {
@@ -240,15 +200,16 @@ const formatTime = (timeString) => {
     return date.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'});
 };
 
-// Obtenir les devoirs pour un jour spécifique
+// Fonction pour obtenir les devoirs d'un jour spécifique
 const getDevoirsForDay = (date) => {
-    return devoirsFiltres.value.filter(devoir => {
+    return devoirsUtilisateur.value.filter(devoir => {
         const devoirDate = new Date(devoir.date);
         return devoirDate.getDate() === date.getDate() &&
             devoirDate.getMonth() === date.getMonth() &&
             devoirDate.getFullYear() === date.getFullYear();
     });
 };
+
 
 // État local des cases cochées
 const checkboxStatuses = ref({});
@@ -314,7 +275,7 @@ const loadCheckboxStatuses = async () => {
         const response = await axios.get(`${API_URL}/checkbox_statuses`, {
             params: {
                 user: `${API_URL}/users/${user.value.id}`, // Utilisation du format IRI
-                'devoirs.id[]': devoirsFiltres.value.map(d => d.id)
+                'devoirs.id[]': devoirsUtilisateur.value.map(d => d.id)
             },
             headers: {
                 'Content-Type': 'application/ld+json',
@@ -338,7 +299,7 @@ const loadCheckboxStatuses = async () => {
     }
 };
 
-watch(devoirsFiltres, (newDevoirs) => {
+watch(devoirsUtilisateur, (newDevoirs) => {
     if (newDevoirs.length > 0) {
         loadCheckboxStatuses();
     }
@@ -348,6 +309,85 @@ watch(devoirsFiltres, (newDevoirs) => {
 // Charger les statuts au montage du composant
 onMounted(() => {
     loadCheckboxStatuses();
+});
+
+const getVerifDevoir = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/user_devoir_votes`, {
+            headers: {
+                "Content-Type": "application/ld+json",
+                "Authorization": `Bearer ${store.state.token}`
+            },
+        });
+        verifDevoir.value = response.data.member;
+    } catch (e) {
+        console.error('Erreur lors de la récupération des votes:', e);
+        error.value = 'Impossible de récupérer les votes.';
+        return [];
+    }
+}
+
+
+// faire une fonction qui permet de mettre le nombre de devoir à vérifier en passant par verifDevoir. il faut que le nombre de vote soit inférieur à 5 et que le devoir soit de la promo de l'utilisateur
+/*const countVerifDevoir = computed(() => {
+    if (!verifDevoir.value || !user.value) {
+        return [];
+    }
+
+    return verifDevoir.value.filter(votes => {
+        const { id_devoirs } = votes;
+
+        if (!id_devoirs || !id_devoirs.id_classes) return false;
+
+        // Vérification de la promo
+        return id_devoirs.id_classes.promo === user.value.promo;
+    });
+});*/
+
+const maxVote = 5;
+const votes = ref([]);
+
+const countVerifDevoir = computed(() => {
+    if (!devoirs.value || !user.value || !user.value.id) {
+        return [];
+    }
+    return devoirs.value.filter(devoir => {
+        const { id_classes } = devoir;
+        if (!id_classes) return false;
+
+        // Vérification de la promo
+        const promoCorrespond = id_classes.promo === user.value.promo;
+
+        // Vérification du type de groupe (TD ou TP)
+        const tdCorrespond = id_classes.type === user.value.td;
+        const tpCorrespond = id_classes.type === user.value.tp;
+
+        // Vérification du nombre de votes
+        const votesCount = countVotes(devoir.id);
+
+        // Le devoir est valide si la promo correspond, soit le TD ou TP correspond ou aucun type spécifique n'est requis, et le nombre de votes est inférieur au maximum requis
+        return promoCorrespond &&
+            (!id_classes.type || tdCorrespond || tpCorrespond) &&
+            votesCount < maxVote;
+    });
+});
+
+const countVotes = (devoirId) => {
+    if (!votes.value.length) return 0;
+
+    return votes.value.reduce((total, vote) => {
+        const voteDevoirId = vote.devoirs['@id'].split('/').pop();
+        return (voteDevoirId === devoirId.toString()) ? total + vote.vote : total;
+    }, 0);
+};
+
+const devoirsVerifies = computed(() => {
+    if (!devoirs.value || !votes.value) {
+        return [];
+    }
+    return devoirs.value.filter(devoir => {
+        return countVotes(devoir.id) >= maxVote;
+    });
 });
 
 </script>
@@ -486,7 +526,7 @@ onMounted(() => {
                           </div>
                         </div>
                         <div class="mt-4 flex justify-end">
-                          <Button variant="solid" size="small" class="mt-4" v-if="selectedDevoir.id_formatRendu?.lien" :href="selectedDevoir.id_formatRendu.lien">
+                          <Button variant="solid" size="small" class="mt-4" v-if="selectedDevoir.id_formatRendu?.lien" tag="a" :href="selectedDevoir.id_formatRendu.lien">
                             Rendre le devoir
                           </Button>
                         </div>
@@ -500,12 +540,12 @@ onMounted(() => {
                         <div>
                             <h2 class="text-2xl font-semibold flex items-center gap-2">
                                 Liste des devoirs
-                                <span class="bg-white border border-gray-200 text-gray-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded">{{ devoirsFiltres.length }}</span>
+                                <span class="bg-white border border-gray-200 text-gray-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded">{{ devoirsUtilisateur.length }}</span>
                             </h2>
                         </div>
                         <div>
                             <Button class="hover:border-b border-b-green-500 !rounded-none !py-0 !px-0" variant="ghost" size="small" tag="a" href="/devoirs">En attente de vérification
-                                <span class="relative bg-white border border-gray-200 text-gray-800 text-xs font-light px-1.5 py-0.5 rounded">{{ devoirsFiltres.length }}
+                                <span class="relative bg-white border border-gray-200 text-gray-800 text-xs font-light px-1.5 py-0.5 rounded">{{ countVerifDevoir.length }}
                                     <l-ping
                                         size="12"
                                         speed="5"
@@ -528,8 +568,8 @@ onMounted(() => {
                         <div class="h-20 bg-gray-300 animate-pulse rounded-lg"></div>
                     </div>
 
-                    <div v-else-if="devoirsFiltres.length > 0" class="space-y-4 mt-4 max-h-80 overflow-y-auto ">
-                        <div v-for="devoir in devoirsFiltres" :key="devoir['@id']" class="flex items-center p-2 rounded-lg border border-gray-300 gap-2 relative bg-white">
+                    <div v-else-if="devoirsUtilisateur.length > 0" class="space-y-4 mt-4 max-h-150 overflow-y-auto ">
+                        <div v-for="devoir in devoirsUtilisateur" :key="devoir['@id']" class="flex items-center p-2 rounded-lg border border-gray-300 gap-2 relative bg-white">
                             <div :class="devoir.id_categories.couleur" class="absolute h-full w-2 rounded-tl-lg rounded-bl-lg left-0"></div>
                             <div class="flex items-center gap-4 pl-4 w-full pr-2">
                                 <div class="flex items-center">
@@ -560,7 +600,7 @@ onMounted(() => {
                                     </div>
                                     <div class="absolute right-4 text-xs font-light flex items-center gap-2">
                                         <span :class="{ 'opacity-50 line-through': getCheckboxStatus(devoir['@id']) }" class="rounded-lg p-1 px-1.5">
-                                            {{ new Date(devoir.date).toLocaleDateString("fr-FR") }} | {{
+                                            {{
                                                 new Date(devoir.heure).toLocaleTimeString("fr-FR", {
                                                     hour: "2-digit",
                                                     minute: "2-digit",

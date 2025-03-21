@@ -225,7 +225,6 @@ const devoirsVerifies = computed(() => {
                             <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Matière</th>
                             <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Catégorie</th>
                             <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Classes</th>
-                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Votes</th>
                             <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Actions</th>
                         </tr>
                         </thead>
@@ -240,7 +239,6 @@ const devoirsVerifies = computed(() => {
                                 {{devoir.id_classes.promo}}
                                 {{devoir.id_classes.type}}
                             </td>
-                            <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ countVotes(devoir.id) }}</td>
                             <td class="px-6 py-4 text-xs font-normal flex items-center gap-2">
                                 <DropdownMenu>
                                     <!-- Personnalisation du bouton déclencheur -->
