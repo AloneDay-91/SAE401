@@ -569,7 +569,7 @@ const devoirsVerifies = computed(() => {
                     </div>
 
                     <div v-else-if="devoirsUtilisateur.length > 0" class="space-y-4 mt-4 max-h-150 overflow-y-auto ">
-                        <div v-for="devoir in devoirsUtilisateur" :key="devoir['@id']" class="flex items-center p-2 rounded-lg border border-gray-300 gap-2 relative bg-white">
+                        <div v-for="devoir in devoirsUtilisateur" :key="devoir['@id']" @click="openModal(devoir)" class=" hover:bg-gray-200/20 transition duration-200 flex items-center p-2 rounded-lg border border-gray-300 gap-2 relative bg-white">
                             <div :class="devoir.id_categories.couleur" class="absolute h-full w-2 rounded-tl-lg rounded-bl-lg left-0"></div>
                             <div class="flex items-center gap-4 pl-4 w-full pr-2">
                                 <div class="flex items-center">
