@@ -129,7 +129,7 @@ const AjouterDevoirs = async () => {
     id_matieres: `/api/matieres/${matiere1.value}`,
     id_categories: `/api/categories/${categorie.value}`,
     id_formatRendu: `/api/format_rendus/${rendu1.value}`,
-    id_classes: `/api/classes/${classes.value}`
+    id_classes: `/api/classes/${classe.value}`
   };
 
   try {
@@ -188,6 +188,14 @@ const AjouterDevoirs = async () => {
       <select v-model="rendu1" id="rendu" name="rendu" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required>
         <option v-for="rendu in format_rendus" :key="rendu.id" :value="rendu.id">
           {{ rendu.intitule }}
+        </option>
+      </select>
+    </div>
+    <div class="flex gap-1 items-center mb-3">
+      <label for="rendu" class="w-32.5">Classe : </label>
+      <select v-model="classe" id="classe" name="classe" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required>
+        <option v-for="classe in classes" :key="classe.id" :value="classe.id">
+          {{ classe.intitule }} {{ classe.promo }} {{ classe.type }}
         </option>
       </select>
     </div>

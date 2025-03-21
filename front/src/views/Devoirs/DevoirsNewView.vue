@@ -24,6 +24,8 @@ const lien = ref('');
 const intituler = ref('');
 const classes = ref([]);
 const classe = ref('');
+const format_rendus = ref([]);
+const rendu = ref('');
 const token = localStorage.getItem('token');
 const user = ref(store.state.user);
 
@@ -104,11 +106,30 @@ const GetClasses = async () => {
     }
 };
 
+// Récupérer les formats de rendus
+const GetRendus = async () => {
+  if (!token) {
+    error.value = 'Authentification requise';
+    return;
+  }
+
+  try {
+    const response = await axios.get(`${API_URL}/format_rendus`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    format_rendus.value = response.data.member;
+  } catch (e) {
+    console.error('Erreur lors de la récupération des formats de rendu:', e);
+    error.value = 'Impossible de récupérer les formats de rendu.';
+  }
+};
+
 // Appeler les fonctions au montage du composant
 onMounted(() => {
     GetMatieres();
     GetCategories();
     GetClasses();
+    GetRendus();
 });
 
 // Fonction pour ajouter un devoir
@@ -198,86 +219,81 @@ const AjouterDevoir = async () => {
             <Button variant="solid" size="small" tag="a" href="/devoirs">Retour</Button>
         </div>
       </div>
-        <form class="flex flex-wrap gap-12 mt-6 border border-gray-200 rounded-lg mx-auto px-4 py-8 sm:px-6 sm:py-12 lg:px-8" @submit.prevent="AjouterDevoir">
-            <div class="flex flex-col gap-2 w-xs">
-                <label for="intitule" class="font-medium">Intitulé</label>
-                <input type="text" id="intitule" v-model="intitule" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md" placeholder="Entrer un intitulé" required />
-            </div>
+        <form class="flex-column gap-12 mt-6 border border-gray-200 rounded-lg mx-auto px-4 py-8 sm:px-6 sm:py-12 lg:px-8" @submit.prevent="AjouterDevoir">
+          <div class="flex flex-row gap-12 mb-4">
+              <div class="flex flex-col gap-2 w-xs">
+                  <label for="intitule" class="font-medium">Intitulé</label>
+                  <input type="text" id="intitule" v-model="intitule" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80" placeholder="Entrer un intitulé" required />
+              </div>
 
-            <div class="flex flex-col gap-2 w-xs">
-                <label for="desc" class="font-medium">Description</label>
-                <input type="text" id="desc" v-model="desc" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md" placeholder="Entrer une description" required />
-            </div>
+              <div class="flex flex-col gap-2 w-xs">
+                  <label for="desc" class="font-medium">Description</label>
+                  <input type="text" id="desc" v-model="desc" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80" placeholder="Entrer une description" required />
+              </div>
+          </div>
 
-            <div class="flex flex-col gap-2">
-                <label for="date" class="font-medium">Date</label>
-                <input type="date" id="date" v-model="date" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md" required />
-            </div>
+          <div class="flex flex-row gap-12 mb-4">
+              <div class="flex flex-col gap-2">
+                  <label for="date" class="font-medium">Date</label>
+                  <input type="date" id="date" v-model="date" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80" required />
+              </div>
 
-            <div class="flex flex-col gap-2">
-                <label for="heure" class="font-medium">Heure</label>
-                <input type="time" id="heure" v-model="heure" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md" required />
-            </div>
+              <div class="flex flex-col gap-2">
+                  <label for="heure" class="font-medium">Heure</label>
+                  <input type="time" id="heure" v-model="heure" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80" required />
+              </div>
+          </div>
 
             <!-- Matières -->
-            <div class="flex flex-col gap-2">
-                <label for="matiere" class="font-medium">Matière</label>
-                <select id="matiere" v-model="matiere" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md" required>
-                    <option value="">Sélectionner une matière</option>
-                    <option v-for="matiere in matieres" :key="matiere.id" :value="matiere.id">
-                        {{ matiere.nom }}
-                    </option>
-                </select>
-            </div>
+          <div class="flex flex-row gap-12 mb-4">
+              <div class="flex flex-col gap-2">
+                  <label for="matiere" class="font-medium">Matière</label>
+                  <select id="matiere" v-model="matiere" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80" required>
+                      <option value="">Sélectionner une matière</option>
+                      <option v-for="matiere in matieres" :key="matiere.id" :value="matiere.id">
+                          {{ matiere.nom }}
+                      </option>
+                  </select>
+              </div>
 
-            <!-- Catégories -->
-            <div class="flex flex-col gap-2">
-                <label for="categorie" class="font-medium">Catégories</label>
-                <select id="categorie" v-model="categorie" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md" required>
-                    <option value="">Sélectionner une catégorie</option>
-                    <option v-for="categorie in categories" :key="categorie.id" :value="categorie.id">
-                        {{ categorie.nom }}
-                    </option>
-                </select>
-            </div>
+              <!-- Catégories -->
+              <div class="flex flex-col gap-2">
+                  <label for="categorie" class="font-medium">Catégorie</label>
+                  <select id="categorie" v-model="categorie" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80" required>
+                      <option value="">Sélectionner une catégorie</option>
+                      <option v-for="categorie in categories" :key="categorie.id" :value="categorie.id">
+                          {{ categorie.nom }}
+                      </option>
+                  </select>
+              </div>
+          </div>
+          <div class="flex flex-row gap-12 mb-4">
+              <!-- Classes -->
+              <div v-if="classes.length > 0" class="flex flex-col gap-2 w-xs">
+                  <label for="classe" class="font-medium">Classe</label>
+                  <select id="classe" v-model="classe" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80" required>
+                      <option value="">Sélectionner une classe</option>
+                      <option v-for="classe in classes" :key="classe.id" :value="classe.id">
+                          {{ classe.intitule }} ({{ classe.type }})
+                      </option>
+                  </select>
+              </div>
 
-            <!-- Nouveau : Type de filtre -->
-            <div class="flex flex-col gap-2">
-                <label for="filterType" class="font-medium">Filtrer par :</label>
-                <select id="filterType" v-model="filterType" @change="filterClassesByType" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md">
-                    <option value="">Sélectionner un filtre</option>
-                    <option value="TP">TP</option>
-                    <option value="TD">TD</option>
-                    <option value="Promo">Promo</option>
-                </select>
-            </div>
+              <div class="flex flex-col gap-2">
+                  <label for="rendu" class="font-medium">Format de rendu : </label>
+                  <select v-model="rendu" id="rendu" name="rendu" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80" required>
+                      <option v-for="rendu in format_rendus" :key="rendu.id" :value="rendu.id">
+                          {{ rendu.intitule }}
+                      </option>
+                  </select>
+              </div>
 
-            <!-- Classes -->
-            <div v-if="classes.length > 0" class="flex flex-col gap-2 w-xs">
-                <label for="classe" class="font-medium">Classe</label>
-                <select id="classe" v-model="classe" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md" required>
-                    <option value="">Sélectionner une classe</option>
-                    <option v-for="classe in classes" :key="classe.id" :value="classe.id">
-                        {{ classe.intitule }} (Promo : {{ classe.promo }}) (TP: {{ classe.tp }}) (TD: {{ classe.td }})
-                    </option>
-                </select>
-            </div>
-
-            <!-- Format rendu -->
-<!--            <br />-->
-<!--            <span>Format de rendu</span>-->
-
-            <!-- Intitulé format rendu -->
-            <div class="flex flex-col gap-2">
-                <label for="intituler" class="font-medium">Intitulé format rendu</label>
-                <input type="text" id="intituler" v-model="intituler" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md" required />
-            </div>
-
-            <!-- Lien format rendu -->
-            <div class="flex flex-col gap-2">
-                <label for="lien" class="font-medium">Lien format rendu</label>
-                <input type="text" id="lien" v-model="lien" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md" required />
-            </div>
+              <!-- Lien format rendu -->
+              <div class="flex flex-col gap-2">
+                  <label for="lien" class="font-medium">Lien format rendu</label>
+                  <input type="text" id="lien" v-model="lien" class="border rounded-md border-gray-200 py-2 px-3 placeholder-gray-300 placeholder:font-light placeholder:text-md w-80" required />
+              </div>
+          </div>
 
             <!-- Bouton soumettre -->
             <div class="mt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">
