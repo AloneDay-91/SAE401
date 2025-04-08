@@ -206,7 +206,7 @@ const AjouterDevoirs = async () => {
   </form>
 
 
-  <div class="flex items-center w-full justify-between gap-8 mt-24">
+  <div class="flex items-center w-full justify-between gap-8 mt-24 px-4">
     <router-link to="/admin/devoirs" class="w-full border border-gray-200 hover:border-green-400 p-12 rounded-lg hover:bg-gray-100 transition duration-400">
       <div>
         <div class="flex items-center gap-4 justify-start">

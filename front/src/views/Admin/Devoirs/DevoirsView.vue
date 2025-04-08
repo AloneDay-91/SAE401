@@ -1,9 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useStore } from 'vuex';
+import {computed, onMounted, ref} from 'vue';
+import {useStore} from 'vuex';
 import axios from 'axios';
 import {RouterLink} from "vue-router";
-import {FilePenLine, Trash2, Eye, ArrowLeft, ArrowRight, Ellipsis} from "lucide-vue-next";
+import {ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Ellipsis, Eye, FilePenLine, Trash2, Search} from "lucide-vue-next";
 import DropdownMenu from "@/components/DropdownMenu.vue";
 import Button from "@/components/Button.vue";
 
@@ -17,105 +17,191 @@ const error = ref('');
 const isModalOpen = ref(false);
 const modifierDevoir = ref(null);
 
+// Variables pour la recherche, le filtrage et la pagination
+const searchQuery = ref('');
+
+const currentPage = ref(1);
+const itemsPerPage = ref(5);
+
+// Nouvelles propriétés calculées pour la pagination
+const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage.value);
+const endIndex = computed(() => Math.min(startIndex.value + itemsPerPage.value, filteredDevoirs.value.length));
+
+const pageRange = computed(() => {
+    const range = [];
+    const maxVisiblePages = 10;
+    let start = Math.max(1, currentPage.value - Math.floor(maxVisiblePages / 2));
+    const end = Math.min(start + maxVisiblePages - 1, totalPages.value);
+
+    if (end - start + 1 < maxVisiblePages) {
+        start = Math.max(1, end - maxVisiblePages + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+        range.push(i);
+    }
+    return range;
+});
+
+// Ouvrir/fermer le modal de modification
 const openModal = (devoir) => {
-  modifierDevoir.value = { ...devoir, date: extractDate(devoir.date), heure: extractTime(devoir.heure) };
-  isModalOpen.value = true;
-};
-const closeModal = () => {
-  isModalOpen.value = false;
+    modifierDevoir.value = { ...devoir, date: extractDate(devoir.date), heure: extractTime(devoir.heure) };
+    isModalOpen.value = true;
 };
 
-// formater la date et l'heure
+const closeModal = () => {
+    isModalOpen.value = false;
+};
+
+// Formater la date et l'heure
 const formatDate = (date) => {
-  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-  return new Date(date).toLocaleDateString('fr-FR', options);
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    return new Date(date).toLocaleDateString('fr-FR', options);
 };
 
 const formatTime = (date) => {
-  const options = { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris' };
-  return new Date(date).toLocaleTimeString('fr-FR', options);
+    const options = { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris' };
+    return new Date(date).toLocaleTimeString('fr-FR', options);
 };
 
 const extractDate = (dateTime) => {
-  return dateTime ? dateTime.split('T')[0] : '';
+    return dateTime ? dateTime.split('T')[0] : '';
 };
 
 const extractTime = (dateTime) => {
-  if (!dateTime) return '';
-
-  const date = new Date(dateTime);
-  date.setHours(date.getHours() + 1);
-  return date.toISOString().substring(11, 16);
+    if (!dateTime) return '';
+    const date = new Date(dateTime);
+    date.setHours(date.getHours() + 1);
+    return date.toISOString().substring(11, 16);
 };
 
+// Récupération des données depuis l'API
 onMounted(async () => {
-  try {
-    const devoirsresponse = await axios.get(`${API_URL}/devoirs`, {
-      headers: {
-        "Content-Type": "application/ld+json",
-        "Authorization": `Bearer ${store.state.token}`
-      },
-    });
-    devoirs.value = devoirsresponse.data.member;
+    try {
+        const devoirsresponse = await axios.get(`${API_URL}/devoirs`, {
+            headers: {
+                "Content-Type": "application/ld+json",
+                "Authorization": `Bearer ${store.state.token}`
+            },
+        });
+        devoirs.value = devoirsresponse.data.member;
 
-    const matieresresponse = await axios.get(`${API_URL}/matieres`, {
-      headers: {
-        "Content-Type": "application/ld+json",
-        "Authorization": `Bearer ${store.state.token}`
-      },
-    });
-    matieres.value = matieresresponse.data.member;
+        const matieresresponse = await axios.get(`${API_URL}/matieres`, {
+            headers: {
+                "Content-Type": "application/ld+json",
+                "Authorization": `Bearer ${store.state.token}`
+            },
+        });
+        matieres.value = matieresresponse.data.member;
 
-    const categoriesresponse = await axios.get(`${API_URL}/categories`, {
-      headers: {
-        "Content-Type": "application/ld+json",
-        "Authorization": `Bearer ${store.state.token}`
-      },
-    });
-    categories.value = categoriesresponse.data.member;
-  } catch (e) {
-    console.error('Erreur lors de la récupération des matières:', e);
-    error.value = 'Impossible de récupérer les matières.';
-  }
+        const categoriesresponse = await axios.get(`${API_URL}/categories`, {
+            headers: {
+                "Content-Type": "application/ld+json",
+                "Authorization": `Bearer ${store.state.token}`
+            },
+        });
+        categories.value = categoriesresponse.data.member;
+    } catch (e) {
+        console.error('Erreur lors de la récupération des matières:', e);
+        error.value = 'Impossible de récupérer les matières.';
+    }
 });
 
+// Mise à jour d'un devoir
 const updateDevoir = async () => {
-  if (!modifierDevoir.value) return;
+    if (!modifierDevoir.value) return;
 
-  try {
-    const [hours, minutes] = modifierDevoir.value.heure.split(':');
-    const dateTime = new Date(modifierDevoir.value.date); // Date de l'input
-    dateTime.setHours(parseInt(hours), parseInt(minutes), 0); // Heure locale
+    try {
+        const [hours, minutes] = modifierDevoir.value.heure.split(':');
+        const dateTime = new Date(modifierDevoir.value.date);
+        dateTime.setHours(parseInt(hours), parseInt(minutes), 0);
 
-    const devoirData = JSON.stringify({
-      intitule: modifierDevoir.value.intitule,
-      date: modifierDevoir.value.date,
-      heure: dateTime.toISOString(),
-      matiere: modifierDevoir.value.matiere,
-      categorie: modifierDevoir.value.categorie,
-    });
+        const devoirData = JSON.stringify({
+            intitule: modifierDevoir.value.intitule,
+            date: modifierDevoir.value.date,
+            heure: dateTime.toISOString(),
+            matiere: modifierDevoir.value.matiere,
+            categorie: modifierDevoir.value.categorie,
+        });
 
-    await axios.patch(`${API_URL}/devoirs/${modifierDevoir.value.id}`, devoirData, {
-      headers: {
-        "Content-Type": "application/merge-patch+json",
-        "Authorization": `Bearer ${store.state.token}`,
-      },
-    });
+        await axios.patch(`${API_URL}/devoirs/${modifierDevoir.value.id}`, devoirData, {
+            headers: {
+                "Content-Type": "application/merge-patch+json",
+                "Authorization": `Bearer ${store.state.token}`,
+            },
+        });
 
-    const index = devoirs.value.findIndex((u) => u.id === modifierDevoir.value.id);
-    if (index !== -1) {
-      Object.assign(devoirs.value[index] = {
-        ...modifierDevoir.value,
-      heure: dateTime.toISOString(),
-      });
+        const index = devoirs.value.findIndex((u) => u.id === modifierDevoir.value.id);
+        if (index !== -1) {
+            Object.assign(devoirs.value[index], {
+                ...modifierDevoir.value,
+                heure: dateTime.toISOString(),
+            });
+        }
+
+        closeModal();
+    } catch (error) {
+        console.error('Erreur lors de la mise à jour du devoir:', error);
     }
-
-    closeModal();
-  } catch (error) {
-    console.error('Erreur lors de la mise à jour du devoir:', error);
-  }
 };
+
+// Filtrage des devoirs avec les filtres sélectionnés
+const filteredDevoirs = computed(() => {
+    return devoirs.value.filter((devoir) => {
+        // Vérifier si le devoir correspond aux filtres sélectionnés
+        const matchesFilters =
+            selectedFilters.value.every((filter) =>
+                [devoir.id_matieres.nom, devoir.id_categories.nom].includes(filter)
+            );
+
+        // Vérifier si le devoir correspond à la recherche
+        const matchesSearch =
+            searchQuery.value === '' ||
+            Object.values(devoir).some((value) =>
+                String(value).toLowerCase().includes(searchQuery.value.toLowerCase())
+            );
+
+        return matchesFilters && matchesSearch;
+    });
+});
+
+// Pagination des données filtrées
+const paginatedDevoirs = computed(() => {
+    return filteredDevoirs.value.slice(startIndex.value, endIndex.value);
+});
+
+// Calcul du nombre total de pages
+const totalPages = computed(() => Math.ceil(filteredDevoirs.value.length / itemsPerPage.value));
+
+// Méthodes pour naviguer entre les pages
+const prevPage = () => {
+    if (currentPage.value > 1) currentPage.value--;
+};
+
+const nextPage = () => {
+    if (currentPage.value < totalPages.value) currentPage.value++;
+};
+
+
+
+// Liste réactive pour les filtres sélectionnés
+const selectedFilters = ref([]);
+
+// Ajouter un filtre
+const addFilter = (filter) => {
+    if (!selectedFilters.value.includes(filter)) {
+        selectedFilters.value.push(filter);
+    }
+};
+
+// Supprimer un filtre
+const removeFilter = (filter) => {
+    selectedFilters.value = selectedFilters.value.filter((f) => f !== filter);
+};
+
+
 </script>
+
 <template>
   <div class="flex items-center justify-between text-left w-full border-b border-gray-200 mx-auto px-4 sm:px-6 lg:px-8 py-4">
     <div>
@@ -131,7 +217,53 @@ const updateDevoir = async () => {
     <section>
       <div>
         <div>
-          <div class="max-w-full border border-gray-200 border-b-0 rounded-lg">
+            <div class="flex items-center justify-between gap-4 mb-4">
+                <div class="relative w-full max-w-xl">
+                    <label for="search" class="mb-2 text-sm font-light text-gray-500 sr-only">Rechercher un devoir</label>
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <Search class="w-4 h-4 text-gray-400" stroke-width="1.5" />
+                    </div>
+                    <input
+                        id="search"
+                        v-model="searchQuery"
+                        type="text"
+                        placeholder="Rechercher un intitulé..."
+                        class="pl-10 border border-gray-200 rounded-lg px-2 py-3 w-full text-sm"
+                    />
+                </div>
+                <!-- Listes déroulantes pour sélectionner les filtres -->
+                <div class="flex gap-4">
+                    <select @change="addFilter($event.target.value)" class="border border-gray-200 text-gray-500 font-light text-sm rounded px-2 py-1 w-full">
+                        <option value="" disabled selected>Filtrer par matière</option>
+                        <option v-for="matiere in matieres" :key="matiere.id" :value="matiere.nom">
+                            {{ matiere.nom }}
+                        </option>
+                    </select>
+
+                    <select @change="addFilter($event.target.value)" class="border border-gray-200 text-gray-500 font-light text-sm rounded px-2 py-1 w-full">
+                        <option value="" disabled selected>Filtrer par catégorie</option>
+                        <option v-for="categorie in categories" :key="categorie.id" :value="categorie.nom">
+                            {{ categorie.nom }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex flex-col gap-4 mb-4">
+                <!-- Affichage des chips -->
+                <div class="flex gap-2 flex-wrap">
+                    <span
+                        v-for="filter in selectedFilters"
+                        :key="filter"
+                        class="text-green-500 bg-green-300/10 border border-green-300 px-2 py-1 font-light text-sm rounded-lg flex items-center gap-2"
+                    >
+                      {{ filter }}
+                      <button @click="removeFilter(filter)" class="text-green-500 hover:text-red-500">&times;</button>
+                    </span>
+                </div>
+            </div>
+
+
+            <div class="max-w-full border border-gray-200 border-b-0 rounded-lg">
             <table class="w-full text-left text-gray-500">
               <thead class="border-b border-gray-200">
               <tr class="uppercase">
@@ -146,7 +278,12 @@ const updateDevoir = async () => {
               </tr>
               </thead>
               <tbody>
-              <tr class="border-b border-gray-200" v-for="devoir in devoirs">
+<!--              <tr class="border-b border-gray-200" v-for="devoir in devoirs">-->
+                <tr
+                    v-for="devoir in paginatedDevoirs"
+                    :key="devoir.id"
+                    class="border-b border-gray-200"
+                >
                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.intitule }}</td>
                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ formatDate(devoir.date) }}</td>
                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ formatTime(devoir.heure) }}</td>
@@ -183,6 +320,47 @@ const updateDevoir = async () => {
               </tr>
               </tbody>
             </table>
+              <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4 border-b border-gray-200 rounded-bl-lg rounded-br-lg" aria-label="Table navigation">
+                  <span class="text-sm font-normal text-gray-500">
+                    Affichage
+                    <span class="font-semibold text-gray-900">{{ startIndex + 1 }} - {{ endIndex }}</span> sur
+                    <span class="font-semibold text-gray-900">{{ filteredDevoirs.length }}</span>
+                  </span>
+                  <ul class="inline-flex items-stretch -space-x-px">
+                      <!-- Bouton Précédent -->
+                      <li>
+                          <button
+                              @click.prevent="prevPage"
+                              :disabled="currentPage === 1"
+                              class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 hover:cursor-pointer rounded-tl-lg rounded-bl-lg"
+                          >
+                              <span class="sr-only">Précédent</span>
+                              <ChevronLeft class="w-5 h-5" stroke-width="1.5" size="18" />
+                          </button>
+                      </li>
+
+                      <!-- Numéros de Page -->
+                      <li v-for="page in pageRange" :key="page">
+                          <button
+                              @click.prevent="currentPage = page"
+                              :class="{'text-primary-600 bg-green-400 border-green-400 hover:bg-green-400': page === currentPage, 'text-gray-500 bg-white border-gray-300': page !== currentPage}"
+                              class="flex items-center justify-center text-sm py-2 px-3 leading-tight border hover:bg-gray-100 hover:cursor-pointer"
+                          >
+                              {{ page }}
+                          </button>
+                      </li>
+                      <li>
+                          <button
+                              @click.prevent="nextPage"
+                              :disabled="currentPage === totalPages"
+                              class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 hover:cursor-pointer rounded-tr-lg rounded-br-lg"
+                          >
+                              <span class="sr-only">Suivant</span>
+                              <ChevronRight class="w-5 h-5" stroke-width="1.5" size="18" />
+                          </button>
+                      </li>
+                  </ul>
+              </nav>
           </div>
 
 
