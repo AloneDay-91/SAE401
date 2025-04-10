@@ -21,7 +21,7 @@ const modifierDevoir = ref(null);
 const searchQuery = ref('');
 
 const currentPage = ref(1);
-const itemsPerPage = ref(15);
+const itemsPerPage = ref(10);
 
 // Nouvelles propriétés calculées pour la pagination
 const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage.value);
