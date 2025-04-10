@@ -21,7 +21,7 @@ const modifierDevoir = ref(null);
 const searchQuery = ref('');
 
 const currentPage = ref(1);
-const itemsPerPage = ref(5);
+const itemsPerPage = ref(15);
 
 // Nouvelles propriétés calculées pour la pagination
 const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage.value);
@@ -228,19 +228,19 @@ const removeFilter = (filter) => {
                         v-model="searchQuery"
                         type="text"
                         placeholder="Rechercher un intitulé..."
-                        class="pl-10 border border-gray-200 rounded-lg px-2 py-3 w-full text-sm"
+                        class="pl-10 border border-gray-300 rounded-lg px-2 py-3 w-full text-sm bg-gray-50"
                     />
                 </div>
                 <!-- Listes déroulantes pour sélectionner les filtres -->
                 <div class="flex gap-4">
-                    <select @change="addFilter($event.target.value)" class="border border-gray-200 text-gray-500 font-light text-sm rounded px-2 py-1 w-full">
+                    <select @change="addFilter($event.target.value)" class="border border-gray-300 text-gray-500 font-light text-sm rounded px-2 py-1 w-full bg-gray-50">
                         <option value="" disabled selected>Filtrer par matière</option>
                         <option v-for="matiere in matieres" :key="matiere.id" :value="matiere.nom">
                             {{ matiere.nom }}
                         </option>
                     </select>
 
-                    <select @change="addFilter($event.target.value)" class="border border-gray-200 text-gray-500 font-light text-sm rounded px-2 py-1 w-full">
+                    <select @change="addFilter($event.target.value)" class="border border-gray-300 text-gray-500 font-light text-sm rounded px-2 py-1 w-full bg-gray-50">
                         <option value="" disabled selected>Filtrer par catégorie</option>
                         <option v-for="categorie in categories" :key="categorie.id" :value="categorie.nom">
                             {{ categorie.nom }}
@@ -265,7 +265,7 @@ const removeFilter = (filter) => {
 
             <div class="max-w-full border border-gray-200 border-b-0 rounded-lg">
             <table class="w-full text-left text-gray-500">
-              <thead class="border-b border-gray-200">
+              <thead class="border-b border-gray-200 bg-gray-50">
               <tr class="uppercase">
                 <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Intitulé</th>
                 <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Date</th>
