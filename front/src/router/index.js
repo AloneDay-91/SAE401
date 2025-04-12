@@ -3,10 +3,12 @@ import HomeView from '../views/HomeView.vue';
 import ConnexionView from '../views/Auth/ConnexionView.vue'; // Import direct
 import store from '../store';
 import ProfileView from "@/views/Profile/ProfileView.vue";
+import ErrorView from "../views/404.vue"; // Import direct
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    { path: '/404', name: '404', component: ErrorView },
     { path: '/', name: 'home', component: HomeView, meta: { requiresAuth: true } },
 
     // AUTH
@@ -104,6 +106,16 @@ router.beforeEach(async (to, from, next) => {
     console.error('Erreur dans le garde de navigation:', error);
     return next('/connexion'); // Redirige vers la page de connexion en cas d'erreur
   }
+});
+
+// faire une page 404.vue
+
+router.beforeResolve((to, from, next) => {
+    // Si la route n'existe pas, redirige vers la page d'accueil
+    if (!router.hasRoute(to.name)) {
+        return next({ name: '404' });
+    }
+    next();
 });
 
 export default router;
