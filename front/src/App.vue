@@ -154,13 +154,13 @@ provide('triggerToast', triggerToast);
                         </a>
                     </div>
 
-                    <router-link active-class="text-gray-800 bg-white border border-gray-300" to="/admin/dashboard" class="w-full p-2 hover:bg-gray-50 rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group">
+                    <router-link active-class="text-gray-800 bg-white border border-gray-300" to="/admin/dashboard" class="w-full p-2 hover:bg-gray-50 rounded-lg text-sm font-normal text-gray-600 hover:text-gray-800 flex items-center group">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house mr-2"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
                         <span class="flex-1 text-left whitespace-nowrap text-xs">Accueil</span>
                     </router-link>
                     <button
                         @click="toggle('devoirs')"
-                        class="w-full p-2 hover:bg-white rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group"
+                        class="w-full p-2 hover:bg-white rounded-lg text-sm font-normal text-gray-600 hover:text-gray-800 flex items-center group"
                         :class="{ 'text-gray-800 bg-white border border-gray-300': isOpen.devoirs }"
                     >
                         <ListTodo stroke-width="1.5" size="16" class="mr-2" />
@@ -180,7 +180,7 @@ provide('triggerToast', triggerToast);
                     </div>
                     <button
                         @click="toggle('classes')"
-                        class="w-full p-2 hover:bg-white rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group"
+                        class="w-full p-2 hover:bg-white rounded-lg text-sm font-normal text-gray-600 hover:text-gray-800 flex items-center group"
                         :class="{ 'text-gray-800 bg-white border border-gray-300': isOpen.classes }"
                     >
                         <List stroke-width="1.5" size="16" class="mr-2" />
@@ -197,7 +197,7 @@ provide('triggerToast', triggerToast);
                     </div>
                     <button
                         @click="toggle('matieres')"
-                        class="w-full p-2 hover:bg-white rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group"
+                        class="w-full p-2 hover:bg-white rounded-lg text-sm font-normal text-gray-600 hover:text-gray-800 flex items-center group"
                         :class="{ 'text-gray-800 bg-white border border-gray-300': isOpen.matieres }"
                     >
                         <LayoutList stroke-width="1.5" size="16" class="mr-2" />
@@ -217,7 +217,7 @@ provide('triggerToast', triggerToast);
                     </div>
                     <button
                         @click="toggle('categories')"
-                        class="w-full p-2 hover:bg-white rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group"
+                        class="w-full p-2 hover:bg-white rounded-lg text-sm font-normal text-gray-600 hover:text-gray-800 flex items-center group"
                         :class="{ 'text-gray-800 bg-white border border-gray-300': isOpen.categories }"
                     >
                         <ListTree stroke-width="1.5" size="16" class="mr-2" />
@@ -237,7 +237,7 @@ provide('triggerToast', triggerToast);
                     </div>
                     <button
                         @click="toggle('users')"
-                        class="w-full p-2 hover:bg-white rounded-lg text-sm font-normal text-gray-400 hover:text-gray-800 flex items-center group"
+                        class="w-full p-2 hover:bg-white rounded-lg text-sm font-normal text-gray-600 hover:text-gray-800 flex items-center group"
                         :class="{ 'text-gray-800 bg-white border border-gray-300': isOpen.users }"
                     >
                         <User stroke-width="1.5" size="16" class="mr-2" />
