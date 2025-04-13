@@ -142,6 +142,9 @@ const nextPage = () => {
             <p class="text-gray-800 font-semibold">Liste des classes</p>
             <div class="mt-1 text-sm text-gray-500">Gérer les différentes classes</div>
         </div>
+        <div class="">
+            <Button variant="solid" size="small" tag="a" href="classes/new">Ajouter une classe</Button>
+        </div>
     </div>
 
     <div class="mx-4 my-4">

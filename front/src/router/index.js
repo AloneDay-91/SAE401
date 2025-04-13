@@ -65,6 +65,7 @@ const router = createRouter({
 
     // ADMIN CLASSES
     { path: '/admin/classes', name: 'AdminClasses', component: () => import('../views/Admin/Classes/ClassesView.vue'), meta: { requiresAdminRole: true, requiresAuth: true } },
+    { path: '/admin/classes/new', name: 'AdminClassesNew', component: () => import('../views/Admin/Classes/ClassesNewView.vue'), meta: { requiresAdminRole: true, requiresAuth: true } },
   ],
 });
 

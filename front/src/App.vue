@@ -194,6 +194,9 @@ provide('triggerToast', triggerToast);
                         <router-link to="/admin/classes" class="block px-4 py-2 text-xs font-light text-gray-600 hover:bg-gray-100">
                             Liste des classes
                         </router-link>
+                        <router-link to="/admin/classes/new" class="block px-4 py-2 text-xs font-light text-gray-600 hover:bg-gray-100">
+                            Ajouter une classe
+                        </router-link>
                     </div>
                     <button
                         @click="toggle('matieres')"

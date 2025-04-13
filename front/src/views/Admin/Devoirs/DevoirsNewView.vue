@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref} from 'vue'
+import {inject, onMounted, ref} from 'vue'
 import axios from "axios";
 import {RouterLink, useRouter} from 'vue-router'
 import { useStore } from 'vuex'
@@ -29,6 +29,8 @@ const router = useRouter()
 const store = useStore()
 const token = localStorage.getItem('token');
 const user = ref(store.state.user);
+
+const triggerToast = inject('triggerToast');
 
 // Récupérer les matières
 const GetMatieres = async () => {
@@ -114,7 +116,11 @@ const AjouterDevoirs = async () => {
   loading.value = true;
   error.value = "";
 
-  console.log("Promo utilisateur :", classe.value);
+    if (!intitule.value || !contenu.value || !matiere1.value || !categorie1.value || !date.value || !heure.value || !rendu1.value || !classe.value) {
+        triggerToast("Champs manquants","Veuillez remplir tous les champs obligatoires.", 'error');
+        loading.value = false;
+        return;
+    }
 
   const devoirData = {
     intitule: intitule.value,
@@ -139,72 +145,191 @@ const AjouterDevoirs = async () => {
         "Authorization": `Bearer ${store.state.token}`
       }
     });
-    console.log("Devoir ajouté avec succès");
+    triggerToast("Devoir ajouté","Le devoir a été ajouté avec succès.", 'success');
     router.push("/admin/devoirs");
   } catch (err) {
     console.error("Erreur API :", err.response?.data || err);
     error.value = err.response?.data?.detail || "Erreur lors de l'ajout du devoir";
+    triggerToast("Erreur d'ajout","Une erreur est survenue lors de l'ajout du devoir.", 'error');
   }
 
   loading.value = false;
 };
 </script>
 <template>
-  <form @submit.prevent="AjouterDevoirs" class="py-6 px-12 flex-column"> <!-- Ajout de @submit.prevent -->
-    <div class="flex gap-1 items-center mb-3">
-      <label for="intitule" class="w-32.5">Intitulé : </label>
-      <input v-model="intitule" type="text" id="intitule" name="intitule" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required/>
-    </div>
-    <div class="flex gap-1 items-center mb-3">
-      <label for="description" class="w-32.5">Description : </label>
-      <input v-model="contenu" type="text" id="description" name="description" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required/>
-    </div>
-    <div class="flex gap-1 items-center mb-3">
-      <label for="matiere" class="w-32.5">Matière : </label>
-      <select v-model="matiere1" id="matiere" name="matiere" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required>
-        <option v-for="matiere in matieres" :key="matiere.id" :value="matiere.id">
-          {{ matiere.nom }}
-        </option>
-      </select>
-    </div>
-    <div class="flex gap-1 items-center mb-3">
-      <label for="categorie" class="w-32.5">Catégorie : </label>
-      <select v-model="categorie1" id="categorie" name="categorie" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required>
-        <option v-for="categorie in categories" :key="categorie.id" :value="categorie.id">
-          {{ categorie.nom }}
-        </option>
-      </select>
-    </div>
-    <div class="flex gap-1 items-center mb-3">
-      <label for="date" class="w-32.5">Date : </label>
-      <input v-model="date" type="date" id="date" name="date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required/>
-    </div>
-    <div class="flex gap-1 items-center mb-3">
-      <label for="heure" class="w-32.5">Heure : </label>
-      <input v-model="heure" type="time" id="heure" name="heure" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required/>
-    </div>
-    <div class="flex gap-1 items-center mb-3">
-      <label for="rendu" class="w-32.5">Format de rendu : </label>
-      <select v-model="rendu1" id="rendu" name="rendu" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required>
-        <option v-for="rendu in format_rendus" :key="rendu.id" :value="rendu.id">
-          {{ rendu.intitule }}
-        </option>
-      </select>
-    </div>
-    <div class="flex gap-1 items-center mb-3">
-      <label for="rendu" class="w-32.5">Classe : </label>
-      <select v-model="classe" id="classe" name="classe" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required>
-        <option v-for="classe in classes" :key="classe.id" :value="classe.id">
-          {{ classe.intitule }} {{ classe.promo }} {{ classe.type }}
-        </option>
-      </select>
-    </div>
-    <Button variant="solid" size="small" type="submit" :disabled="loading">
-      {{ loading ? 'Ajout en cours...' : 'Ajouter le devoir' }}
-    </Button>
-    <p v-if="error" style="color: red;">{{ error }}</p> <!-- Affichage des erreurs -->
-  </form>
+    <div class="max-w-2xl m-auto w-full">
+        <div class="text-left flex items-center justify-between mt-12">
+            <div class="w-full flex justify-start flex-col">
+                <h1 class="font-semibold">Ajouter un devoir</h1>
+                <p class="text-gray-500 text-sm mt-2">Remplissez le formulaire ci-dessous pour ajouter un nouveau devoir.</p>
+            </div>
+            <div class="w-full flex justify-end">
+                <Button variant="outline" size="small" tag="a" href="/admin/devoirs">Retour</Button>
+            </div>
+        </div>
+        <div class="border border-gray-200 rounded-lg bg-gray-100/50 mt-4">
+            <form class="py-6 px-12 flex-colum">
+                <div class="flex items-center justify-between">
+                    <div class="w-full flex justify-start flex-col">
+                        <div class="flex items-start justify-items-start">
+                            <span class="font-normal text-gray-600">Intitulé</span>
+                            <span class="font-normal text-red-500 ml-1">*</span>
+                        </div>
+                        <p class="text-gray-500 font-light text-sm">Intitulé du devoir</p>
+                    </div>
+                    <div>
+                        <div class="flex gap-1 items-center mb-3">
+                            <label for="intitule" class="hidden w-32.5">Intitulé : </label>
+                            <input v-model="intitule" type="text" id="intitule" name="intitule" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required/>
+                        </div>
+                    </div>
+                </div>
+                <div class="my-4 text-gray-200">
+                    <hr>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="w-full flex justify-start flex-col">
+                        <div class="flex items-start justify-items-start">
+                            <span class="font-normal text-gray-600">Description</span>
+                            <span class="font-normal text-red-500 ml-1">*</span>
+                        </div>
+                        <p class="text-gray-500 font-light text-sm">Description du devoir</p>
+                    </div>
+                    <div>
+                        <div class="flex gap-1 items-center mb-3">
+                            <label for="description" class="w-32.5 hidden">Description : </label>
+                            <input v-model="contenu" type="text" id="description" name="description" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required/>
+                        </div>
+                    </div>
+                </div>
+                <div class="my-4 text-gray-200">
+                    <hr>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="w-full flex justify-start flex-col">
+                        <div class="flex items-start justify-items-start">
+                            <span class="font-normal text-gray-600">Matière</span>
+                            <span class="font-normal text-red-500 ml-1">*</span>
+                        </div>
+                        <p class="text-gray-500 font-light text-sm">Matière du devoir</p>
+                    </div>
+                    <div>
+                        <div class="flex gap-1 items-center mb-3">
+                            <label for="matiere" class="w-32.5 hidden">Matière : </label>
+                            <select v-model="matiere1" id="matiere" name="matiere" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required>
+                                <option v-for="matiere in matieres" :key="matiere.id" :value="matiere.id">
+                                    {{ matiere.nom }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="my-4 text-gray-200">
+                    <hr>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="w-full flex justify-start flex-col">
+                        <div class="flex items-start justify-items-start">
+                            <span class="font-normal text-gray-600">Catégorie</span>
+                            <span class="font-normal text-red-500 ml-1">*</span>
+                        </div>
+                        <p class="text-gray-500 font-light text-sm">Catégorie du devoir</p>
+                    </div>
+                    <div>
+                        <div class="flex gap-1 items-center mb-3">
+                            <label for="categorie" class="w-32.5 hidden">Catégorie : </label>
+                            <select v-model="categorie1" id="categorie" name="categorie" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required>
+                                <option v-for="categorie in categories" :key="categorie.id" :value="categorie.id">
+                                    {{ categorie.nom }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="my-4 text-gray-200">
+                    <hr>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="w-full flex justify-start flex-col">
+                        <div class="flex items-start justify-items-start">
+                            <span class="font-normal text-gray-600">Date</span>
+                            <span class="font-normal text-red-500 ml-1">*</span>
+                        </div>
+                        <p class="text-gray-500 font-light text-sm">Date du devoir</p>
+                    </div>
+                    <div>
+                        <div class="flex gap-1 items-center mb-3">
+                            <label for="date" class="w-32.5 hidden">Date : </label>
+                            <input v-model="date" type="date" id="date" name="date" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required/>
+                        </div>
+                    </div>
+                </div>
+                <div class="my-4 text-gray-200">
+                    <hr>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="w-full flex justify-start flex-col">
+                        <div class="flex items-start justify-items-start">
+                            <span class="font-normal text-gray-600">Heure</span>
+                            <span class="font-normal text-red-500 ml-1">*</span>
+                        </div>
+                        <p class="text-gray-500 font-light text-sm">Heure du devoir</p>
+                    </div>
+                    <div class="flex gap-1 items-center mb-3">
+                        <label for="heure" class="w-32.5 hidden">Heure : </label>
+                        <input v-model="heure" type="time" id="heure" name="heure" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required/>
+                    </div>
+                </div>
+                <div class="my-4 text-gray-200">
+                    <hr>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="w-full flex justify-start flex-col">
+                        <div class="flex items-start justify-items-start">
+                            <span class="font-normal text-gray-600">Format de rendu</span>
+                            <span class="font-normal text-red-500 ml-1">*</span>
+                        </div>
+                        <p class="text-gray-500 font-light text-sm">Format de rendu du devoir</p>
+                    </div>
+                    <div class="flex gap-1 items-center mb-3">
+                        <label for="rendu" class="w-32.5 hidden">Format de rendu : </label>
+                        <select v-model="rendu1" id="rendu" name="rendu" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required>
+                            <option v-for="rendu in format_rendus" :key="rendu.id" :value="rendu.id">
+                                {{ rendu.intitule }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="my-4 text-gray-200">
+                    <hr>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="w-full flex justify-start flex-col">
+                        <div class="flex items-start justify-items-start">
+                            <span class="font-normal text-gray-600">Classe</span>
+                            <span class="font-normal text-red-500 ml-1">*</span>
+                        </div>
+                        <p class="text-gray-500 font-light text-sm">Classe du devoir</p>
+                    </div>
+                    <div class="flex gap-1 items-center mb-3">
+                        <label for="rendu" class="w-32.5 hidden">Classe : </label>
+                        <select v-model="classe" id="classe" name="classe" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required>
+                            <option v-for="classe in classes" :key="classe.id" :value="classe.id">
+                                {{ classe.intitule }} {{ classe.promo }} {{ classe.type }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
 
+                <p v-if="error" style="color: red;">{{ error }}</p> <!-- Affichage des erreurs -->
+            </form>
+        </div>
+        <div class="mt-4 flex items-center justify-end w-full">
+            <Button variant="solid" size="small" type="submit" :disabled="loading" @click.prevent="AjouterDevoirs">
+                {{ loading ? 'Ajout en cours...' : 'Ajouter le devoir' }}
+            </Button>
+        </div>
+    </div>
 
   <div class="flex items-center w-full justify-between gap-8 mt-24 px-4">
     <router-link to="/admin/devoirs" class="w-full border border-gray-200 hover:border-green-400 p-12 rounded-lg hover:bg-gray-100 transition duration-400">
