@@ -81,7 +81,7 @@ const AjouterCategories = async () => {
                 <div class="flex items-center justify-between">
                     <div class="w-full flex justify-start flex-col">
                         <div class="flex items-start justify-items-start">
-                            <span class="font-normal text-gray-600">Code</span>
+                            <span class="font-normal text-gray-600">Couleur</span>
                             <span class="font-normal text-red-500 ml-1">*</span>
                         </div>
                         <p class="text-gray-500 font-light text-sm">Couleur d'une catégorie</p>
@@ -103,7 +103,7 @@ const AjouterCategories = async () => {
         </div>
         <div class="mt-4 flex items-center justify-end w-full">
             <Button variant="solid" size="small" type="submit" :disabled="loading" @click.prevent="AjouterCategories">
-                {{ loading ? 'Ajout en cours...' : 'Ajouter la matière' }}
+                {{ loading ? 'Ajout en cours...' : 'Ajouter la catégorie' }}
             </Button>
         </div>
     </div>

@@ -22,6 +22,13 @@ const AjouterMatieres = async () => {
   loading.value = true;
   error.value = "";
 
+    // Vérifier si les champs sont remplis
+    if (!nom.value || !code.value || !couleur.value) {
+        triggerToast("Erreur", "Veuillez remplir tous les champs obligatoires.", 'error');
+        loading.value = false;
+        return;
+    }
+
   const MatiereData = {
     nom: nom.value,
     code: code.value,
@@ -103,7 +110,7 @@ const AjouterMatieres = async () => {
                 <div class="flex items-center justify-between">
                     <div class="w-full flex justify-start flex-col">
                         <div class="flex items-start justify-items-start">
-                            <span class="font-normal text-gray-600">Code</span>
+                            <span class="font-normal text-gray-600">Couleur</span>
                             <span class="font-normal text-red-500 ml-1">*</span>
                         </div>
                         <p class="text-gray-500 font-light text-sm">Couleur d'une matière</p>

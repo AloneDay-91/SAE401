@@ -146,7 +146,7 @@ const AjouterDevoirs = async () => {
       }
     });
     triggerToast("Devoir ajouté","Le devoir a été ajouté avec succès.", 'success');
-    router.push("/admin/devoirs");
+      await router.push("/admin/devoirs");
   } catch (err) {
     console.error("Erreur API :", err.response?.data || err);
     error.value = err.response?.data?.detail || "Erreur lors de l'ajout du devoir";
