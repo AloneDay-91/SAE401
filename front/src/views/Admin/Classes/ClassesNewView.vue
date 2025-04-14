@@ -145,7 +145,9 @@ async function VerifClasseExistante() {
                     <div>
                         <div class="flex gap-1 items-center mb-3">
                             <label for="intitule" class="hidden w-32.5">Intitulé : </label>
-                            <select v-model="intitule" id="intitule" name="intitule" class="bg-white border border-gray-300 text-gray-500 font-light text-xs rounded-lg block p-2 py-1.5 w-50" required>
+                            <select v-model="intitule" id="intitule" name="intitule"
+                                    class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
+                                    required>
                                 <option value="" selected>Sélectionner un intitulé</option>
                                 <option value="1ère année">1ère année</option>
                                 <option value="2ème année">2ème année</option>
@@ -168,7 +170,9 @@ async function VerifClasseExistante() {
                     <div>
                         <div class="flex gap-1 items-center mb-3">
                             <label for="promo" class="w-32.5 hidden">Promotion : </label>
-                            <select v-model="promo" id="promo" name="promo" class="bg-white border border-gray-300 text-gray-500 text-xs font-light rounded-lg block p-2 py-1.5 w-50" required>
+                            <select v-model="promo" id="promo" name="promo"
+                                    class="bg-white border border-gray-300 text-gray-500 text-sm font-light rounded-lg block p-2 py-1.5 w-50"
+                                    required>
                                 <option value="" selected>Sélectionner une promo</option>
                                 <!-- Options dynamiques basées sur "intitule" -->
                                 <option v-for="option in filteredPromoOptions" :key="option" :value="option">{{ option }}</option>
@@ -190,7 +194,9 @@ async function VerifClasseExistante() {
                     <div>
                         <div class="flex gap-1 items-center mb-3">
                             <label for="type" class="w-32.5 hidden">Classe : </label>
-                            <select v-model="type" id="type" name="type" class="bg-white border border-gray-300 text-gray-500 font-light text-xs rounded-lg block p-2 py-1.5 w-50" required>
+                            <select v-model="type" id="type" name="type"
+                                    class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
+                                    required>
                                 <option value="" selected>Sélectionner une classe</option>
                                 <option value="TPA">TPA</option>
                                 <option value="TPB">TPB</option>

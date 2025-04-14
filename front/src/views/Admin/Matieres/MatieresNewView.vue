@@ -36,7 +36,7 @@ const AjouterMatieres = async () => {
       }
     });
       triggerToast("Matière ajoutée avec succès", "La matière a été ajoutée avec succès.", 'success');
-    router.push("/admin/matieres");
+      await router.push("/admin/matieres");
   } catch (err) {
       triggerToast("Erreur lors de l'ajout de la matière", "Une erreur s'est produite lors de l'ajout de la matière.", 'error');
       console.error("Erreur API :", err.response?.data || err);
@@ -72,7 +72,7 @@ const AjouterMatieres = async () => {
                         <div class="flex gap-1 items-center mb-3">
                             <label for="nom" class="hidden w-32.5">Intitulé : </label>
                             <input type="text" v-model="nom" id="nom"
-                                   class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50"
+                                   class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                    required>
                         </div>
                     </div>
@@ -92,7 +92,7 @@ const AjouterMatieres = async () => {
                         <div class="flex gap-1 items-center mb-3">
                             <label for="code" class="hidden w-32.5">Code : </label>
                             <input type="text" v-model="code" id="code"
-                                   class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50"
+                                   class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                    required>
                         </div>
                     </div>
@@ -116,7 +116,7 @@ const AjouterMatieres = async () => {
                         <div class="flex gap-1 items-center mb-3">
                             <label for="couleur" class="hidden w-32.5">Couleur : </label>
                             <input type="text" v-model="couleur" id="couleur"
-                                   class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50"
+                                   class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                    required>
                         </div>
                     </div>

@@ -180,7 +180,9 @@ const AjouterDevoirs = async () => {
                     <div>
                         <div class="flex gap-1 items-center mb-3">
                             <label for="intitule" class="hidden w-32.5">Intitulé : </label>
-                            <input v-model="intitule" type="text" id="intitule" name="intitule" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required/>
+                            <input v-model="intitule" type="text" id="intitule" name="intitule"
+                                   class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
+                                   required/>
                         </div>
                     </div>
                 </div>
@@ -198,7 +200,9 @@ const AjouterDevoirs = async () => {
                     <div>
                         <div class="flex gap-1 items-center mb-3">
                             <label for="description" class="w-32.5 hidden">Description : </label>
-                            <input v-model="contenu" type="text" id="description" name="description" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required/>
+                            <input v-model="contenu" type="text" id="description" name="description"
+                                   class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
+                                   required/>
                         </div>
                     </div>
                 </div>
@@ -216,7 +220,9 @@ const AjouterDevoirs = async () => {
                     <div>
                         <div class="flex gap-1 items-center mb-3">
                             <label for="matiere" class="w-32.5 hidden">Matière : </label>
-                            <select v-model="matiere1" id="matiere" name="matiere" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required>
+                            <select v-model="matiere1" id="matiere" name="matiere"
+                                    class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
+                                    required>
                                 <option v-for="matiere in matieres" :key="matiere.id" :value="matiere.id">
                                     {{ matiere.nom }}
                                 </option>
@@ -238,7 +244,9 @@ const AjouterDevoirs = async () => {
                     <div>
                         <div class="flex gap-1 items-center mb-3">
                             <label for="categorie" class="w-32.5 hidden">Catégorie : </label>
-                            <select v-model="categorie1" id="categorie" name="categorie" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required>
+                            <select v-model="categorie1" id="categorie" name="categorie"
+                                    class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
+                                    required>
                                 <option v-for="categorie in categories" :key="categorie.id" :value="categorie.id">
                                     {{ categorie.nom }}
                                 </option>
@@ -260,7 +268,9 @@ const AjouterDevoirs = async () => {
                     <div>
                         <div class="flex gap-1 items-center mb-3">
                             <label for="date" class="w-32.5 hidden">Date : </label>
-                            <input v-model="date" type="date" id="date" name="date" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required/>
+                            <input v-model="date" type="date" id="date" name="date"
+                                   class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
+                                   required/>
                         </div>
                     </div>
                 </div>
@@ -277,7 +287,9 @@ const AjouterDevoirs = async () => {
                     </div>
                     <div class="flex gap-1 items-center mb-3">
                         <label for="heure" class="w-32.5 hidden">Heure : </label>
-                        <input v-model="heure" type="time" id="heure" name="heure" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required/>
+                        <input v-model="heure" type="time" id="heure" name="heure"
+                               class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
+                               required/>
                     </div>
                 </div>
                 <div class="my-4 text-gray-200">
@@ -293,7 +305,9 @@ const AjouterDevoirs = async () => {
                     </div>
                     <div class="flex gap-1 items-center mb-3">
                         <label for="rendu" class="w-32.5 hidden">Format de rendu : </label>
-                        <select v-model="rendu1" id="rendu" name="rendu" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required>
+                        <select v-model="rendu1" id="rendu" name="rendu"
+                                class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
+                                required>
                             <option v-for="rendu in format_rendus" :key="rendu.id" :value="rendu.id">
                                 {{ rendu.intitule }}
                             </option>
@@ -313,7 +327,9 @@ const AjouterDevoirs = async () => {
                     </div>
                     <div class="flex gap-1 items-center mb-3">
                         <label for="rendu" class="w-32.5 hidden">Classe : </label>
-                        <select v-model="classe" id="classe" name="classe" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block p-2 py-1.5 w-50" required>
+                        <select v-model="classe" id="classe" name="classe"
+                                class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
+                                required>
                             <option v-for="classe in classes" :key="classe.id" :value="classe.id">
                                 {{ classe.intitule }} {{ classe.promo }} {{ classe.type }}
                             </option>
