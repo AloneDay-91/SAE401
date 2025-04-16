@@ -1,18 +1,27 @@
+<!-- TODO: Corriger bug pagination classes admin -->
+
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import {ref, computed, onMounted, inject} from 'vue';
 import { useStore } from 'vuex';
 import axios from 'axios';
 import { ChevronLeft, ChevronRight, Search, Ellipsis, FilePenLine, Trash2, ArrowLeft } from "lucide-vue-next";
 import DropdownMenu from "@/components/DropdownMenu.vue";
 import Button from "@/components/Button.vue";
+import {pulsar} from 'ldrs'
+
+pulsar.register()
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
+const loading = ref(false)
 const store = useStore();
 const classes = ref([]);
 const error = ref('');
 const isModalOpen = ref(false);
 const modifierClasse = ref(null);
+const isModalDeleteOpen = ref(false);
+
+const triggerToast = inject('triggerToast');
 
 // Variables pour la recherche, le filtrage et la pagination
 const searchQuery = ref('');
@@ -27,6 +36,7 @@ const totalPages = computed(() => Math.ceil(filteredClasses.value.length / items
 
 // Récupération des données depuis l'API
 onMounted(async () => {
+    loading.value = true;
     try {
         const response = await axios.get(`${API_URL}/classes`, {
             headers: {
@@ -35,9 +45,11 @@ onMounted(async () => {
             },
         });
         classes.value = response.data.member;
+        loading.value = false;
     } catch (e) {
-        console.error('Erreur lors de la récupération des classes:', e);
-        error.value = 'Impossible de récupérer les classes.';
+        loading.value = false;
+        error.value = e.response?.data?.detail || "Erreur lors de la récupération des classes";
+        triggerToast("Erreur", error.value, 'error');
     }
 });
 
@@ -86,6 +98,7 @@ const openModal = (classe) => {
 
 const closeModal = () => {
     isModalOpen.value = false;
+    isModalDeleteOpen.value = false;
 };
 
 // Mise à jour d'une classe
@@ -135,6 +148,28 @@ const prevPage = () => {
 const nextPage = () => {
     if (currentPage.value < totalPages.value) currentPage.value++;
 };
+
+const deleteClasse = async (classeId) => {
+    try {
+        await axios.delete(`${API_URL}/classes/${classeId}`, {
+            headers: {
+                "Content-Type": "application/ld+json",
+                "Authorization": `Bearer ${store.state.token}`
+            }
+        });
+
+        classes.value = classes.value.filter(classe => classe.id !== classeId);
+        closeModal();
+        triggerToast("Classe supprimée avec succès", "La classe a été supprimée avec succès.", 'success');
+    } catch (error) {
+        triggerToast("Erreur lors de la suppression de la classe", "Une erreur s'est produite lors de la suppression de la classe.", 'error');
+    }
+}
+
+const openDeleteModal = () => {
+    isModalDeleteOpen.value = true;
+};
+
 </script>
 <template>
     <div class="flex items-center justify-between text-left w-full border-b border-gray-200 mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -188,6 +223,10 @@ const nextPage = () => {
                     </span>
                         </div>
                     </div>
+                    <div v-if="loading" class="w-full text-center">
+                        <l-pulsar size="40" speed="1.75" color="#05df72"></l-pulsar>
+                    </div>
+                    <div v-else>
                     <div class="max-w-full border border-gray-200 border-b-0 rounded-lg">
                         <table class="w-full text-left text-gray-500">
                             <thead class="border-b border-gray-200">
@@ -220,11 +259,31 @@ const nextPage = () => {
                                             <FilePenLine stroke-width="1.5" size="16"/>
                                           </button>
                                             <hr class="text-gray-200">
-                                            <router-link :to="`classes/${classe.id}/delete`"
-                                                         class="py-2 flex items-center justify-between text-gray-600 font-light hover:bg-gray-200/50 rounded px-2 my-1">
-                                                <span class="text-red-600">Supprimer</span>
+                                            <button
+                                                class="w-full py-2 flex items-center justify-between text-gray-600 font-light hover:bg-gray-200/50 rounded px-2 my-1"
+                                                @click="openDeleteModal"><span class="text-red-600">Supprimer</span>
                                                 <Trash2 stroke-width="1.5" size="16"/>
-                                            </router-link>
+                                            </button>
+                                            <transition name="modal-fade">
+                                                <div v-if="isModalDeleteOpen"
+                                                     class="fixed inset-0 bg-black/70 flex items-center justify-center">
+                                                    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+                                                        <h2 class="text-lg mb-2">Supprimer la classe</h2>
+                                                        <p class="text-xs font-light">Êtes-vous sûr de vouloir supprimer
+                                                            la classe n°{{ classe.id }} ?</p>
+                                                        <div class="mt-4 flex justify-end gap-2">
+                                                            <button @click="closeModal"
+                                                                    class="bg-gray-200 px-3 py-1.5 text-xs font-light rounded cursor-pointer hover:bg-gray-300 transition">
+                                                                Annuler
+                                                            </button>
+                                                            <button @click="deleteClasse(classe.id)"
+                                                                    class="bg-red-600 text-white px-3 py-1.5 text-xs font-light rounded cursor-pointer hover:bg-red-700 transition">
+                                                                Supprimer
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </transition>
                                         </div>
                                     </DropdownMenu>
                                 </td>
@@ -273,32 +332,48 @@ const nextPage = () => {
                             </ul>
                         </nav>
                     </div>
+                    </div>
 
                   <div v-if="isModalOpen" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
                       <div class="bg-white p-6 rounded-lg shadow-lg w-96 relative">
                           <button @click="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
-                          <h2 class="text-lg font-light mb-4">Modifier une classe</h2>
+                          <h2 class="text-lg font-light">Modifier une classe</h2>
+                          <p class="text-xs font-light mb-4">Modifier les informations de la classe
+                              n°{{ modifierClasse.id }}</p>
                       <div>
 
                           <div class="">
-                              <form @submit.prevent="updateClasse" class="px-4 py-5 sm:px-6">
+                              <form @submit.prevent="updateClasse" class="py-5">
                                   <div class="mb-6">
-                                    <label for="intitule" class="block mb-2 text-sm font-medium text-gray-900">Année en cours</label>
-                                    <select v-model="modifierClasse.intitule" id="intitule" name="intitule" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
+                                      <label for="intitule" class="block mb-2 text-sm text-gray-500 font-light">Année en
+                                          cours</label>
+                                      <select v-model="modifierClasse.intitule" id="intitule" name="intitule"
+                                              class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
+                                              required>
                                       <option value="1ère année">1ère année</option>
                                       <option value="2ème année">2ème année</option>
                                       <option value="3ème année">3ème année</option>
                                     </select>
                                   </div>
                                   <div class="mb-6">
-                                    <label for="promo" class="block mb-2 text-sm font-medium text-gray-900">Promo</label>
-                                    <select v-model="modifierClasse.promo" id="promo" name="promo" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
+                                      <label for="promo"
+                                             class="block mb-2 text-sm text-gray-500 font-light">Promo</label>
+                                      <select v-model="modifierClasse.promo" id="promo" name="promo"
+                                              class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
+                                              required>
                                       <option value="S1/S2">S1/S2</option>
                                       <option value="S3/S4">S3/S4</option>
                                       <option value="S5/S6">S5/S6</option>
                                     </select>
                                   </div>
-                              <Button variant="solid" size="small" type="submit">Modifier</Button>
+                                  <div class="w-full flex justify-end gap-2">
+                                      <Button variant="outline" size="small" class="hover:cursor-pointer"
+                                              @click="closeModal">Annuler
+                                      </Button>
+                                      <Button variant="solid" size="small" type="submit" class="hover:cursor-pointer">
+                                          Modifier
+                                      </Button>
+                                  </div>
                           </form>
                       </div>
                   </div>
