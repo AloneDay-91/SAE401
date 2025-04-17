@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
 import { useStore } from 'vuex';
-import {useRouter} from 'vue-router';
+import {RouterLink, useRouter} from 'vue-router';
 import axios from 'axios';
 import Button from "@/components/Button.vue";
 
@@ -25,6 +25,7 @@ const intituler = ref('');
 const classes = ref([]);
 const classe = ref('');
 const format_rendus = ref([]);
+const rendu = ref('');
 const token = localStorage.getItem('token');
 const user = ref(store.state.user);
 
