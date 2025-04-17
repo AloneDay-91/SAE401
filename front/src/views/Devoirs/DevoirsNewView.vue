@@ -1,7 +1,7 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue';
+import {onMounted, ref} from 'vue';
 import { useStore } from 'vuex';
-import {RouterLink, useRouter} from 'vue-router';
+import {useRouter} from 'vue-router';
 import axios from 'axios';
 import Button from "@/components/Button.vue";
 
