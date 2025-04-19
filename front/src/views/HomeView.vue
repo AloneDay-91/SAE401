@@ -3,7 +3,7 @@ import axios from "axios";
 import {computed, onMounted, ref, watch, inject} from "vue";
 import {useStore} from "vuex";
 import Button from '@/components/Button.vue';
-import {Check, ArrowRight} from "lucide-vue-next";
+import {Check, ArrowRight, ChevronLeft, ChevronRight} from "lucide-vue-next";
 import {ping} from "ldrs";
 import {RouterLink, useRoute} from "vue-router";
 
@@ -323,69 +323,6 @@ onMounted(() => {
     loadCheckboxStatuses();
 });
 
-/*const getVerifDevoir = async () => {
-    try {
-        const response = await axios.get(`${API_URL}/user_devoir_votes`, {
-            headers: {
-                "Content-Type": "application/ld+json",
-                "Authorization": `Bearer ${store.state.token}`
-            },
-        });
-        verifDevoir.value = response.data.member;
-    } catch (e) {
-        console.error('Erreur lors de la récupération des votes:', e);
-        error.value = 'Impossible de récupérer les votes.';
-        triggerToast("Erreur", "Impossible de récupérer les votes.", 'error');
-        return [];
-    }
-}
-
-const maxVote = 5;
-const votes = ref([]);
-
-const countVerifDevoir = computed(() => {
-    if (!devoirs.value || !user.value || !user.value.id) {
-        return [];
-    }
-    return devoirs.value.filter(devoir => {
-        const { id_classes } = devoir;
-        if (!id_classes) return false;
-
-        // Vérification de la promo
-        const promoCorrespond = id_classes.promo === user.value.promo;
-
-        // Vérification du type de groupe (TD ou TP)
-        const tdCorrespond = id_classes.type === user.value.td;
-        const tpCorrespond = id_classes.type === user.value.tp;
-
-        // Vérification du nombre de votes
-        const votesCount = countVotes(devoir.id);
-
-        // Le devoir est valide si la promo correspond, soit le TD ou TP correspond ou aucun type spécifique n'est requis, et le nombre de votes est inférieur au maximum requis
-        return promoCorrespond &&
-            (!id_classes.type || tdCorrespond || tpCorrespond) &&
-            votesCount < maxVote;
-    });
-});
-
-const countVotes = (devoirId) => {
-    if (!votes.value.length) return 0;
-
-    return votes.value.reduce((total, vote) => {
-        const voteDevoirId = vote.devoirs['@id'].split('/').pop();
-        return (voteDevoirId === devoirId.toString()) ? total + vote.vote : total;
-    }, 0);
-};
-
-const devoirsVerifies = computed(() => {
-    if (!devoirs.value || !votes.value) {
-        return [];
-    }
-    return devoirs.value.filter(devoir => {
-        return countVotes(devoir.id) >= maxVote;
-    });
-});*/
-
 </script>
 
 <template>
@@ -423,28 +360,21 @@ const devoirsVerifies = computed(() => {
                 <div class="w-full md:basis-2/3 p-4">
                     <h2 class="text-2xl font-semibold">Calendrier</h2>
 
-                    <p v-if="error" class="error-message border rounded p-3 text-sm font-light border-red-400/20 bg-red-200/10 text-red-900 flex items-center gap-2">
-                        ⚠ {{ error }}
-                    </p>
-
                     <div class="calendar-container w-full p-4 bg-white rounded-lg border border-gray-300 space-y-4 mt-4">
                         <div class="calendar-header flex justify-between pb-4 border-b border-gray-200 items-center mb-4">
                             <div class="flex items-center gap-2">
-                                <button class="cursor-pointer px-1 py-1 rounded border border-gray-200 hover:bg-gray-200" @click="previousWeek">
-                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" class="size-6 stroke-gray-600">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                                  </svg>
-                                </button>
-                              <button class="cursor-pointer px-1 py-1 rounded border border-gray-200 hover:bg-gray-200" @click="nextWeek">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" class="size-6 stroke-gray-600">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                                </svg>
-                              </button>
-                                <button class="cursor-pointer px-2 py-1 rounded hover:bg-gray-200" @click="goToToday">
+                                <Button variant="outline" size="small" class="hover:cursor-pointer"
+                                        @click="previousWeek">
+                                    <ChevronLeft stroke-width="1.5" size="18"/>
+                                </Button>
+                                <Button variant="outline" size="small" class="hover:cursor-pointer" @click="nextWeek">
+                                    <ChevronRight stroke-width="1.5" size="18"/>
+                                </Button>
+                                <Button variant="outline" size="small" class="hover:cursor-pointer" @click="goToToday">
                                     Aujourd'hui
-                                </button>
+                                </Button>
                             </div>
-                            <div class="font-semibold">
+                            <div class="font-light">
                                 {{ currentWeekLabel }}
                             </div>
                         </div>
@@ -452,16 +382,17 @@ const devoirsVerifies = computed(() => {
                         <div class="calendar-grid grid grid-cols-7 gap-x-1">
                             <!-- Jours de la semaine -->
                             <div v-for="(day, index) in daysOfWeek" :key="index"
-                                 class="flex items-center justify-between text-left py-2 px-2 font-medium bg-gray-50 rounded-t border-b border-gray-200">
+                                 class="flex items-center justify-between text-left py-2 px-2 font-medium bg-gray-50 rounded-t border border-gray-200">
                                 {{ day.shortName }}
-                                <div class="text-sm text-gray-400 font-semibold" :class="isToday(day.date) ? '!text-[#00D478] font-semibold' : ''">
+                                <div class="text-sm text-gray-400 font-semibold"
+                                     :class="isToday(day.date) ? 'bg-green-400/30 border border-green-400 !text-gray-700 px-2 rounded' : ''">
                                     {{ formatDayNumber(day.date) }}
                                 </div>
                             </div>
 
                             <!-- Cellules du calendrier -->
                             <div v-for="(day, index) in daysOfWeek" :key="'day-'+index"
-                                 class="min-h-[150px] bg-gray-50 rounded-b p-2"
+                                 class="min-h-[150px] rounded-b p-2 border-b border-l border-r border-gray-200"
                                  :class="isToday(day.date) ? 'bg-[#00D478]/10 border-[#00D478]/30' : ''">
                                 <!-- Devoirs pour ce jour -->
                                 <div v-for="devoir in getDevoirsForDay(day.date)" :key="devoir['@id']" @click="openModal(devoir)"
@@ -545,10 +476,6 @@ const devoirsVerifies = computed(() => {
                             </Button>
                         </div>
                     </div>
-
-                    <p v-if="error" class="error-message border rounded p-3 text-sm font-light border-red-400/20 bg-red-200/10 text-red-900 flex items-center gap-2">
-                        ⚠ {{ error }}
-                    </p>
 
                     <!-- Loader de chargement -->
                     <div v-if="loading" class="space-y-4 mt-4">
