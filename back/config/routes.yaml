@@ -5,11 +5,11 @@ controllers:
     type: attribute
 
 auth:
-    path: /api/auth
+    path: /auth # retirer le /api en prod
     methods: [ 'POST' ]
 
 api_login_check:
-    path: /api/auth
+    path: /auth # retirer le /api en prod
 
 api_password_reset_request:
     path: /api/password-reset

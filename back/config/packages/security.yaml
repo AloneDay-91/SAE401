@@ -15,10 +15,10 @@ security:
             security: false
 
         login:
-            pattern: ^/api/auth
+            pattern: ^/auth # retirer le /api en prod
             stateless: true
             json_login:
-                check_path: /api/auth
+                check_path: /auth # retirer le /api en prod
                 username_path: email
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
