@@ -1,16 +1,18 @@
 <script setup>
 import axios from "axios";
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, onMounted, ref, watch, inject} from "vue";
 import {useStore} from "vuex";
 import Button from '@/components/Button.vue';
 import {Check, ArrowRight} from "lucide-vue-next";
 import {ping} from "ldrs";
+import {RouterLink, useRoute} from "vue-router";
 
 ping.register();
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const store = useStore();
+const route = useRoute()
 const user = computed(() => store.state.user);
 
 const devoirs = ref([]);
@@ -18,7 +20,9 @@ const loading = ref(true);
 const error = ref("");
 const selectedDevoir = ref(null);
 const isModalOpen = ref(false)
-const verifDevoir = ref([]);
+/*const verifDevoir = ref([]);*/
+
+const triggerToast = inject('triggerToast');
 
 const openModal = (devoir) => {
   selectedDevoir.value = devoir;
@@ -39,10 +43,9 @@ onMounted(async () => {
             },
         });
         devoirs.value = response.data.member;
-
     } catch (e) {
-        console.error("Erreur lors de la récupération des devoirs:", e);
         error.value = e.response?.data?.detail || "Impossible de récupérer les devoirs.";
+        triggerToast("Erreur", "Impossible de récupérer les devoirs.", 'error');
     } finally {
         loading.value = false;
     }
@@ -59,16 +62,22 @@ const devoirsUtilisateur = computed(() => {
     if (!devoirs.value || !user.value) {
         return [];
     }
+    const now = new Date();
     return devoirs.value
         .filter(devoir => {
-            const { id_classes } = devoir;
+            const {id_classes, date} = devoir;
             if (!id_classes) return false;
 
+            // Filtrage sur la classe
             const promoCorrespond = id_classes.promo === user.value.promo;
             const tdCorrespond = id_classes.type === user.value.td;
             const tpCorrespond = id_classes.type === user.value.tp;
 
-            return promoCorrespond && (!id_classes.type || tdCorrespond || tpCorrespond);
+            // Filtrage sur la date : on garde seulement les devoirs dont la date est aujourd'hui ou dans le futur
+            const dateRendu = new Date(date);
+            const enRetard = dateRendu < now.setHours(0, 0, 0, 0); // on compare à aujourd'hui minuit
+
+            return promoCorrespond && (!id_classes.type || tdCorrespond || tpCorrespond) && !enRetard;
         })
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 });
@@ -94,7 +103,7 @@ const getDateDevoirStatus = (dateRendu) => {
 };
 
 const getDateDevoirClass = (dateRendu) => {
-    if (!dateRendu) return "bg-gray-500/20 text-gray-700";
+    if (!dateRendu) return "bg-gray-500/20 text-gray-700 border border-gray-500";
 
     const dateRenduObj = new Date(dateRendu);
     const dateActuelle = new Date();
@@ -102,13 +111,13 @@ const getDateDevoirClass = (dateRendu) => {
     const diffJours = Math.floor(diff / (1000 * 60 * 60 * 24));
 
     if (diffJours <= 0) {
-        return "bg-red-500/20 text-red-700"; // En retard
+        return "bg-red-500/20 text-red-700 border border-red-500"; // En retard
     } else if (diffJours === 0) {
-        return "bg-orange-500/20 text-orange-700"; // Aujourd'hui
+        return "bg-orange-500/20 text-orange-700 border border-orange-500"; // Aujourd'hui
     } else if (diffJours <= 4) {
-        return "bg-yellow-500/20 text-yellow-700"; // Moins de 4 jours
+        return "bg-yellow-500/20 text-yellow-700 border border-yellow-500"; // Moins de 4 jours
     } else {
-        return "bg-green-500/20 text-green-700"; // Plus de 4 jours
+        return "bg-green-500/20 text-green-700 border border-green-500"; // Plus de 4 jours
     }
 };
 
@@ -259,9 +268,12 @@ const updateDevoirStatus = async (devoirId, isChecked) => {
             status: isChecked
         };
 
+        triggerToast("Statut mis à jour", "Le statut du devoir a été mis à jour avec succès.", 'success');
+
     } catch (error) {
         console.error("Erreur:", error.response?.data || error.message);
         checkboxStatuses.value[devoirId].status = !isChecked;
+        triggerToast("Erreur", "Impossible de mettre à jour le statut du devoir.", 'error');
     } finally {
         loadingStatuses.value[devoirId] = false;
     }
@@ -311,7 +323,7 @@ onMounted(() => {
     loadCheckboxStatuses();
 });
 
-const getVerifDevoir = async () => {
+/*const getVerifDevoir = async () => {
     try {
         const response = await axios.get(`${API_URL}/user_devoir_votes`, {
             headers: {
@@ -323,6 +335,7 @@ const getVerifDevoir = async () => {
     } catch (e) {
         console.error('Erreur lors de la récupération des votes:', e);
         error.value = 'Impossible de récupérer les votes.';
+        triggerToast("Erreur", "Impossible de récupérer les votes.", 'error');
         return [];
     }
 }
@@ -371,7 +384,7 @@ const devoirsVerifies = computed(() => {
     return devoirs.value.filter(devoir => {
         return countVotes(devoir.id) >= maxVote;
     });
-});
+});*/
 
 </script>
 
@@ -529,12 +542,6 @@ const devoirsVerifies = computed(() => {
                         <div>
                             <Button class="hover:border-b border-b-green-500 !rounded-none !py-0 !px-0 inline-flex items-center relative" variant="ghost" size="small" tag="a" href="/devoirs">
                                 En attente de vérification <ArrowRight size="14" stroke-width="1" />
-                                <l-ping
-                                    size="12"
-                                    speed="5"
-                                    color="red"
-                                    class="absolute right-[-8px] top-[-8px]"
-                                ></l-ping>
                             </Button>
                         </div>
                     </div>
@@ -592,7 +599,8 @@ const devoirsVerifies = computed(() => {
                                         <p :class="{'opacity-50 line-through': getCheckboxStatus(devoir['@id']),[getDateDevoirClass(devoir.date)]: true}" class="text-xs font-light p-1 px-2 rounded-lg" v-if="!getCheckboxStatus(devoir['@id'])">
                                             {{ getDateDevoirStatus(devoir.date) }}
                                         </p>
-                                        <p class="text-xs font-light p-1 px-2 rounded-lg bg-gray-200" v-else>
+                                        <p class="text-xs font-light p-1 px-2 rounded-lg bg-gray-200 border border-gray-500"
+                                           v-else>
                                             Terminé
                                         </p>
                                     </div>
@@ -610,6 +618,34 @@ const devoirsVerifies = computed(() => {
                     </p>
                 </div>
             </div>
+        </div>
+        <!-- Devoirs en retard et terminé -->
+        <div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+            <div
+                class="sm:flex sm:items-start flex flex-col items-center border border-t-0 border-l-0 border-r-0 border-gray-200">
+                <span class="text-2xl font-extrabold text-gray-900">Mes devoirs</span>
+                <p class="mt-1 max-w-2xl text-sm text-gray-500 mb-5">Gérez les paramètres de votre compte</p>
+                <nav class="mb-2">
+                    <ul class="flex items-center gap-4 text-sm">
+                        <li>
+                            <RouterLink class="p-2 font-light text-gray-400" :to="{ name: 'DevoirsTermines' }"
+                                        :class="{ '!text-black border-b-2 border-b-green-500': route.name === 'DevoirsTermines' }">
+                                Devoirs terminés
+                            </RouterLink>
+                        </li>
+                        <li>
+                            <RouterLink class="p-2 font-light text-gray-400" :to="{ name: 'DevoirsRetards' }"
+                                        :class="{ '!text-black border-b-2 border-b-green-500': route.name === 'DevoirsRetards' }">
+                                Devoirs précédents
+                            </RouterLink>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8 mb-8">
+            <router-view></router-view>
         </div>
     </main>
 </template>

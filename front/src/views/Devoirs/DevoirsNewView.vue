@@ -425,7 +425,7 @@ const afficherLien = ref(false);
           </div>
 
           <div class="pt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center justify-end">
-              <Button variant="solid" size="small" tag="button" type="submit" :disabled="loading">
+              <Button variant="solid" size="small" tag="button" @click="AjouterDevoir" :disabled="loading">
                   {{ loading ? 'Ajout en cours...' : 'Ajouter le devoir' }}
               </Button>
           </div>
