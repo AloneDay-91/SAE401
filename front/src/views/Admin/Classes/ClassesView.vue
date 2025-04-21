@@ -48,8 +48,7 @@ onMounted(async () => {
         loading.value = false;
     } catch (e) {
         loading.value = false;
-        error.value = e.response?.data?.detail || "Erreur lors de la récupération des classes";
-        triggerToast("Erreur", error.value, 'error');
+        triggerToast("Erreur lors de la récupération des classes", "Une erreur s'est produite lors de la récupération des classes.", 'error');
     }
 });
 
@@ -108,7 +107,8 @@ const updateClasse = async () => {
     try {
         const classeData = JSON.stringify({
             intitule: modifierClasse.value.intitule,
-            promo: modifierClasse.value.promo
+            promo: modifierClasse.value.promo,
+            type: modifierClasse.value.type
         });
 
         await axios.patch(`${API_URL}/classes/${modifierClasse.value.id}`, classeData, {
@@ -122,10 +122,10 @@ const updateClasse = async () => {
         if (index !== -1) {
             Object.assign(classes.value[index], modifierClasse.value);
         }
-
+        triggerToast("Classe mise à jour avec succès", "La classe a été mise à jour avec succès.", 'success');
         closeModal();
     } catch (error) {
-        console.error('Erreur lors de la mise à jour de la classe:', error);
+        triggerToast("Erreur lors de la mise à jour de la classe", "Une erreur s'est produite lors de la mise à jour de la classe.", 'error');
     }
 };
 
@@ -272,10 +272,10 @@ const openDeleteModal = () => {
                                                         <p class="text-xs font-light">Êtes-vous sûr de vouloir supprimer
                                                             la classe n°{{ classe.id }} ?</p>
                                                         <div class="mt-4 flex justify-end gap-2">
-                                                            <button @click="closeModal"
+                                                            <Button variant="outline" @click="closeModal"
                                                                     class="bg-gray-200 px-3 py-1.5 text-xs font-light rounded cursor-pointer hover:bg-gray-300 transition">
                                                                 Annuler
-                                                            </button>
+                                                            </Button>
                                                             <button @click="deleteClasse(classe.id)"
                                                                     class="bg-red-600 text-white px-3 py-1.5 text-xs font-light rounded cursor-pointer hover:bg-red-700 transition">
                                                                 Supprimer
@@ -365,6 +365,13 @@ const openDeleteModal = () => {
                                       <option value="S3/S4">S3/S4</option>
                                       <option value="S5/S6">S5/S6</option>
                                     </select>
+                                  </div>
+                                  <div class="mb-6">
+                                      <label for="classe"
+                                             class="block mb-2 text-sm text-gray-500 font-light">Classe</label>
+                                      <input type="text" v-model="modifierClasse.type" id="classe" name="classe"
+                                             class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
+                                             required/>
                                   </div>
                                   <div class="w-full flex justify-end gap-2">
                                       <Button variant="outline" size="small" class="hover:cursor-pointer"

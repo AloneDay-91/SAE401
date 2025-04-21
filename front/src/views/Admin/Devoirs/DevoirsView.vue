@@ -214,7 +214,7 @@ const removeFilter = (filter) => {
 };
 
 // axios delete
-const deleteUser = async (devoirId) => {
+const deleteDevoir = async (devoirId) => {
     try {
         await axios.delete(`${API_URL}/devoirs/${devoirId}`, {
             headers: {
@@ -380,11 +380,11 @@ const deleteUser = async (devoirId) => {
                                                         <p class="text-xs font-light">Êtes-vous sûr de vouloir supprimer
                                                             le devoir n°{{ devoir.id }} ?</p>
                                                         <div class="mt-4 flex justify-end gap-2">
-                                                            <button @click="closeModal"
+                                                            <Button variant="outline" @click="closeModal"
                                                                     class="bg-gray-200 px-3 py-1.5 text-xs font-light rounded cursor-pointer hover:bg-gray-300 transition">
                                                                 Annuler
-                                                            </button>
-                                                            <button @click="deleteUser(devoir.id)"
+                                                            </Button>
+                                                            <button @click="deleteDevoir(devoir.id)"
                                                                     class="bg-red-600 text-white px-3 py-1.5 text-xs font-light rounded cursor-pointer hover:bg-red-700 transition">
                                                                 Supprimer
                                                             </button>

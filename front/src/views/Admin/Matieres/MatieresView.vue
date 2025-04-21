@@ -1,9 +1,19 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import {ref, onMounted, computed, inject} from 'vue';
 import { useStore } from 'vuex';
 import axios from 'axios';
 import {RouterLink} from "vue-router";
-import {ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Ellipsis, FilePenLine, Search, Trash2} from "lucide-vue-next";
+import {
+    ArrowLeft,
+    ArrowRight,
+    ChevronLeft,
+    ChevronRight,
+    Ellipsis,
+    FilePenLine,
+    Info,
+    Search,
+    Trash2
+} from "lucide-vue-next";
 import DropdownMenu from "@/components/DropdownMenu.vue";
 import Button from "@/components/Button.vue";
 
@@ -14,12 +24,18 @@ const matieres = ref([]);
 const error = ref('');
 const isModalOpen = ref(false);
 const modifierMatiere = ref(null);
+const isModalDeleteOpen = ref(false);
+const triggerToast = inject('triggerToast');
 
 // Variables pour la recherche, le filtrage et la pagination
 const searchQuery = ref('');
 const selectedFilters = ref([]);
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
+
+const openDeleteModal = () => {
+    isModalDeleteOpen.value = true;
+};
 
 // Pagination calculée
 const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage.value);
@@ -69,6 +85,7 @@ const openModal = (matiere) => {
 };
 const closeModal = () => {
   isModalOpen.value = false;
+    isModalDeleteOpen.value = false;
 };
 
 onMounted(async () => {
@@ -81,8 +98,7 @@ onMounted(async () => {
         });
         matieres.value = response.data.member;
     } catch (e) {
-        console.error('Erreur lors de la récupération des matières:', e);
-        error.value = 'Impossible de récupérer les matières.';
+        triggerToast("Erreur lors de la récupération des matières", "Une erreur s'est produite lors de la récupération des matières.", 'error');
     }
 });
 
@@ -109,11 +125,10 @@ const updateMatiere = async () => {
     if (index !== -1) {
       matieres.value[index] = { ...modifierMatiere.value };
     }
-
+      triggerToast("Matière mise à jour avec succès", "La matière a été mise à jour avec succès.", 'success');
     closeModal();
-
   } catch (error) {
-    console.error('Erreur lors de la mise à jour de la matière:', error);
+      triggerToast("Erreur lors de la mise à jour de la matière", "Une erreur s'est produite lors de la mise à jour de la matière.", 'error');
   }
 };
 
@@ -135,6 +150,22 @@ const prevPage = () => {
 
 const nextPage = () => {
     if (currentPage.value < totalPages.value) currentPage.value++;
+};
+
+const deleteMatiere = async (matiereId) => {
+    try {
+        await axios.delete(`${API_URL}/matieres/${matiereId}`, {
+            headers: {
+                "Content-Type": "application/ld+json",
+                "Authorization": `Bearer ${store.state.token}`
+            },
+        });
+        matieres.value = matieres.value.filter((matiere) => matiere.id !== matiereId);
+        closeModal();
+        triggerToast("Matière supprimé", "La matière a été supprimé avec succès.", 'success');
+    } catch (error) {
+        triggerToast("Erreur lors de la suppression de la matière", "Impossible de supprimer la matière.", 'error');
+    }
 };
 </script>
 <template>
@@ -193,6 +224,7 @@ const nextPage = () => {
                         <table class="w-full text-left text-gray-500">
                             <thead class="border-b border-gray-200">
                                 <tr class="uppercase">
+                                    <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">ID</th>
                                     <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Nom</th>
                                     <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Code</th>
                                     <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Couleur</th>
@@ -201,6 +233,7 @@ const nextPage = () => {
                             </thead>
                             <tbody>
                                 <tr class="border-b border-gray-200" v-for="matiere in paginatedClasses">
+                                    <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ matiere.id }}</td>
                                     <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ matiere.nom }}</td>
                                     <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ matiere.code }}</td>
                                     <td class="px-6 py-4 text-xs font-normal w-auto">
@@ -221,10 +254,32 @@ const nextPage = () => {
                                                     <FilePenLine stroke-width="1.5" size="16"/>
                                                 </button>
                                                 <hr class="text-gray-200">
-                                                <router-link :to="`matieres/${matiere.id}/delete`" class="py-2 flex items-center justify-between text-gray-600 font-light hover:bg-gray-200/50 rounded px-2 my-1">
-                                                    <span class="text-red-600">Supprimer</span>
+                                                <button
+                                                    class="w-full py-2 flex items-center justify-between text-gray-600 font-light hover:bg-gray-200/50 rounded px-2 my-1"
+                                                    @click="openDeleteModal"><span class="text-red-600">Supprimer</span>
                                                     <Trash2 stroke-width="1.5" size="16"/>
-                                                </router-link>
+                                                </button>
+                                                <transition name="modal-fade">
+                                                    <div v-if="isModalDeleteOpen"
+                                                         class="fixed inset-0 bg-black/70 flex items-center justify-center">
+                                                        <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+                                                            <h2 class="text-lg mb-2">Supprimer la matière</h2>
+                                                            <p class="text-xs font-light">Êtes-vous sûr de vouloir
+                                                                supprimer
+                                                                la matière n°{{ matiere.id }} ?</p>
+                                                            <div class="mt-4 flex justify-end gap-2">
+                                                                <Button variant="outline" @click="closeModal"
+                                                                        class="bg-gray-200 px-3 py-1.5 text-xs font-light rounded cursor-pointer hover:bg-gray-300 transition">
+                                                                    Annuler
+                                                                </Button>
+                                                                <button @click="deleteMatiere(matiere.id)"
+                                                                        class="bg-red-600 text-white px-3 py-1.5 text-xs font-light rounded cursor-pointer hover:bg-red-700 transition">
+                                                                    Supprimer
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </transition>
                                             </div>
                                         </DropdownMenu>
                                     </td>
@@ -275,29 +330,57 @@ const nextPage = () => {
                     </div>
 
                   <div v-if="isModalOpen" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-                    <div class="bg-white p-6 rounded-lg shadow-lg w-96 relative">
-                      <button @click="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
-                      <h2 class="text-lg font-light mb-4">Modifier un utilisateur</h2>
-                      <div>
+                      <div class="bg-white p-6 rounded-lg shadow-lg w-96 relative">
+                          <button @click="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+                              &times;
+                          </button>
+                          <h2 class="text-lg font-light">Modifier une matière</h2>
+                          <p class="text-xs font-light mb-4">Modifier les informations de la matière
+                              n°{{ modifierMatiere.id }}</p>
+                          <div>
 
-                        <div class="">
-                          <form @submit.prevent="updateMatiere" class="px-4 py-5 sm:px-6">
-                            <div class="mb-6">
-                              <label for="nom" class="block mb-2 text-sm font-medium text-gray-900">Matière</label>
-                              <input type="text" id="nom" name="nom" v-model="modifierMatiere.nom" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" placeholder="Le nom de la matière" required>
-                            </div>
-                            <div class="mb-6">
-                              <label for="code" class="block mb-2 text-sm font-medium text-gray-900">Code</label>
-                              <input type="text" id="code" name="code" v-model="modifierMatiere.code" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" placeholder="Le code de la matière" required>
-                            </div>
-                            <div class="mb-6">
-                              <label for="couleur" class="block mb-2 text-sm font-medium text-gray-900">Couleur</label>
-                              <input type="text" id="couleur" name="couleur" v-model="modifierMatiere.couleur" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" placeholder="La couleur de la matière" required>
-                            </div>
-                            <Button variant="solid" size="small" type="submit">Modifier</Button>
-                          </form>
-                        </div>
-                      </div>
+                              <div class="">
+                                  <form @submit.prevent="updateMatiere" class="py-5">
+                                      <div class="mb-6">
+                                          <label for="intitule" class="block mb-2 text-sm text-gray-500 font-light">Intitulé</label>
+                                          <input type="text" v-model="modifierMatiere.nom" id="intitule" name="intitule"
+                                                 class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
+                                                 required>
+                                      </div>
+                                      <div class="mb-6">
+                                          <label for="code"
+                                                 class="block mb-2 text-sm text-gray-500 font-light">Code</label>
+                                          <input type="text" v-model="modifierMatiere.code" id="code" name="code"
+                                                 class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
+                                                 required>
+                                      </div>
+                                      <div class="mb-6">
+                                          <label for="couleur" class="block mb-2 text-sm text-gray-500 font-light">Couleur</label>
+                                          <input type="text" v-model="modifierMatiere.couleur" id="couleur"
+                                                 name="couleur"
+                                                 class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
+                                                 required/>
+                                          <div>
+                                              <span
+                                                  class="text-xs text-gray-500 font-light mt-4 inline-flex items-center"><Info
+                                                  size="14"
+                                                  class="mr-1"/> La couleur ajoutée doit être du type : </span>
+                                              <br>
+                                              <span class="text-xs text-gray-500 font-light underline">text-blue-500 bg-blue-500/20</span>
+                                          </div>
+                                      </div>
+                                      <div class="w-full flex justify-end gap-2">
+                                          <Button variant="outline" size="small" class="hover:cursor-pointer"
+                                                  @click="closeModal">Annuler
+                                          </Button>
+                                          <Button variant="solid" size="small" type="submit"
+                                                  class="hover:cursor-pointer">
+                                              Modifier
+                                          </Button>
+                                      </div>
+                                  </form>
+                              </div>
+                          </div>
                     </div>
                   </div>
 
