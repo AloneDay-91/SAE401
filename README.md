@@ -20,12 +20,13 @@ L'objectif est de concevoir une application web qui permet aux étudiants de cen
 ### Partie Local
 - Cloner le projet : `git clone https://github.com/AloneDay-91/SAE401.git`
 - Installer les dépendances PHP pour le Back : `composer install`
-- Installer les dépendances JS pour le Front et le Back : `npm install`
+- Installer les dépendances JS pour le Front (sae401/front) et le Back (sae401/back) : `npm install`
 - Créer un fichier `.env.local` et configurer la connexion à la base de données ainsi que l'adresse sur serveur de mail
 - Créer la base de données : `php bin/console doctrine:database:create`
 - Créer les tables : `php bin/console doctrine:schema:update --force`
 - Générer les fichiers jwt : `php bin/console lexik:jwt:generate-keypair`
 - Changer l'url de l'api dans le fichier `.env` du dossier Front
+- Build le Front (sae401/front) `npm run build` et le Back (sae401/back)
 - Lancer le serveur front : `npm run dev` ou `npx vite`
 
 ### Partie Serveur
