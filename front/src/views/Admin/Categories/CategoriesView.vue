@@ -16,12 +16,15 @@ import {
 } from "lucide-vue-next";
 import DropdownMenu from "@/components/DropdownMenu.vue";
 import Button from "@/components/Button.vue";
+import {pulsar} from 'ldrs'
+
+pulsar.register()
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const store = useStore();
 const categories = ref([]);
-const error = ref('');
+const loading = ref(false);
 const isModalOpen = ref(false);
 const modifierCategorie = ref(null);
 const triggerToast = inject('triggerToast');
@@ -89,6 +92,7 @@ const closeModal = () => {
 };
 
 onMounted(async () => {
+    loading.value = true;
     try {
         const response = await axios.get(`${API_URL}/categories`, {
             headers: {
@@ -96,8 +100,10 @@ onMounted(async () => {
                 "Authorization": `Bearer ${store.state.token}`
             },
         });
+        loading.value = false;
         categories.value = response.data.member;
     } catch (e) {
+        loading.value = false;
         triggerToast("Erreur", "Impossible de récupérer les catégories.", 'error');
     }
 });
@@ -223,6 +229,10 @@ const nextPage = () => {
                             </div>
                         </div>
                     </div>
+                    <div v-if="loading" class="w-full text-center">
+                        <l-pulsar size="40" speed="1.75" color="#05df72"></l-pulsar>
+                    </div>
+                    <div v-else>
                     <div class="max-w-full border border-gray-200 border-b-0 rounded-lg">
                         <table class="w-full text-left text-gray-500">
                             <thead class="border-b border-gray-200">
@@ -290,11 +300,11 @@ const nextPage = () => {
                         <nav
                             class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4 border-b border-gray-200 rounded-bl-lg rounded-br-lg"
                             aria-label="Table navigation">
-                  <span class="text-sm font-normal text-gray-500">
-                    Affichage
-                    <span class="font-semibold text-gray-900">{{ startIndex + 1 }} - {{ endIndex }}</span> sur
-                    <span class="font-semibold text-gray-900">{{ filteredCat.length }}</span>
-                  </span>
+                              <span class="text-sm font-normal text-gray-500">
+                                Affichage
+                                <span class="font-semibold text-gray-900">{{ startIndex + 1 }} - {{ endIndex }}</span> sur
+                                <span class="font-semibold text-gray-900">{{ filteredCat.length }}</span>
+                              </span>
                             <ul class="inline-flex items-stretch -space-x-px">
                                 <!-- Bouton Précédent -->
                                 <li>
@@ -330,6 +340,7 @@ const nextPage = () => {
                                 </li>
                             </ul>
                         </nav>
+                    </div>
                     </div>
 
                     <div v-if="isModalOpen" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
