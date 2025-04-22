@@ -1,11 +1,95 @@
 <script setup>
-import { RouterLink, useRouter } from 'vue-router';
-import { useStore } from 'vuex';
-import {computed, inject, onBeforeUnmount, onMounted, ref, watch} from 'vue';
-import {CircleUser, Book, Trash2, FilePenLine, Ellipsis} from 'lucide-vue-next';
+import {useStore} from 'vuex';
+import {computed, onMounted, ref, watch} from 'vue';
+import {Book, CircleUser, Ellipsis, FilePenLine, GraduationCap, Trash2} from 'lucide-vue-next';
 import axios from 'axios';
 import DropdownMenu from "@/components/DropdownMenu.vue";
 import Button from "@/components/Button.vue";
+import ApexCharts from 'apexcharts'
+
+let chart = null;
+
+onMounted(() => {
+    TotalUser();
+    TotalDevoir();
+    TotalMatiere();
+    TotalClasse();
+});
+
+onMounted(async () => {
+
+    await TotalDevoir();
+
+    const {dates, counts} = generateChartData();
+    const timestamps = dates.map(date => new Date(date).getTime());
+
+    const options = {
+        chart: {
+            type: 'area',
+            dropShadow: {
+                enabled: false,
+            },
+            toolbar: {
+                show: false,
+            },
+        },
+        fill: {
+            type: "gradient",
+            gradient: {
+                opacityFrom: 0.55,
+                opacityTo: 0,
+                shade: "#05df72",
+                gradientToColors: ["#05df72"],
+            },
+        },
+        dataLabels: {
+            enabled: false,
+        },
+        stroke: {
+            width: 6,
+        },
+        grid: {
+            show: false,
+            strokeDashArray: 4,
+            padding: {
+                left: 2,
+                right: 2,
+                top: 0
+            },
+        },
+        series: [{
+            name: 'Devoirs créés',
+            data: counts,
+            color: "#05df72",
+        }],
+        yaxis: {
+            show: false,
+        },
+        xaxis: {
+            type: 'datetime',
+            categories: timestamps,
+            labels: {
+                format: 'dd/MM',
+                datetimeUTC: false,
+                show: false,
+            },
+            axisBorder: {
+                show: false,
+            },
+            axisTicks: {
+                show: false,
+            },
+        },
+        tooltip: {
+            x: {
+                format: 'dd/MM',
+            }
+        },
+    };
+
+    chart = new ApexCharts(document.querySelector("#chart"), options);
+    chart.render();
+});
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -13,15 +97,18 @@ const store = useStore();
 
 const TotalUsers = ref(0);
 const TotalDevoirs = ref(0);
+const TotalMatieres = ref(0);
+const TotalClasses = ref(0);
 const users = ref([]);
 const recherche = ref('');
 const loading = ref(false);
 const userRecherche = ref('');
 const isModalOpen = ref(false);
 const modifierUser = ref(null);
+const devoirsParJour = ref({});
 
 const openModal = (user) => {
-    modifierUser.value = { ...user };
+    modifierUser.value = {...user};
     isModalOpen.value = true;
 };
 const closeModal = () => {
@@ -72,9 +159,76 @@ const TotalDevoir = async () => {
                 "Authorization": `Bearer ${store.state.token}`
             },
         });
+
+        console.log(response.data.member);
+
+        const counts = response.data.member.reduce((acc, devoir) => {
+            try {
+                // Utiliser le champ 'date' au lieu de 'createdAt'
+                const dateObj = new Date(devoir.date);
+                if (isNaN(dateObj)) throw new Error('Date invalide');
+
+                const date = dateObj.toISOString().split('T')[0];
+                acc[date] = (acc[date] || 0) + 1;
+            } catch (e) {
+                console.error('Erreur de date pour le devoir', devoir.id, e);
+            }
+            return acc;
+        }, {});
+
+        devoirsParJour.value = counts;
+        console.log(counts);
+
+
         TotalDevoirs.value = response.data.totalItems;
     } catch (e) {
         console.error('Erreur lors de la récupération des devoirs:', e);
+    }
+};
+
+const generateChartData = () => {
+    const endDate = new Date('2025-04-22'); // Date actuelle selon ton contexte
+    const startDate = new Date(endDate);
+    startDate.setDate(endDate.getDate() - 30);
+
+    const allDates = {};
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        const dateStr = d.toISOString().split('T')[0];
+        allDates[dateStr] = devoirsParJour.value[dateStr] || 0;
+    }
+
+    return {
+        dates: Object.keys(allDates).sort(),
+        counts: Object.values(allDates)
+    };
+};
+
+
+const TotalMatiere = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/matieres`, {
+            headers: {
+                "Content-Type": "application/ld+json",
+                "Authorization": `Bearer ${store.state.token}`
+            },
+        });
+        TotalMatieres.value = response.data.totalItems;
+    } catch (e) {
+        console.error('Erreur lors de la récupération des matières:', e);
+    }
+};
+
+const TotalClasse = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/classes`, {
+            headers: {
+                "Content-Type": "application/ld+json",
+                "Authorization": `Bearer ${store.state.token}`
+            },
+        });
+        TotalClasses.value = response.data.totalItems;
+    } catch (e) {
+        console.error('Erreur lors de la récupération des matières:', e);
     }
 };
 
@@ -95,11 +249,6 @@ const CouleurRoles = (role) => {
     if (role === 'ROLE_ELEVE') return 'bg-blue-200/50 text-blue-500/70';
     return 'bg-gray-200/50';
 };
-
-onMounted(() => {
-    TotalUser();
-    TotalDevoir();
-});
 
 const updateUser = async () => {
     if (!modifierUser.value) return;
@@ -123,7 +272,7 @@ const updateUser = async () => {
         // Mettre à jour l'utilisateur dans le tableau local
         const index = users.value.findIndex(u => u.id === modifierUser.value.id);
         if (index !== -1) {
-            users.value[index] = { ...modifierUser.value };
+            users.value[index] = {...modifierUser.value};
         }
 
         closeModal();
@@ -141,7 +290,8 @@ const updateUser = async () => {
         <div class="mt-1 text-sm text-gray-500">Gérer les paramètres du site</div>
     </div>
     <div class="px-12 py-8">
-        <div class="text-left w-full mx-auto px-4 sm:px-6 lg:px-12 flex items-center gap-2 justify-between bg-gray-100/50 border border-gray-200 rounded-lg">
+        <div
+            class="text-left w-full mx-auto px-4 sm:px-6 lg:px-12 flex items-center gap-2 justify-between bg-gray-100/50 border border-gray-200 rounded-lg">
             <div class="flex flex-col items-start py-4 border-r border-gray-200 gap-2 w-full">
                 <span><CircleUser stroke-width="1.5" size="30" class="text-green-400 fill-green-200/40" /></span>
                 <span class="uppercase text-xs font-light">Nombres d'utilisateurs</span>
@@ -155,16 +305,19 @@ const updateUser = async () => {
                 <span class="text-2xl font-medium">{{ TotalDevoirs }} <span class="text-xs font-light">au total</span></span>
             </div>
             <div class="flex flex-col items-start py-4 border-r border-gray-200 gap-2 w-full px-8">
-                <span><CircleUser stroke-width="1.5" size="30" class="text-green-400 fill-green-200/40" /></span>
-                <span class="uppercase text-xs font-light">Nombres d'utilisateurs</span>
-                <span class="text-2xl font-medium">{{ TotalUsers }} <span class="text-xs font-light">au total</span></span>
+                <span>
+                    <GraduationCap stroke-width="1.5" size="30" class="text-green-400 fill-green-200/40"/>
+                </span>
+                <span class="uppercase text-xs font-light">Nombres de classes</span>
+                <span class="text-2xl font-medium">{{ TotalClasses }} <span
+                    class="text-xs font-light">au total</span></span>
             </div>
             <div class="flex flex-col items-start py-4 gap-2 w-full px-8">
             <span>
                 <Book stroke-width="1.5" size="30" class="text-green-400 fill-green-200/40" />
             </span>
-                <span class="uppercase text-xs font-light">Nombres de devoirs</span>
-                <span class="text-2xl font-medium">{{ TotalDevoirs }} <span class="text-xs font-light">au total</span></span>
+                <span class="uppercase text-xs font-light">Nombres de matières</span>
+                <span class="text-2xl font-medium">{{ TotalMatieres }} <span class="text-xs font-light">au total</span></span>
             </div>
         </div>
     </div>
@@ -214,6 +367,17 @@ const updateUser = async () => {
                                     </span>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="py-6">
+                    <div class="rounded-lg ring-1 ring-gray-200 shadow bg-white">
+                        <div class="w-full p-6">
+                            <p class="block font-medium text-gray-700 text-sm">Devoirs crées</p>
+                            <p class="text-gray-500 text-sm">Statistiques des devoirs créés</p>
+                        </div>
+                        <div class="flex items-center justify-center">
+                            <div class="max-w-3xl w-full" id="chart"></div>
                         </div>
                     </div>
                 </div>

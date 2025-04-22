@@ -292,6 +292,11 @@ provide('triggerToast', triggerToast);
                                 <span> API </span>
                                 <ExternalLink stroke-width="2" size="12" />
                             </a>
+                            <a class="inline-flex items-center text-left rounded text-xs font-light gap-x-1.5 px-3 py-0.5 bg-gray-50 border border-gray-300 text-gray-900"
+                               href="https://github.com/AloneDay-91/SAE401" target="_blank">
+                                <span> Github </span>
+                                <ExternalLink stroke-width="2" size="12"/>
+                            </a>
                             <!-- Bouton de profil -->
                             <button
                                 @click="toggleProfile"
