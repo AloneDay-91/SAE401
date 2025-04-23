@@ -248,8 +248,9 @@ const nextPage = () => {
                                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ categorie.id }}</td>
                                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ categorie.nom }}</td>
                                 <td class="px-6 py-4 text-xs font-normal w-auto">
-                                    <span class="h-4 rounded-lg w-auto py-1 px-2 "
-                                          :class="categorie.couleur">{{ categorie.couleur }}</span>
+                                    <span class="h-4 rounded w-auto py-1 px-2 border border-gray-400 ">{{
+                                            categorie.couleur
+                                        }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-xs font-normal flex items-center gap-2">
                                     <DropdownMenu>

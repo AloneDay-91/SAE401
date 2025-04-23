@@ -332,15 +332,17 @@ const deleteDevoir = async (devoirId) => {
                                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">
                                     {{ formatTime(devoir.heure) }}
                                 </td>
-                                <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{
-                                        devoir.id_matieres.nom
-                                    }}
+                                <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">
+                                    {{ devoir.id_matieres.nom }}
                                 </td>
                                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">
                                     {{ devoir.id_categories.nom }}
                                 </td>
-                                <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.id_users.nom }}
-                                    {{ devoir.id_users.prenom }}
+                                <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">
+                                    <span class="h-4 rounded w-auto py-1 px-2 border border-gray-400">{{
+                                            devoir.id_users.nom
+                                        }}
+                                    {{ devoir.id_users.prenom }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">
                                     {{ devoir.id_classes.promo }} {{ devoir.id_classes.type }}
