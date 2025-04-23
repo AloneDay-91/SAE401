@@ -197,8 +197,10 @@ const TotalUser = async () => {
         });
         TotalUsers.value = response.data.totalItems;
         users.value = response.data.member;
+        loading.value = false;
     } catch (e) {
         console.error('Erreur lors de la récupération des utilisateurs:', e);
+        loading.value = false;
     }
 };
 
@@ -442,8 +444,6 @@ const updateUser = async () => {
                             <div>
                                 <div class="flex items-center justify-between pt-4 first:pt-0 gap-2">
                                     <div class="w-full">
-
-
                                         <div class="w-full">
                                             <div>
                                                 <div class="flex items-center justify-between gap-4 mb-4">
@@ -487,111 +487,116 @@ const updateUser = async () => {
                                                                 </span>
                                                     </div>
                                                 </div>
-                                                <div class="max-w-full border border-gray-200 rounded-lg">
-                                                    <div class="relative sm:rounded-lg">
-                                                        <div class="">
-                                                            <table class="w-full text-left">
-                                                                <thead class="uppercase border-b border-gray-200 bg-gray-200/30">
-                                                                <tr>
-                                                                    <th scope="col"
-                                                                        class="px-4 py-3 text-gray-500 text-xs font-normal">
-                                                                        ID
-                                                                    </th>
-                                                                    <th scope="col"
-                                                                        class="px-4 py-3 text-gray-500 text-xs font-normal">
-                                                                        Nom & prénom
-                                                                    </th>
-                                                                    <th scope="col"
-                                                                        class="px-4 py-3 text-gray-500 text-xs font-normal">
-                                                                        Email
-                                                                    </th>
-                                                                    <th scope="col"
-                                                                        class="px-4 py-3 text-gray-500 text-xs font-normal">
-                                                                        Classe
-                                                                    </th>
-                                                                    <th scope="col"
-                                                                        class="px-4 py-3 text-gray-500 text-xs font-normal">
-                                                                        Rôles
-                                                                    </th>
-                                                                </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                <tr v-for="user in paginatedUsers" :key="user.id"
-                                                                    class="border-b border-gray-200">
-                                                                    <td class="px-4 py-4 text-gray-500 text-xs font-normal">
-                                                                        {{ user.id }}
-                                                                    </td>
-                                                                    <td class="px-4 py-4 text-gray-500 text-xs font-normal">
-                                                                        {{ user.nom }} {{ user.prenom }}
-                                                                    </td>
-                                                                    <td class="px-4 py-4 text-gray-500 text-xs font-normal">
-                                                                        {{ user.email }}
-                                                                    </td>
-                                                                    <td class="px-4 py-4 text-gray-500 text-xs font-normal">
-                                                                        {{ user.promo }} {{ user.td }} {{ user.tp }}
-                                                                    </td>
-                                                                    <td class="px-4 py-4 text-gray-500 text-xs font-normal">
-                                                                            <span class="rounded px-2 py-1 border">
-                                                                                {{ getRoleLabel(user) }}
-                                                                            </span>
-                                                                    </td>
-                                                                </tr>
-                                                                </tbody>
-                                                            </table>
-                                                            <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4 border-b border-gray-200 rounded-bl-lg rounded-br-lg"
-                                                                 aria-label="Table navigation">
-                                                                      <span class="text-sm font-normal text-gray-500">
-                                                                        Affichage
-                                                                        <span class="font-semibold text-gray-900">{{
-                                                                                startIndex + 1
-                                                                            }} - {{ endIndex }}</span> sur
-                                                                        <span class="font-semibold text-gray-900">{{
-                                                                                filteredUsers.length
-                                                                            }}</span>
-                                                                      </span>
-                                                                <ul class="inline-flex items-stretch -space-x-px">
-                                                                    <!-- Bouton Précédent -->
-                                                                    <li>
-                                                                        <button
-                                                                                @click.prevent="prevPage"
-                                                                                :disabled="currentPage === 1"
-                                                                                class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 hover:cursor-pointer rounded-tl-lg rounded-bl-lg"
-                                                                        >
-                                                                            <span class="sr-only">Précédent</span>
-                                                                            <ChevronLeft class="w-5 h-5"
-                                                                                         stroke-width="1.5" size="18"/>
-                                                                        </button>
-                                                                    </li>
+                                                <div v-if="loading" class="w-full text-center">
+                                                    <l-pulsar size="40" speed="1.75" color="#05df72"></l-pulsar>
+                                                </div>
+                                                <div v-else>
+                                                    <div class="max-w-full border border-gray-200 rounded-lg">
+                                                        <div class="relative sm:rounded-lg">
+                                                            <div class="">
+                                                                <table class="w-full text-left">
+                                                                    <thead class="uppercase border-b border-gray-200 bg-gray-200/30">
+                                                                    <tr>
+                                                                        <th scope="col"
+                                                                            class="px-4 py-3 text-gray-500 text-xs font-normal">
+                                                                            ID
+                                                                        </th>
+                                                                        <th scope="col"
+                                                                            class="px-4 py-3 text-gray-500 text-xs font-normal">
+                                                                            Nom & prénom
+                                                                        </th>
+                                                                        <th scope="col"
+                                                                            class="px-4 py-3 text-gray-500 text-xs font-normal">
+                                                                            Email
+                                                                        </th>
+                                                                        <th scope="col"
+                                                                            class="px-4 py-3 text-gray-500 text-xs font-normal">
+                                                                            Classe
+                                                                        </th>
+                                                                        <th scope="col"
+                                                                            class="px-4 py-3 text-gray-500 text-xs font-normal">
+                                                                            Rôles
+                                                                        </th>
+                                                                    </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                    <tr v-for="user in paginatedUsers" :key="user.id"
+                                                                        class="border-b border-gray-200">
+                                                                        <td class="px-4 py-4 text-gray-500 text-xs font-normal">
+                                                                            {{ user.id }}
+                                                                        </td>
+                                                                        <td class="px-4 py-4 text-gray-500 text-xs font-normal">
+                                                                            {{ user.nom }} {{ user.prenom }}
+                                                                        </td>
+                                                                        <td class="px-4 py-4 text-gray-500 text-xs font-normal">
+                                                                            {{ user.email }}
+                                                                        </td>
+                                                                        <td class="px-4 py-4 text-gray-500 text-xs font-normal">
+                                                                            {{ user.promo }} {{ user.td }} {{ user.tp }}
+                                                                        </td>
+                                                                        <td class="px-4 py-4 text-gray-500 text-xs font-normal">
+                                                                                <span class="rounded px-2 py-1 border">
+                                                                                    {{ getRoleLabel(user) }}
+                                                                                </span>
+                                                                        </td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                                <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4 border-b border-gray-200 rounded-bl-lg rounded-br-lg"
+                                                                     aria-label="Table navigation">
+                                                                          <span class="text-sm font-normal text-gray-500">
+                                                                            Affichage
+                                                                            <span class="font-semibold text-gray-900">{{
+                                                                                    startIndex + 1
+                                                                                }} - {{ endIndex }}</span> sur
+                                                                            <span class="font-semibold text-gray-900">{{
+                                                                                    filteredUsers.length
+                                                                                }}</span>
+                                                                          </span>
+                                                                    <ul class="inline-flex items-stretch -space-x-px">
+                                                                        <!-- Bouton Précédent -->
+                                                                        <li>
+                                                                            <button
+                                                                                    @click.prevent="prevPage"
+                                                                                    :disabled="currentPage === 1"
+                                                                                    class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 hover:cursor-pointer rounded-tl-lg rounded-bl-lg"
+                                                                            >
+                                                                                <span class="sr-only">Précédent</span>
+                                                                                <ChevronLeft class="w-5 h-5"
+                                                                                             stroke-width="1.5"
+                                                                                             size="18"/>
+                                                                            </button>
+                                                                        </li>
 
-                                                                    <!-- Numéros de Page -->
-                                                                    <li v-for="page in pageRange" :key="page">
-                                                                        <button
-                                                                                @click.prevent="currentPage = page"
-                                                                                :class="{'text-primary-600 bg-green-400 border-green-400 hover:bg-green-400': page === currentPage, 'text-gray-500 bg-white border-gray-300': page !== currentPage}"
-                                                                                class="flex items-center justify-center text-sm py-2 px-3 leading-tight border hover:bg-gray-100 hover:cursor-pointer"
-                                                                        >
-                                                                            {{ page }}
-                                                                        </button>
-                                                                    </li>
-                                                                    <li>
-                                                                        <button
-                                                                                @click.prevent="nextPage"
-                                                                                :disabled="currentPage === totalPages"
-                                                                                class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 hover:cursor-pointer rounded-tr-lg rounded-br-lg"
-                                                                        >
-                                                                            <span class="sr-only">Suivant</span>
-                                                                            <ChevronRight class="w-5 h-5"
-                                                                                          stroke-width="1.5" size="18"/>
-                                                                        </button>
-                                                                    </li>
-                                                                </ul>
-                                                            </nav>
+                                                                        <!-- Numéros de Page -->
+                                                                        <li v-for="page in pageRange" :key="page">
+                                                                            <button
+                                                                                    @click.prevent="currentPage = page"
+                                                                                    :class="{'text-primary-600 bg-green-400 border-green-400 hover:bg-green-400': page === currentPage, 'text-gray-500 bg-white border-gray-300': page !== currentPage}"
+                                                                                    class="flex items-center justify-center text-sm py-2 px-3 leading-tight border hover:bg-gray-100 hover:cursor-pointer"
+                                                                            >
+                                                                                {{ page }}
+                                                                            </button>
+                                                                        </li>
+                                                                        <li>
+                                                                            <button
+                                                                                    @click.prevent="nextPage"
+                                                                                    :disabled="currentPage === totalPages"
+                                                                                    class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 hover:cursor-pointer rounded-tr-lg rounded-br-lg"
+                                                                            >
+                                                                                <span class="sr-only">Suivant</span>
+                                                                                <ChevronRight class="w-5 h-5"
+                                                                                              stroke-width="1.5"
+                                                                                              size="18"/>
+                                                                            </button>
+                                                                        </li>
+                                                                    </ul>
+                                                                </nav>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-
-
                                         </div>
                                 </div>
                             </div>
