@@ -98,10 +98,10 @@ const pourcentageAvances = computed(() => Math.min((devoirsAvance.value / procha
 const pourcentageVotes = computed(() => Math.min((devoirsVotes.value / prochainObjectifVotes.value) * 100, 100));
 
 // Badges actuels
-const badgeAjoutes = computed(() => `/src/assets/badges/${niveauAjoutes.value.badge}`);
-const badgeTermines = computed(() => `/src/assets/badges/${niveauTermines.value.badge}`);
-const badgeAvances = computed(() => `/src/assets/badges/${niveauAvances.value.badge}`);
-const badgeVotes = computed(() => `/src/assets/badges/${niveauVotes.value.badge}`);
+const badgeAjoutes = computed(() => `./src/assets/${niveauAjoutes.value.badge}`);
+const badgeTermines = computed(() => `./src/assets/${niveauTermines.value.badge}`);
+const badgeAvances = computed(() => `./src/assets/${niveauAvances.value.badge}`);
+const badgeVotes = computed(() => `./src/assets/${niveauVotes.value.badge}`);
 
 // Fonction pour récupérer le nombre de devoirs ajoutés
 const fetchDevoirsAjoutes = async () => {
