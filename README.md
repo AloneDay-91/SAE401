@@ -38,6 +38,7 @@ L'objectif est de concevoir une application web qui permet aux étudiants de cen
 ## Mise en production du projet
 - Mettre sur le serveur de production votre projet Symfony, depuis GitHub ou en uploadant une archive (sans le dossier `vendor/` et `var/`).
 - Créer un fichier `.env.local` et changer le `APP_ENV=dev` en `APP_ENV=prod`.
+- Changer le mailer pour utiliser un serveur de mail (ex: `MAILER_DSN=smtp://user:password@host:port`)
 - Pointer le serveur vers le dossier `public/`
 - Installer les dépendances PHP`composer install --optimize-autoloader`
 - Installer les dépendances JS si Webpack Encore `npm install --force`

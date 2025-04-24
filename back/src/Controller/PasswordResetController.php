@@ -16,7 +16,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Mime\Address;
 
-#[Route('/api')]
+// Retirer le #[Route('/api')] en prod
 class PasswordResetController extends AbstractController
 {
     #[Route('/password-reset', methods: ['POST'])]
@@ -52,11 +52,11 @@ class PasswordResetController extends AbstractController
         $entityManager->flush();
 
         // Génération du lien de réinitialisation
-        $resetUrl = 'http://localhost:5174/reset-password?token=' . $passwordResetToken->getToken();
+        $resetUrl = 'http://localhost:5174/reset-password?token=' . $passwordResetToken->getToken(); // changer l'url pour celui de prod
 
         // Création de l'email avec un template Twig
         $emailMessage = (new TemplatedEmail())
-            ->from(new Address('no-reply@votresite.com', 'Votre Site'))
+            ->from(new Address('mmi23f03.mmi-troyes.fr', 'Taskly'))
             ->to($user->getEmail())
             ->subject('Réinitialisation de votre mot de passe')
             ->htmlTemplate('emails/password_reset.html.twig')

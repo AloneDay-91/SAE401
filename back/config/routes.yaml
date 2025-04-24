@@ -12,11 +12,11 @@ api_login_check:
     path: /auth # retirer le /api en prod
 
 api_password_reset_request:
-    path: /api/password-reset
+    path: /password-reset # retirer le /api en prod
     controller: App\Controller\PasswordResetController::requestReset
     methods: POST
 
 api_password_reset_confirm:
-    path: /api/password-reset/confirm
+    path: /password-reset/confirm # retirer le /api en prod
     controller: App\Controller\PasswordResetController::resetPassword
     methods: POST
