@@ -1,10 +1,15 @@
 <script setup>
 import {useStore} from 'vuex';
-import {computed, onMounted, ref, watch} from 'vue';
-import {Book, CircleUser, Ellipsis, FilePenLine, GraduationCap, Trash2} from 'lucide-vue-next';
+import {computed, onMounted, ref} from 'vue';
+import {
+    Book,
+    ChevronLeft,
+    ChevronRight,
+    CircleUser,
+    GraduationCap,
+    Search,
+} from 'lucide-vue-next';
 import axios from 'axios';
-import DropdownMenu from "@/components/DropdownMenu.vue";
-import Button from "@/components/Button.vue";
 import ApexCharts from 'apexcharts'
 
 let chart = null;
@@ -100,12 +105,78 @@ const TotalDevoirs = ref(0);
 const TotalMatieres = ref(0);
 const TotalClasses = ref(0);
 const users = ref([]);
-const recherche = ref('');
 const loading = ref(false);
-const userRecherche = ref('');
 const isModalOpen = ref(false);
 const modifierUser = ref(null);
 const devoirsParJour = ref({});
+
+// Variables pour la recherche, le filtrage et la pagination
+const searchQuery = ref('');
+const selectedFilters = ref([]);
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
+
+// Pagination calculée
+const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage.value);
+const endIndex = computed(() => Math.min(startIndex.value + itemsPerPage.value, filteredUsers.value.length));
+const totalPages = computed(() => Math.ceil(filteredUsers.value.length / itemsPerPage.value));
+
+// Filtrage des classes
+const filteredUsers = computed(() => {
+    return users.value.filter((user) => {
+        const matchesFilters =
+            selectedFilters.value.every((filter) =>
+                [user.nom].includes(filter) || [user.prenom].includes(filter) || [user.email].includes(filter) || [user.promo].includes(filter) || [user.td].includes(filter) || [user.tp].includes(filter) || [user.roleapp].includes(filter)
+            );
+
+        const matchesSearch =
+            searchQuery.value === '' ||
+            Object.values(user).some((value) =>
+                String(value).toLowerCase().includes(searchQuery.value.toLowerCase())
+            );
+
+        return matchesFilters && matchesSearch;
+    });
+});
+
+const pageRange = computed(() => {
+    const range = [];
+    const maxVisiblePages = 10;
+    let start = Math.max(1, currentPage.value - Math.floor(maxVisiblePages / 2));
+    const end = Math.min(start + maxVisiblePages - 1, totalPages.value);
+
+    if (end - start + 1 < maxVisiblePages) {
+        start = Math.max(1, end - maxVisiblePages + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+        range.push(i);
+    }
+    return range;
+});
+
+// Pagination des données filtrées
+const paginatedUsers = computed(() => filteredUsers.value.slice(startIndex.value, endIndex.value));
+
+// Gestion des filtres
+const addFilter = (filter) => {
+    if (!selectedFilters.value.includes(filter)) {
+        selectedFilters.value.push(filter);
+    }
+};
+
+const removeFilter = (filter) => {
+    selectedFilters.value = selectedFilters.value.filter((f) => f !== filter);
+};
+
+// Navigation entre les pages
+const prevPage = () => {
+    if (currentPage.value > 1) currentPage.value--;
+};
+
+const nextPage = () => {
+    if (currentPage.value < totalPages.value) currentPage.value++;
+};
 
 const openModal = (user) => {
     modifierUser.value = {...user};
@@ -126,30 +197,12 @@ const TotalUser = async () => {
         });
         TotalUsers.value = response.data.totalItems;
         users.value = response.data.member;
+        loading.value = false;
     } catch (e) {
         console.error('Erreur lors de la récupération des utilisateurs:', e);
+        loading.value = false;
     }
 };
-
-const utilisateursFiltres = computed(() => {
-    if (!userRecherche.value) return users.value;
-
-    const searchTerm = userRecherche.value.toLowerCase();
-    return users.value.filter(user => {
-        return user.nom.toLowerCase().includes(searchTerm) ||
-            user.prenom.toLowerCase().includes(searchTerm) ||
-            user.email.toLowerCase().includes(searchTerm) ||
-            user.id.toString().includes(searchTerm);
-    });
-});
-
-let timeoutId = null;
-watch(userRecherche, (newValue) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => {
-        recherche.value = newValue;
-    }, 300);
-});
 
 const TotalDevoir = async () => {
     try {
@@ -166,7 +219,7 @@ const TotalDevoir = async () => {
             try {
                 // Utiliser le champ 'date' au lieu de 'createdAt'
                 const dateObj = new Date(devoir.date);
-                if (isNaN(dateObj)) throw new Error('Date invalide');
+                if (isNaN(dateObj)) new Error('Date invalide');
 
                 const date = dateObj.toISOString().split('T')[0];
                 acc[date] = (acc[date] || 0) + 1;
@@ -241,13 +294,6 @@ const getRoleLabel = (user) => {
     if (user.roleapp.includes('ROLE_ELEVE')) return 'Etudiant';
 
     return 'Inconnu';
-};
-
-const CouleurRoles = (role) => {
-    if (role === 'ROLE_ADMIN') return 'bg-purple-200/50 text-purple-500/70';
-    if (role === 'ROLE_PROFESSEUR') return 'bg-green-200/50 text-green-500/70';
-    if (role === 'ROLE_ELEVE') return 'bg-blue-200/50 text-blue-500/70';
-    return 'bg-gray-200/50';
 };
 
 const updateUser = async () => {
@@ -382,6 +428,7 @@ const updateUser = async () => {
                     </div>
                 </div>
             </div>
+
             <div class="mx-auto px-4 sm:px-6 lg:px-8 w-full">
                 <div class="">
                     <div class="rounded-lg border-1 border-gray-200 shadow-xs">
@@ -397,74 +444,166 @@ const updateUser = async () => {
                             <div>
                                 <div class="flex items-center justify-between pt-4 first:pt-0 gap-2">
                                     <div class="w-full">
-                                        <div class="w-full mb-2">
-                                            <label for="search" class="sr-only">Search</label>
-                                            <div class="relative w-full">
-                                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                    <svg aria-hidden="true" class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
-                                                    </svg>
+                                        <div class="w-full">
+                                            <div>
+                                                <div class="flex items-center justify-between gap-4 mb-4">
+                                                    <div class="relative w-full max-w-xl">
+                                                        <label for="search"
+                                                               class="mb-2 text-sm font-light text-gray-500 sr-only">Rechercher
+                                                            un utilisateur</label>
+                                                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                            <Search class="w-4 h-4 text-gray-400" stroke-width="1.5"/>
+                                                        </div>
+                                                        <input
+                                                                id="search"
+                                                                v-model="searchQuery"
+                                                                type="text"
+                                                                placeholder="Rechercher un utilisateur..."
+                                                                class="pl-10 border border-gray-300 rounded-lg px-2 py-2 w-full text-sm bg-gray-50"
+                                                        />
+                                                    </div>
+                                                    <!-- Listes déroulantes pour sélectionner les filtres -->
+                                                    <div class="flex gap-4">
+                                                        <select @change="addFilter($event.target.value)"
+                                                                class="border border-gray-300 text-gray-500 font-light text-sm rounded px-2 py-1 w-full bg-gray-50">
+                                                            <option value="" disabled selected>Filtrer par rôle</option>
+                                                            <option value="ROLE_PROFESSEUR">Professeur</option>
+                                                            <option value="ROLE_ELEVE">Etudiant</option>
+                                                            <option value="ROLE_ADMIN">Administrateur</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
-                                                <input v-model="userRecherche" type="text" name="search" id="search" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2" placeholder="Rechercher..." value="">
-                                            </div>
-                                        </div>
-                                        <div class="max-w-full border border-gray-200 rounded-lg">
-                                            <div class="relative sm:rounded-lg">
-                                                <div class="">
-                                                    <table class="w-full text-left">
-                                                        <thead class="uppercase border-b border-gray-200 bg-gray-200/30">
-                                                            <tr>
-                                                                <th scope="col" class="px-4 py-3 text-gray-500 text-xs font-normal">ID</th>
-                                                                <th scope="col" class="px-4 py-3 text-gray-500 text-xs font-normal">Nom & prénom</th>
-                                                                <th scope="col" class="px-4 py-3 text-gray-500 text-xs font-normal">Email</th>
-                                                                <th scope="col" class="px-4 py-3 text-gray-500 text-xs font-normal">Rôles</th>
-                                                                <th scope="col" class="px-4 py-3 text-gray-500 text-xs font-normal">Actions</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr v-for="user in utilisateursFiltres" :key="user.id" class="border-b border-gray-200">
-                                                                <td class="px-4 py-4 text-gray-500 text-xs font-normal">{{ user.id }}</td>
-                                                                <td class="px-4 py-4 text-gray-500 text-xs font-normal">{{ user.nom }} {{ user.prenom }}</td>
-                                                                <td class="px-4 py-4 text-gray-500 text-xs font-normal">{{ user.email }}</td>
-                                                                <td class="px-4 py-4 text-gray-500 text-xs font-normal">
-                                                                    <span class="rounded px-2 py-1" :class="CouleurRoles(user.roleapp)">
-                                                                        {{ getRoleLabel(user) }}
-                                                                    </span>
-                                                                </td>
-                                                                <td class="px-4 py-4 text-xs font-normal flex items-center gap-2">
-                                                                    <DropdownMenu>
-                                                                        <!-- Personnalisation du bouton déclencheur -->
-                                                                        <template #trigger>
-                                                                            <Button class="inline-flex hover:cursor-pointer" variant="ghost" size="small">
-                                                                                <Ellipsis stroke-width="1.5" size="16" />
-                                                                            </Button>
-                                                                        </template>
+                                                <div class="flex flex-col gap-4 mb-4">
+                                                    <!-- Affichage des chips -->
+                                                    <div class="flex gap-2 flex-wrap">
+                                                                <span
+                                                                        v-for="filter in selectedFilters"
+                                                                        :key="filter"
+                                                                        class="text-green-500 bg-green-300/10 border border-green-300 px-2 py-1 font-light text-sm rounded-lg flex items-center gap-2"
+                                                                >
+                                                                  {{ filter }}
+                                                                  <button @click="removeFilter(filter)"
+                                                                          class="text-green-500 hover:text-red-500">&times;</button>
+                                                                </span>
+                                                    </div>
+                                                </div>
+                                                <div v-if="loading" class="w-full text-center">
+                                                    <l-pulsar size="40" speed="1.75" color="#05df72"></l-pulsar>
+                                                </div>
+                                                <div v-else>
+                                                    <div class="max-w-full border border-gray-200 rounded-lg">
+                                                        <div class="relative sm:rounded-lg">
+                                                            <div class="">
+                                                                <table class="w-full text-left">
+                                                                    <thead class="uppercase border-b border-gray-200 bg-gray-200/30">
+                                                                    <tr>
+                                                                        <th scope="col"
+                                                                            class="px-4 py-3 text-gray-500 text-xs font-normal">
+                                                                            ID
+                                                                        </th>
+                                                                        <th scope="col"
+                                                                            class="px-4 py-3 text-gray-500 text-xs font-normal">
+                                                                            Nom & prénom
+                                                                        </th>
+                                                                        <th scope="col"
+                                                                            class="px-4 py-3 text-gray-500 text-xs font-normal">
+                                                                            Email
+                                                                        </th>
+                                                                        <th scope="col"
+                                                                            class="px-4 py-3 text-gray-500 text-xs font-normal">
+                                                                            Classe
+                                                                        </th>
+                                                                        <th scope="col"
+                                                                            class="px-4 py-3 text-gray-500 text-xs font-normal">
+                                                                            Rôles
+                                                                        </th>
+                                                                    </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                    <tr v-for="user in paginatedUsers" :key="user.id"
+                                                                        class="border-b border-gray-200">
+                                                                        <td class="px-4 py-4 text-gray-500 text-xs font-normal">
+                                                                            {{ user.id }}
+                                                                        </td>
+                                                                        <td class="px-4 py-4 text-gray-500 text-xs font-normal">
+                                                                            {{ user.nom }} {{ user.prenom }}
+                                                                        </td>
+                                                                        <td class="px-4 py-4 text-gray-500 text-xs font-normal">
+                                                                            {{ user.email }}
+                                                                        </td>
+                                                                        <td class="px-4 py-4 text-gray-500 text-xs font-normal">
+                                                                            {{ user.promo }} {{ user.td }} {{ user.tp }}
+                                                                        </td>
+                                                                        <td class="px-4 py-4 text-gray-500 text-xs font-normal">
+                                                                                <span class="rounded px-2 py-1 border">
+                                                                                    {{ getRoleLabel(user) }}
+                                                                                </span>
+                                                                        </td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                                <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4 border-b border-gray-200 rounded-bl-lg rounded-br-lg"
+                                                                     aria-label="Table navigation">
+                                                                          <span class="text-sm font-normal text-gray-500">
+                                                                            Affichage
+                                                                            <span class="font-semibold text-gray-900">{{
+                                                                                    startIndex + 1
+                                                                                }} - {{ endIndex }}</span> sur
+                                                                            <span class="font-semibold text-gray-900">{{
+                                                                                    filteredUsers.length
+                                                                                }}</span>
+                                                                          </span>
+                                                                    <ul class="inline-flex items-stretch -space-x-px">
+                                                                        <!-- Bouton Précédent -->
+                                                                        <li>
+                                                                            <button
+                                                                                    @click.prevent="prevPage"
+                                                                                    :disabled="currentPage === 1"
+                                                                                    class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 hover:cursor-pointer rounded-tl-lg rounded-bl-lg"
+                                                                            >
+                                                                                <span class="sr-only">Précédent</span>
+                                                                                <ChevronLeft class="w-5 h-5"
+                                                                                             stroke-width="1.5"
+                                                                                             size="18"/>
+                                                                            </button>
+                                                                        </li>
 
-                                                                        <div class="px-2">
-                                                                            <Button @click="openModal(user)" class="inline-flex justify-between items-center w-full py-2 !px-2 my-1 hover:bg-gray-200/50 text-gray-600" variant="ghost" size="small">
-                                                                                <span>Modifier</span>
-                                                                                <FilePenLine stroke-width="1.5" size="16"/>
-                                                                            </Button>
-                                                                            <hr class="text-gray-200">
-                                                                            <Button class="inline-flex justify-between items-center w-full py-2 !px-2 my-1 hover:bg-gray-200/50 text-gray-600" tag="a" :href="`users/${user.id}/delete`" variant="ghost" size="small">
-                                                                                <span class="text-red-600">Supprimer</span>
-                                                                                <Trash2 stroke-width="1.5" size="16"/>
-                                                                            </Button>
-                                                                        </div>
-                                                                    </DropdownMenu>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
+                                                                        <!-- Numéros de Page -->
+                                                                        <li v-for="page in pageRange" :key="page">
+                                                                            <button
+                                                                                    @click.prevent="currentPage = page"
+                                                                                    :class="{'text-primary-600 bg-green-400 border-green-400 hover:bg-green-400': page === currentPage, 'text-gray-500 bg-white border-gray-300': page !== currentPage}"
+                                                                                    class="flex items-center justify-center text-sm py-2 px-3 leading-tight border hover:bg-gray-100 hover:cursor-pointer"
+                                                                            >
+                                                                                {{ page }}
+                                                                            </button>
+                                                                        </li>
+                                                                        <li>
+                                                                            <button
+                                                                                    @click.prevent="nextPage"
+                                                                                    :disabled="currentPage === totalPages"
+                                                                                    class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 hover:cursor-pointer rounded-tr-lg rounded-br-lg"
+                                                                            >
+                                                                                <span class="sr-only">Suivant</span>
+                                                                                <ChevronRight class="w-5 h-5"
+                                                                                              stroke-width="1.5"
+                                                                                              size="18"/>
+                                                                            </button>
+                                                                        </li>
+                                                                    </ul>
+                                                                </nav>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
             </div>
         </section>
     </div>

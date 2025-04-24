@@ -3,7 +3,6 @@ import {computed, onMounted, ref, inject} from 'vue';
 import {useStore} from 'vuex';
 import axios from 'axios';
 import DropdownMenu from "@/components/DropdownMenu.vue";
-import {RouterLink} from "vue-router";
 import {Eye, FilePenLine, Trash2} from "lucide-vue-next";
 import Button from "@/components/Button.vue";
 import 'ldrs/ring'
@@ -227,6 +226,7 @@ const openModalEdit = (devoirId) => {
     };
 
     modifierDevoir.value = {
+        id: devoir.id,
         intitule: devoir.intitule,
         contenu: devoir.contenu,
         date: convertDate(devoir.date),
@@ -254,6 +254,7 @@ const openModalView = (devoirId) => {
     };
 
     modifierDevoir.value = {
+        id: devoir.id,
         intitule: devoir.intitule,
         contenu: devoir.contenu,
         date: convertDate(devoir.date),
@@ -298,6 +299,8 @@ const openModalView = (devoirId) => {
                             <table class="w-full">
                                 <thead class="border-b border-gray-200">
                                 <tr class="uppercase bg-gray-100">
+                                    <th scope="col" class="text-left px-6 py-3 text-gray-500 text-xs font-normal">ID
+                                    </th>
                                     <th scope="col" class="text-left px-6 py-3 text-gray-500 text-xs font-normal">Intitulé</th>
                                     <th scope="col" class="text-left px-6 py-3 text-gray-500 text-xs font-normal">Date</th>
                                     <th scope="col" class="text-left px-6 py-3 text-gray-500 text-xs font-normal">Heure</th>
@@ -309,6 +312,7 @@ const openModalView = (devoirId) => {
                                 </thead>
                                 <tbody>
                                 <tr v-if="devoirsUtilisateur.length > 0" v-for="devoir in devoirsUtilisateur" :key="devoir['@id']" class="border-b border-gray-200">
+                                    <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.id }}</td>
                                     <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.intitule }}</td>
                                     <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ formatDate(devoir.date) }}</td>
                                     <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ formatTime(devoir.heure) }}</td>
@@ -381,73 +385,81 @@ const openModalView = (devoirId) => {
     </transition>
 
     <transition name="modal-fade">
-        <div v-if="isModalEditOpen" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 overflow-y-auto pt-24">
+        <div v-if="isModalEditOpen"
+             class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 overflow-y-auto pt-24">
             <div class="bg-white p-6 rounded-lg shadow-lg w-96 relative m-12">
-                <button @click="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
-                <h2 class="text-lg font-light mb-4">Modifier un devoir</h2>
+                <button @click="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+                    &times;
+                </button>
+                <h2 class="text-lg font-light">Modifier un devoir</h2>
+                <p class="text-xs font-light mb-4">Modifier les informations du devoir n°{{
+                        modifierDevoir.id
+                    }}</p>
                 <div>
+
                     <div class="">
-                        <form @submit.prevent="updateDevoir" class="px-4 py-5 sm:px-6">
-                            <input type="hidden" v-model="modifierDevoir.id" name="id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
+                        <form @submit.prevent="updateDevoir" class="py-5">
                             <div class="mb-6">
-                                <label for="intitule" class="block mb-2 text-sm font-medium text-gray-900">Intitulé du devoir</label>
-                                <input type="text" id="intitule" name="intitule" v-model="modifierDevoir.intitule" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" placeholder="L'intitule du devoir" required>
+                                <label for="intitule" class="block mb-2 text-sm font-light text-gray-600">Intitulé
+                                    du devoir</label>
+                                <input type="text" id="intitule" name="intitule"
+                                       v-model="modifierDevoir.intitule"
+                                       class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
+                                       placeholder="L'intitule du devoir" required>
                             </div>
                             <div class="mb-6">
-                                <label for="contenu" class="block mb-2 text-sm font-medium text-gray-900">Contenu du devoir</label>
-                                <input type="text" id="contenu" name="contenu" v-model="modifierDevoir.contenu" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" placeholder="Le contenu du devoir" required>
+                                <label for="contenu" class="block mb-2 text-sm font-light text-gray-600">Contenu
+                                    du devoir</label>
+                                <input type="text" id="contenu" name="contenu" v-model="modifierDevoir.contenu"
+                                       class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
+                                       placeholder="Le contenu du devoir" required>
                             </div>
                             <div class="mb-6 flex-col gap-4">
-                                <label for="date" class="block mb-2 text-sm font-medium text-gray-900">Pour le :</label>
+                                <label for="date" class="block mb-2 text-sm font-light text-gray-600">Pour le
+                                    :</label>
                                 <div class="flex gap-4">
-                                    <input type="date" id="date" name="date" v-model="modifierDevoir.date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
+                                    <input type="date" id="date" name="date" v-model="modifierDevoir.date"
+                                           class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
+                                           required>
 
-                                    <label for="heure" class="block mb-2 text-sm font-medium text-gray-900"></label>
-                                    <input type="time" id="heure" name="heure" v-model="modifierDevoir.heure" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
+                                    <label for="heure"
+                                           class="block mb-2 text-sm font-light text-gray-600"></label>
+                                    <input type="time" id="heure" name="heure" v-model="modifierDevoir.heure"
+                                           class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
+                                           required>
                                 </div>
                             </div>
                             <div class="mb-6">
-                                <label for="td" class="block mb-2 text-sm font-medium text-gray-900">Matière</label>
-                                <select v-model="modifierDevoir.id_matieres.nom" id="matiere" name="matiere" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
+                                <label for="td"
+                                       class="block mb-2 text-sm font-light text-gray-600">Matière</label>
+                                <select v-model="modifierDevoir.id_matieres.nom" id="matiere" name="matiere"
+                                        class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
+                                        required>
                                     <option v-for="matiere in matieres" :value="matiere.nom">
                                         {{ matiere.nom }}
                                     </option>
                                 </select>
                             </div>
                             <div class="mb-6">
-                                <label for="categorie" class="block mb-2 text-sm font-medium text-gray-900">Categorie</label>
-                                <select v-model="modifierDevoir.id_categories.nom" id="categorie" name="categorie"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
+                                <label for="categorie"
+                                       class="block mb-2 text-sm font-light text-gray-600">Categorie</label>
+                                <select v-model="modifierDevoir.id_categories.nom" id="categorie"
+                                        name="categorie"
+                                        class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
+                                        required>
                                     <option v-for="categorie in categories" :value="categorie.nom">
                                         {{ categorie.nom }}
                                     </option>
                                 </select>
                             </div>
-                            <div class="mb-6">
-                                <label for="classe" class="block mb-2 text-sm font-medium text-gray-900">Classe</label>
-                                <select v-model="modifierDevoir.id_classes.type" id="classe" name="classe"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
-                                    <option v-for="classe in classes" :value="classe.type">
-                                        {{ classe.promo }} {{ classe.type }}
-                                    </option>
-                                </select>
+                            <div class="w-full flex justify-end gap-2">
+                                <Button variant="outline" size="small" class="hover:cursor-pointer"
+                                        @click="closeModal">Annuler
+                                </Button>
+                                <Button variant="solid" size="small" type="submit" class="hover:cursor-pointer">
+                                    Modifier
+                                </Button>
                             </div>
-                            <div class="flex items-center gap-2 w-full">
-                                <div class="mb-6 w-full">
-                                    <label for="formatRendu" class="block mb-2 text-sm font-medium text-gray-900">Format</label>
-                                    <select v-model="modifierDevoir.id_formatRendu.intitule" id="formatRendu" name="formatRendu"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" required>
-                                        <option v-for="formatRendu in formatRendus" :value="formatRendu.intitule">
-                                            {{ formatRendu.intitule }}
-                                        </option>
-                                    </select>
-                                </div>
-                                <div class="mb-6 w-full">
-                                    <label for="rendu" class="block mb-2 text-sm font-medium text-gray-900">Lien</label>
-                                    <input type="text" id="rendu" name="rendu" v-model="modifierDevoir.id_formatRendu.lien" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" placeholder="Lien de rendu">
-                                </div>
-                            </div>
-                            <Button variant="solid" size="small" type="submit" >Modifier</Button>
                         </form>
                     </div>
                 </div>
@@ -456,47 +468,73 @@ const openModalView = (devoirId) => {
     </transition>
 
     <transition name="modal-fade">
-        <div v-if="isModalViewOpen" class="fixed inset-0 bg-black/70 z-60 flex items-center justify-center">
+        <div v-if="isModalViewOpen"
+             class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 overflow-y-auto pt-24">
             <div class="bg-white p-6 rounded-lg shadow-lg w-96 relative m-12">
-                <button @click="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
-                <h2 class="text-lg font-light mb-4">Voir le devoir</h2>
-                <form class="px-4 py-5 sm:px-6">
-                    <div class="mb-6">
-                        <label for="intitule" class="block mb-2 text-sm font-medium text-gray-900">Intitulé du devoir</label>
-                        <input type="text" id="intitule" name="intitule" v-model="modifierDevoir.intitule" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" disabled>
+                <button @click="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+                    &times;
+                </button>
+                <h2 class="text-lg font-light">Voir un devoir</h2>
+                <p class="text-xs font-light mb-4">Voici les informations du devoir n°{{
+                        modifierDevoir.id
+                    }}</p>
+                <div>
+
+                    <div class="">
+                        <form @submit.prevent="updateDevoir" class="py-5">
+                            <div class="mb-6">
+                                <label for="intitule" class="block mb-2 text-sm font-light text-gray-600">Intitulé
+                                    du devoir</label>
+                                <input type="text" id="intitule" name="intitule"
+                                       v-model="modifierDevoir.intitule"
+                                       class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
+                                       placeholder="L'intitule du devoir" required>
+                            </div>
+                            <div class="mb-6">
+                                <label for="contenu" class="block mb-2 text-sm font-light text-gray-600">Contenu
+                                    du devoir</label>
+                                <input type="text" id="contenu" name="contenu" v-model="modifierDevoir.contenu"
+                                       class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
+                                       placeholder="Le contenu du devoir" required>
+                            </div>
+                            <div class="mb-6 flex-col gap-4">
+                                <label for="date" class="block mb-2 text-sm font-light text-gray-600">Pour le
+                                    :</label>
+                                <div class="flex gap-4">
+                                    <input type="date" id="date" name="date" v-model="modifierDevoir.date"
+                                           class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
+                                           required>
+
+                                    <label for="heure"
+                                           class="block mb-2 text-sm font-light text-gray-600"></label>
+                                    <input type="time" id="heure" name="heure" v-model="modifierDevoir.heure"
+                                           class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
+                                           required>
+                                </div>
+                            </div>
+                            <div class="mb-6">
+                                <label for="matiere"
+                                       class="block mb-2 text-sm font-light text-gray-600">Matière</label>
+                                <input type="text" id="matiere" name="matiere" v-model="modifierDevoir.id_matieres"
+                                       class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
+                                       required>
+                            </div>
+                            <div class="mb-6">
+                                <label for="categorie"
+                                       class="block mb-2 text-sm font-light text-gray-600">Categorie</label>
+                                <input type="text" id="categorie" name="categorie"
+                                       v-model="modifierDevoir.id_categories"
+                                       class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
+                                       required>
+                            </div>
+                            <div class="w-full flex justify-end gap-2">
+                                <Button variant="solid" size="small" class="hover:cursor-pointer"
+                                        @click="closeModal">Fermer
+                                </Button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="mb-6">
-                        <label for="contenu" class="block mb-2 text-sm font-medium text-gray-900">Contenu du devoir</label>
-                        <input type="text" id="contenu" name="contenu" v-model="modifierDevoir.contenu" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" disabled>
-                    </div>
-                    <div class="mb-6">
-                        <label for="date" class="block mb-2 text-sm font-medium text-gray-900">Pour le :</label>
-                        <input type="date" id="date" name="date" v-model="modifierDevoir.date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" disabled>
-                    </div>
-                    <div class="mb-6">
-                        <label for="heure" class="block mb-2 text-sm font-medium text-gray-900">Heure</label>
-                        <input type="time" id="heure" name="heure" v-model="modifierDevoir.heure" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" disabled>
-                    </div>
-                    <div class="mb-6">
-                        <label for="matiere" class="block mb-2 text-sm font-medium text-gray-900">Matière</label>
-                        <input type="text" id="matiere" name="matiere" v-model="modifierDevoir.id_matieres" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" disabled>
-                    </div>
-                    <div class="mb-6">
-                        <label for="categorie" class="block mb-2 text-sm font-medium text-gray-900">Catégorie</label>
-                        <input type="text" id="categorie" name="categorie" v-model="modifierDevoir.id_categories" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" disabled>
-                    </div>
-                    <div class="mb-6">
-                        <label for="classe" class="block mb-2 text-sm font-medium text-gray-900">Classe</label>
-                        <input type="text" id="classe" name="classe" v-model="modifierDevoir.id_classes" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" disabled>
-                    </div>
-                    <div class="mb-6">
-                        <label for="formatRendu" class="block mb-2 text-sm font-medium text-gray-900">Format de rendu</label>
-                        <input type="text" id="formatRendu" name="formatRendu" v-model="modifierDevoir.id_formatRendu" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" disabled>
-                    </div>
-                    <div class="flex justify-end gap-2">
-                        <button @click.prevent="closeModal" class="bg-gray-200 px-3 py-1.5 text-xs font-light rounded cursor-pointer hover:bg-gray-300 transition">Fermer</button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </transition>

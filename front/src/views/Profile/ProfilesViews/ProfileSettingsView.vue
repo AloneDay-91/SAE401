@@ -1,14 +1,12 @@
 <script setup>
-import {inject, onMounted, ref, watch} from 'vue'
+import {inject, onMounted, ref} from 'vue'
 import { useStore } from 'vuex'
 import Button from '@/components/Button.vue'
 import axios from "axios";
 import router from "@/router/index.js";
-import {FilePenLine} from "lucide-vue-next";
 
 const store = useStore()
 const user = ref(store.state.user)
-const error = ref(null)
 const isModalOpen = ref(false)
 const isModalDeleteOpen = ref(false)
 const updatedEmail = ref(user.value.email);
@@ -78,23 +76,22 @@ const updateMail = async () => {
           }
         });
 
-    // Loguer pour déboguer
-    console.log('Avant mise à jour dans le store:', user.value);
-
     // Mettre à jour l'email localement dans le store
     store.commit('setUser', { ...user.value, email: updatedEmail.value });
     localStorage.setItem('email', updatedEmail.value );
-    // Loguer après mise à jour
-    console.log('Après mise à jour dans le store:', store.state.user);
 
-    triggerToast("Succès", "Adresse e-mail mise à jour.", "success");
+      // Afficher un message de succès
+      triggerToast("Mise à jour réussie", "Votre adresse e-mail a été mise à jour avec succès.", 'success');
 
     store.dispatch('logout');
     closeModal();
     window.location.reload();
 
   } catch (error) {
-    triggerToast("Erreur", "Impossible de mettre à jour l'adresse e-mail.", "error");
+      // Gérer les erreurs
+      triggerToast("Erreur", "Une erreur s'est produite lors de la mise à jour de l'email.", 'error');
+  } finally {
+      closeModal();
   }
 };
 
@@ -115,23 +112,37 @@ const updateMail = async () => {
           <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
             <div class="text-sm font-normal text-gray-500">Modifier l'adresse mail</div>
             <p @click="openModal" class="mt-1 max-w-2xl text-sm text-gray-500 hover:underline transition duration-200 cursor-pointer">Changer l'adresse mail</p>
-            <div v-if="isModalOpen" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-              <div class="bg-white p-6 rounded-lg shadow-lg w-96 relative">
-                <button @click="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
-                <h2 class="text-lg font-light mb-4">Modifier l'adresse mail</h2>
-                <div>
-                  <div class="">
-                    <form @submit.prevent="updateMail" class="px-4 py-5 sm:px-6">
-                      <div class="mb-6">
-                        <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Nouvelle adresse mail</label>
-                        <input type="text" id="email" name="email" v-model="updatedEmail" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 py-1.5" placeholder="Votre adresse mail" required>
+
+              <div v-if="isModalOpen"
+                   class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 overflow-y-auto pt-24">
+                  <div class="bg-white p-6 rounded-lg shadow-lg w-96 relative m-12">
+                      <button @click="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+                          &times;
+                      </button>
+                      <h2 class="text-lg font-light">Modifier l'adresse mail</h2>
+                      <p class="text-xs font-light mb-4">Modifier l'adresse mail de votre compte.</p>
+                      <div>
+                          <div class="">
+                              <form @submit.prevent="updateMail" class="py-5">
+                                  <div class="mb-6">
+                                      <label for="intitule" class="block mb-2 text-sm font-light text-gray-600">Votre
+                                          nouvelle adresse mail</label>
+                                      <input type="email" id="email" name="email"
+                                             v-model="updatedEmail"
+                                             class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
+                                             placeholder="Votre nouvelle adresse mail" required>
+                                  </div>
+                                  <div class="w-full flex justify-end gap-2">
+                                      <Button variant="outline" size="small" class="hover:cursor-pointer"
+                                              @click="closeModal">Annuler
+                                      </Button>
+                                      <Button variant="solid" size="small" type="submit">Modifier</Button>
+                                  </div>
+                              </form>
+                          </div>
                       </div>
-                      <Button variant="solid" size="small" type="submit">Modifier</Button>
-                    </form>
                   </div>
-                </div>
               </div>
-            </div>
           </div>
           <div class="border-t border-gray-200"></div>
           <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">

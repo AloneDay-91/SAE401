@@ -248,7 +248,9 @@ const deleteMatiere = async (matiereId) => {
                                     <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ matiere.nom }}</td>
                                     <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ matiere.code }}</td>
                                     <td class="px-6 py-4 text-xs font-normal w-auto">
-                                        <span class="h-4 rounded-lg w-auto py-1 px-2" :class="matiere.couleur">{{matiere.couleur}}</span>
+                                        <span class="h-4 rounded w-auto py-1 px-2 border border-gray-400">{{
+                                                matiere.couleur
+                                            }}</span>
                                     </td>
                                     <td class="px-6 py-4 text-xs font-normal flex items-center gap-2">
                                         <DropdownMenu>

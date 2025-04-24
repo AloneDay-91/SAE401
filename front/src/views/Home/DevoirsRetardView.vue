@@ -23,7 +23,7 @@ const formatDate = (dateString) => {
 
 const formatTime = (timeString) => {
     const options = {hour: '2-digit', minute: '2-digit'};
-    return new Date(`1970-01-01T${timeString}`).toLocaleTimeString('fr-FR', options);
+    return new Date(timeString).toLocaleTimeString('fr-FR', options);
 };
 
 const getDevoirsUtilisateur = async () => {
@@ -123,7 +123,7 @@ const nextPage = () => {
             </tr>
             </thead>
             <tbody>
-            <tr v-if="devoirsUtilisateur.length > 0" v-for="devoir in devoirsUtilisateur" :key="devoir['@id']"
+            <tr v-if="devoirsUtilisateur.length > 0" v-for="devoir in paginatedDevoirs" :key="devoir['@id']"
                 class="border-b border-gray-200">
                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.intitule }}</td>
                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ formatDate(devoir.date) }}</td>

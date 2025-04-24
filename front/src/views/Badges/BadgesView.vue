@@ -1,8 +1,10 @@
 <script setup>
 import Button from "@/components/Button.vue";
-import { ref, computed, onMounted } from "vue";
+import {ref, computed, onMounted, inject} from "vue";
 import axios from 'axios';
 import {useStore} from "vuex";
+
+const triggerToast = inject('triggerToast');
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 const store = useStore();
@@ -115,6 +117,7 @@ const fetchDevoirsAjoutes = async () => {
     });
     devoirsAjoutes.value = response.data.totalItems;
   } catch (error) {
+      triggerToast("Erreur", "Une erreur s'est produite lors de la récupération des devoirs ajoutés.", 'error');
     console.error("Erreur lors de la récupération des devoirs ajoutés :", error);
     devoirsAjoutes.value = 0;
   }
@@ -124,6 +127,7 @@ onMounted(() => {
   if (user.value && user.value.id) {
     fetchDevoirsAjoutes();
   } else {
+      triggerToast("Erreur", "Utilisateur non connecté ou ID manquant.", 'error');
     console.error("Utilisateur non connecté ou ID manquant");
   }
 });
