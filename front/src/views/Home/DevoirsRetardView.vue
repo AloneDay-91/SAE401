@@ -134,14 +134,16 @@ const nextPage = () => {
                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.id_categories.nom }}</td>
                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.id_classes.promo }}
                     {{ devoir.id_classes.type }}
+                  
                 </td>
             </tr>
             <tr>
-                <td colspan="7" v-if="devoirsUtilisateur.length === 0"
-                    class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">
-                    Aucun devoir terminé pour le moment.
-                </td>
+              <td colspan="7" v-if="devoirsUtilisateur.length === 0"
+                  class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">
+                Aucun devoir terminé pour le moment.
+              </td>
             </tr>
+
             </tbody>
         </table>
         <nav

@@ -338,6 +338,7 @@ const devoirsVerifies = computed(() => {
                                 {{devoir.id_classes.promo}}
                                 {{devoir.id_classes.td}}
                                 {{devoir.id_classes.tp}}
+
                             </td>
                             <td class="px-6 py-4 text-xs font-normal flex items-center gap-2">
                                 <BadgeCheck stroke-width="1.5" size="24" fill="#04e073" color="white" />
