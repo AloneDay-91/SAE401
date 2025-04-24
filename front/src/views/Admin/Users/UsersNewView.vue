@@ -21,6 +21,12 @@ const error = ref('')
 const router = useRouter()
 const store = useStore()
 
+const hash = async (password) => {
+    const bcrypt = await import('bcryptjs');
+    const salt = await bcrypt.genSalt(10);
+    return await bcrypt.hash(password, salt);
+};
+
 const triggerToast = inject('triggerToast');
 
 const AjouterUsers = async () => {
@@ -33,6 +39,8 @@ const AjouterUsers = async () => {
         loading.value = false;
         return;
     }
+
+    password.value = await hash(password.value);
 
   const userData = {
     nom: nom.value,

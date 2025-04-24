@@ -1,6 +1,8 @@
 # SAE401 - Cahier de texte | [![wakatime](https://wakatime.com/badge/user/655aa6eb-7c71-402f-b161-4ab28498501a/project/4bb73051-6ad3-469a-a2b2-911a73ad9be6.svg)](https://wakatime.com/badge/user/655aa6eb-7c71-402f-b161-4ab28498501a/project/4bb73051-6ad3-469a-a2b2-911a73ad9be6)
 Membre du groupes : [BABALOLA Job-Faël](https://github.com/Kkeryyann), [BIROST Théo](https://github.com/TheoBirost), [BRUZEK Elouan](https://github.com/AloneDay-91), [GIRMA Valentin](https://github.com/Valgrm), [LOUIS Florent](https://github.com/Lewis3306)
 
+<img src="https://mmi23f03.sae401.ovh/assets/img_accueil-CYZzQbZZ.jpeg" style="width: auto;"/>
+
 ## Présentation du projet
 
 L'objectif est de concevoir une application web qui permet aux étudiants de centraliser et de suivre facilement les dates de rendu de leurs évaluations, travaux et autres échéances. Cette application ne servira pas à soumettre les travaux, mais uniquement à informer et rappeler les dates importantes.
