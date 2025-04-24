@@ -134,7 +134,7 @@ const nextPage = () => {
                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.id_categories.nom }}</td>
                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.id_classes.promo }}
                     {{ devoir.id_classes.type }}
-                  
+
                 </td>
             </tr>
             <tr>
@@ -144,6 +144,7 @@ const nextPage = () => {
               </td>
             </tr>
 
+            
             </tbody>
         </table>
         <nav
