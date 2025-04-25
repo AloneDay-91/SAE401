@@ -303,11 +303,23 @@ const openModalView = (devoirId) => {
                                     </th>
                                     <th scope="col" class="text-left px-6 py-3 text-gray-500 text-xs font-normal">Intitulé</th>
                                     <th scope="col" class="text-left px-6 py-3 text-gray-500 text-xs font-normal">Date</th>
-                                    <th scope="col" class="text-left px-6 py-3 text-gray-500 text-xs font-normal">Heure</th>
-                                    <th scope="col" class="text-left px-6 py-3 text-gray-500 text-xs font-normal">Matière</th>
-                                    <th scope="col" class="text-left px-6 py-3 text-gray-500 text-xs font-normal">Catégorie</th>
-                                    <th scope="col" class="text-left px-6 py-3 text-gray-500 text-xs font-normal">Classes</th>
-                                    <th scope="col" class="text-left px-6 py-3 text-gray-500 text-xs font-normal">Actions</th>
+                                    <th scope="col"
+                                        class="text-left px-6 py-3 text-gray-500 text-xs font-normal hidden lg:table-cell">
+                                        Heure
+                                    </th>
+                                    <th scope="col"
+                                        class="text-left px-6 py-3 text-gray-500 text-xs font-normal hidden lg:table-cell">
+                                        Matière
+                                    </th>
+                                    <th scope="col"
+                                        class="text-left px-6 py-3 text-gray-500 text-xs font-normal hidden lg:table-cell">
+                                        Catégorie
+                                    </th>
+                                    <th scope="col"
+                                        class="text-left px-6 py-3 text-gray-500 text-xs font-normal hidden lg:table-cell">
+                                        Classes
+                                    </th>
+                                    <th scope="col" class="text-left px-6 py-3 text-gray-500 text-xs font-normal"></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -315,18 +327,22 @@ const openModalView = (devoirId) => {
                                     <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.id }}</td>
                                     <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.intitule }}</td>
                                     <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ formatDate(devoir.date) }}</td>
-                                    <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ formatTime(devoir.heure) }}</td>
-                                    <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.id_matieres.nom }} {{ devoir.id_matieres.code }}</td>
+                                    <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto hidden lg:table-cell">
+                                        {{ formatTime(devoir.heure) }}
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto hidden lg:table-cell">
+                                        {{ devoir.id_matieres.nom }} {{ devoir.id_matieres.code }}
+                                    </td>
                                     <td class="w-auto px-6 py-4">
-                                        <div :class="[
-                        `bg-${devoir.id_categories.couleur || 'gray'}-200`,
-                        `text-${devoir.id_categories.couleur || 'gray'}-500`,
-                        ' rounded text-xs font-normal py-1'
+                                        <span :class="[
+                        `border border-gray-400`,
+                        `text-gray-500`,
+                        'rounded-lg text-xs font-normal py-1 px-3 hidden lg:table-cell'
                       ]">
                                             {{ devoir.id_categories.nom || 'Non défini' }}
-                                        </div>
+                                        </span>
                                     </td>
-                                    <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">
+                                    <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto hidden lg:table-cell">
                                         {{ devoir.id_classes.promo }} {{ devoir.id_classes.td }} {{ devoir.id_classes.tp }}
                                     </td>
                                     <td class="px-6 py-4 text-xs font-normal flex items-center gap-2">

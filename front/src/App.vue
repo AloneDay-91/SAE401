@@ -2,7 +2,7 @@
 import { RouterLink, useRouter, useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 import {computed, onBeforeUnmount, onMounted, ref, watch, provide} from 'vue';
-import {ArrowLeft, LayoutList, List, ListTodo, ListTree, User, ExternalLink} from "lucide-vue-next";
+import {ArrowLeft, LayoutList, List, ListTodo, ListTree, User, ExternalLink, Menu, X} from "lucide-vue-next";
 import Button from "@/components/Button.vue";
 import Footer from "@/components/Footer.vue";
 import Toast from "@/components/Toast.vue";
@@ -140,6 +140,13 @@ const triggerToast = (title, message, type = 'info') => {
 };
 
 provide('triggerToast', triggerToast);
+
+const showMobileMenu = ref(false);
+
+function toggleMobileMenu() {
+    showMobileMenu.value = !showMobileMenu.value;
+}
+
 
 </script>
 
@@ -441,7 +448,39 @@ provide('triggerToast', triggerToast);
                         <RouterLink to="/" class="flex mr-4">
                             <img class="w-32" src="@/assets/LOGO.png" alt="Logo">
                         </RouterLink>
-                        <nav v-if="isAuthenticated" class="mr-6">
+                        <!-- Bouton hamburger visible sur mobile -->
+                        <button @click="toggleMobileMenu" class="lg:hidden p-2" aria-label="Ouvrir le menu">
+                            <Menu/>
+                        </button>
+
+                        <!-- Navigation principale -->
+                        <nav :class="['fixed top-0 left-0 w-full h-full bg-white z-40 flex flex-col items-center justify-center transition-transform duration-300 lg:static lg:flex-row lg:bg-transparent lg:w-auto lg:h-auto',showMobileMenu ? 'translate-x-0' : '-translate-x-full lg:translate-x-0']">
+                            <div class="absolute top-4 right-4 lg:hidden">
+                                <button
+                                        @click="toggleMobileMenu"
+                                        class="p-2"
+                                        aria-label="Fermer le menu"
+                                >
+                                    <X/>
+                                </button>
+                            </div>
+                            <ul class="flex flex-col gap-6 text-lg lg:flex-row lg:gap-4 lg:text-sm lg:hidden ">
+                                <li>
+                                    <RouterLink @click="showMobileMenu = false" to="/">Tableau de bord</RouterLink>
+                                </li>
+                                <li>
+                                    <RouterLink @click="showMobileMenu = false" to="/devoirs">Mes devoirs</RouterLink>
+                                </li>
+                                <li>
+                                    <RouterLink @click="showMobileMenu = false" to="/succes">Mes succès</RouterLink>
+                                </li>
+                                <li>
+                                    <RouterLink @click="showMobileMenu = false" to="/profil">Mon profil</RouterLink>
+                                </li>
+                            </ul>
+                        </nav>
+
+                        <nav v-if="isAuthenticated" class="mr-6 hidden md:visible lg:flex lg:items-center lg:gap-4">
                             <ul class="flex items-center gap-4 text-sm">
                                 <li><RouterLink class="p-2 font-light text-gray-600" to="/" active-class="!text-black border-b border-b-green-500">Tableau de bord</RouterLink></li>
                                 <li><RouterLink class="p-2 font-light text-gray-600" to="/devoirs" active-class="!text-black border-b border-b-green-500">Mes devoirs</RouterLink></li>
@@ -449,6 +488,11 @@ provide('triggerToast', triggerToast);
                                 <li><RouterLink class="p-2 font-light text-gray-600" to="/profil" active-class="!text-black border-b border-b-green-500">Mon profil</RouterLink></li>
                             </ul>
                         </nav>
+                        <div
+                                v-if="showMobileMenu"
+                                @click="toggleMobileMenu"
+                                class="fixed inset-0 bg-black bg-opacity-40 z-30 lg:hidden"
+                        ></div>
                     </div>
                     <div v-if="isAuthenticated" class="flex items-center lg:order-2 relative">
                         <!-- Bouton de profil -->

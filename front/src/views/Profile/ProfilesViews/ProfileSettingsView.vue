@@ -109,7 +109,7 @@ const updateMail = async () => {
       </div>
       <div class="border-t border-gray-200 md:flex block">
         <div class="w-full">
-          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 px-5 py-5">
             <div class="text-sm font-normal text-gray-500">Modifier l'adresse mail</div>
             <p @click="openModal" class="mt-1 max-w-2xl text-sm text-gray-500 hover:underline transition duration-200 cursor-pointer">Changer l'adresse mail</p>
 
@@ -145,15 +145,15 @@ const updateMail = async () => {
               </div>
           </div>
           <div class="border-t border-gray-200"></div>
-          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 px-5 py-5">
             <div class="text-sm font-normal text-gray-500">Modifier le mot de passe</div>
             <a href="/mot-de-passe-oublie" class="mt-1 max-w-2xl text-sm text-gray-500 hover:underline transition duration-200">Changer de mot de passe</a>
           </div>
           <div class="border-t border-gray-200"></div>
-<!--          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">-->
-<!--            <div class="text-sm font-normal text-gray-500">Report un bug</div>-->
-<!--            <a href="/mot-de-passe-oublie" class="mt-1 max-w-2xl text-sm text-gray-500 hover:underline transition duration-200">Report un bug</a>-->
-<!--          </div>-->
+            <!--          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
+                        <div class="text-sm font-normal text-gray-500">Report un bug</div>
+                        <a href="/mot-de-passe-oublie" class="mt-1 max-w-2xl text-sm text-gray-500 hover:underline transition duration-200">Report un bug</a>
+                      </div>-->
         </div>
       </div>
     </div>

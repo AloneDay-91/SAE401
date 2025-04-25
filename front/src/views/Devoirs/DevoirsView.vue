@@ -217,12 +217,13 @@ const devoirsVerifies = computed(() => {
 <template>
     <section class="min-h-screen pb-8 border border-l-0 border-r-0 border-gray-200">
         <div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-            <div class="flex items-center justify-between border border-t-0 border-l-0 border-r-0 border-gray-200">
+            <div class="flex-col md:flex-row flex items-center justify-between border border-t-0 border-l-0 border-r-0 border-gray-200">
                 <div class="sm:flex sm:items-start flex flex-col items-center">
                     <h1 class="text-3xl font-extrabold text-gray-900">Devoirs en attentes</h1>
-                    <p class="mt-1 max-w-2xl text-sm text-gray-500 mb-5">Gérez les devoirs en attentes de vérification</p>
+                    <p class="mt-1 max-w-2xl text-sm text-gray-500 lg:mb-5">Gérez les devoirs en attentes de
+                        vérification</p>
                 </div>
-                <div class="mt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">
+                <div class="mt-4 flex flex-row lg:flex-row gap-4 lg:mt-0 sm:flex-row sm:items-center mb-5 lg:mb-0">
                     <Button variant="solid" size="small" tag="a" href="/devoirs/new">Nouveau devoir</Button>
                     <Button variant="outline" size="small" tag="a" href="/">Retour</Button>
                 </div>
@@ -243,32 +244,46 @@ const devoirsVerifies = computed(() => {
                         <tr class="uppercase bg-gray-100">
                             <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Intitulé</th>
                             <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Date</th>
-                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Heure</th>
-                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Matière</th>
-                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Catégorie</th>
-                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Classes</th>
+                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal hidden lg:table-cell">
+                                Heure
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal hidden lg:table-cell">
+                                Matière
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal hidden lg:table-cell">
+                                Catégorie
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal hidden lg:table-cell">
+                                Classes
+                            </th>
                             <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal"></th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr v-if="devoirsUtilisateur.length > 0" v-for="devoir in devoirsUtilisateur" :key="devoir['@id']" class="border-b border-gray-200">
-                            <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.intitule }}</td>
-                            <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ formatDate(devoir.date) }}</td>
-                            <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ formatTime(devoir.heure) }}</td>
-                            <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.id_matieres.code }} {{ devoir.id_matieres.nom }}</td>
-                            <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.id_categories.nom}}</td>
-                            <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">
-                                {{devoir.id_classes.promo}}
-                                {{devoir.id_classes.type}}
+                            <td class="px-6 py-4 text-gray-500 text-xs font-normal">{{ devoir.intitule }}</td>
+                            <td class="px-6 py-4 text-gray-500 text-xs font-normal">{{ formatDate(devoir.date) }}</td>
+                            <td class="px-6 py-4 text-gray-500 text-xs font-normal hidden lg:table-cell">
+                                {{ formatTime(devoir.heure) }}
+                            </td>
+                            <td class="px-6 py-4 text-gray-500 text-xs font-normal hidden lg:table-cell">
+                                {{ devoir.id_matieres.code }} {{ devoir.id_matieres.nom }}
+                            </td>
+                            <td class="px-6 py-4 text-gray-500 text-xs font-normal hidden lg:table-cell">
+                                {{ devoir.id_categories.nom }}
+                            </td>
+                            <td class="px-6 py-4 text-gray-500 text-xs font-normal hidden lg:table-cell">
+                                {{ devoir.id_classes.promo }}
+                                {{ devoir.id_classes.type }}
                             </td>
                             <td class="px-6 py-4 text-xs font-normal flex items-center gap-2">
                                 <DropdownMenu>
-                                    <!-- Personnalisation du bouton déclencheur -->
                                     <template #trigger>
                                         <Button class="inline-flex hover:cursor-pointer" variant="outline" size="small"
                                                 :disabled="hasVoted(devoir.id)">
                                             {{ hasVoted(devoir.id) ? 'Déjà voté' : 'Vérifier' }}
-                                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor"
+                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                             </svg>
                                         </Button>
@@ -288,18 +303,20 @@ const devoirsVerifies = computed(() => {
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="7" v-if="devoirsUtilisateur.length === 0" class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">
+                            <td colspan="7" v-if="devoirsUtilisateur.length === 0"
+                                class="px-6 py-4 text-gray-500 text-xs font-normal text-center">
                                 Aucun devoir disponible pour le moment.
                             </td>
                         </tr>
                         </tbody>
                     </table>
+
                 </div>
             </div>
         </div>
         <div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
             <div class="flex items-center justify-between border border-t-0 border-l-0 border-r-0 border-gray-200">
-                <div class="sm:flex sm:items-start flex flex-col items-center">
+                <div class="sm:flex items-start flex flex-col">
                     <h1 class="text-3xl font-extrabold text-gray-900">Devoirs vérifiés</h1>
                     <p class="mt-1 max-w-2xl text-sm text-gray-500 mb-5">Gérez les devoirs vérifiés</p>
                 </div>
@@ -320,10 +337,18 @@ const devoirsVerifies = computed(() => {
                         <tr class="uppercase bg-gray-100">
                             <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Intitulé</th>
                             <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Date</th>
-                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Heure</th>
-                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Matière</th>
-                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Catégorie</th>
-                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Classes</th>
+                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal hidden lg:table-cell">
+                                Heure
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal hidden lg:table-cell">
+                                Matière
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal hidden lg:table-cell">
+                                Catégorie
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal hidden lg:table-cell">
+                                Classes
+                            </th>
                             <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Status</th>
                         </tr>
                         </thead>
@@ -331,10 +356,16 @@ const devoirsVerifies = computed(() => {
                         <tr v-if="devoirsVerifies.length > 0" v-for="devoir in devoirsVerifies" :key="devoir['@id']" class="border-b border-gray-200">
                             <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.intitule }}</td>
                             <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ formatDate(devoir.date) }}</td>
-                            <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ formatTime(devoir.heure) }}</td>
-                            <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.id_matieres.code }} {{ devoir.id_matieres.nom }}</td>
-                            <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.id_categories.nom}}</td>
-                            <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">
+                            <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto hidden lg:table-cell">
+                                {{ formatTime(devoir.heure) }}
+                            </td>
+                            <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto hidden lg:table-cell">
+                                {{ devoir.id_matieres.code }} {{ devoir.id_matieres.nom }}
+                            </td>
+                            <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto hidden lg:table-cell">
+                                {{ devoir.id_categories.nom }}
+                            </td>
+                            <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto hidden lg:table-cell">
                                 {{devoir.id_classes.promo}}
                                 {{devoir.id_classes.td}}
                                 {{devoir.id_classes.tp}}

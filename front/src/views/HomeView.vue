@@ -6,6 +6,9 @@ import Button from '@/components/Button.vue';
 import {Check, ArrowRight, ChevronLeft, ChevronRight} from "lucide-vue-next";
 import {ping} from "ldrs";
 import {RouterLink, useRoute} from "vue-router";
+import {useWindowSize} from '@vueuse/core'
+
+const {width} = useWindowSize()
 
 ping.register();
 
@@ -150,16 +153,17 @@ function getWeekStart(date) {
 const daysOfWeek = computed(() => {
     const days = [];
     const weekStart = new Date(currentWeekStart.value);
+    const maxDays = width.value < 768 ? 3 : 7 // Breakpoint mobile à 768px
 
     const shortDayNames = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 
-    for (let i = 0; i < 7; i++) {
-        const date = new Date(weekStart);
-        date.setDate(date.getDate() + i);
+    for (let i = 0; i < maxDays; i++) {
+        const date = new Date(weekStart)
+        date.setDate(date.getDate() + i)
         days.push({
             shortName: shortDayNames[i],
             date: date
-        });
+        })
     }
 
     return days;
@@ -188,13 +192,15 @@ const currentWeekLabel = computed(() => {
 // Fonctions de navigation
 const previousWeek = () => {
     const prevWeek = new Date(currentWeekStart.value);
-    prevWeek.setDate(prevWeek.getDate() - 7);
+    const offset = width.value < 768 ? 3 : 7
+    prevWeek.setDate(prevWeek.getDate() - offset);
     currentWeekStart.value = prevWeek;
 };
 
 const nextWeek = () => {
     const nextWeek = new Date(currentWeekStart.value);
-    nextWeek.setDate(nextWeek.getDate() + 7);
+    const offset = width.value < 768 ? 3 : 7
+    nextWeek.setDate(nextWeek.getDate() + offset);
     currentWeekStart.value = nextWeek;
 };
 
@@ -379,7 +385,7 @@ onMounted(() => {
                             </div>
                         </div>
 
-                        <div class="calendar-grid grid grid-cols-7 gap-x-1">
+                        <div class="calendar-grid grid grid-cols-3 sm:grid-cols-7 gap-x-1">
                             <!-- Jours de la semaine -->
                             <div v-for="(day, index) in daysOfWeek" :key="index"
                                  class="flex items-center justify-between text-left py-2 px-2 font-medium bg-gray-50 rounded-t border border-gray-200">
@@ -604,4 +610,11 @@ onMounted(() => {
         min-height: 100px;
     }
 }
+
+@media (max-width: 640px) {
+    .day-cell {
+        min-width: 100px;
+    }
+}
+
 </style>

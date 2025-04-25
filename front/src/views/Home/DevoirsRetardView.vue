@@ -116,10 +116,10 @@ const nextPage = () => {
             <tr class="uppercase bg-gray-100">
                 <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Intitulé</th>
                 <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Date</th>
-                <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Heure</th>
+                <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal hidden lg:table-cell">Heure</th>
                 <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Matière</th>
-                <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Catégorie</th>
-                <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal">Classes</th>
+                <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal hidden lg:table-cell">Catégorie</th>
+                <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal hidden lg:table-cell">Classes</th>
             </tr>
             </thead>
             <tbody>
@@ -127,12 +127,17 @@ const nextPage = () => {
                 class="border-b border-gray-200">
                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.intitule }}</td>
                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ formatDate(devoir.date) }}</td>
-                <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ formatTime(devoir.heure) }}</td>
+                <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto hidden lg:table-cell">
+                    {{ formatTime(devoir.heure) }}
+                </td>
                 <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.id_matieres.code }}
                     {{ devoir.id_matieres.nom }}
                 </td>
-                <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.id_categories.nom }}</td>
-                <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto">{{ devoir.id_classes.promo }}
+                <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto hidden lg:table-cell">
+                    {{ devoir.id_categories.nom }}
+                </td>
+                <td class="px-6 py-4 text-gray-500 text-xs font-normal w-auto hidden lg:table-cell">
+                    {{ devoir.id_classes.promo }}
                     {{ devoir.id_classes.type }}
                 </td>
             </tr>
