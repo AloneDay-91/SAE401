@@ -69,7 +69,7 @@ const AjouterCategories = async () => {
                     <div>
                         <div class="flex gap-1 items-center mb-3">
                             <label for="nom" class="hidden w-32.5">Intitulé : </label>
-                            <input type="text" v-model="nom" id="nom"
+                            <input type="text" v-model="nom" id="nom" aria-label="intitulé"
                                    class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                    required>
                         </div>
@@ -93,7 +93,7 @@ const AjouterCategories = async () => {
                     <div>
                         <div class="flex gap-1 items-center mb-3">
                             <label for="couleur" class="hidden w-32.5">Couleur : </label>
-                            <input type="text" v-model="couleur" id="couleur"
+                            <input type="text" v-model="couleur" id="couleur" aria-label="couleur"
                                    class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                    required>
                         </div>

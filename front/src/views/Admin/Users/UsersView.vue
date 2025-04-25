@@ -351,6 +351,7 @@ const deleteUser = async (userId) => {
                                                                                                 <Ellipsis
                                                                                                         stroke-width="1.5"
                                                                                                         size="16"/>
+                                                                                                <span class="sr-only">Action</span>
                                                                                             </Button>
                                                                                         </template>
 
@@ -506,7 +507,7 @@ const deleteUser = async (userId) => {
                                                        required>
                                             </div>
                                             <div class="mb-6">
-                                                <label for="classe" class="block mb-2 text-sm text-gray-500 font-light">Promo</label>
+                                                <label for="promo" class="block mb-2 text-sm text-gray-500 font-light">Promo</label>
                                                 <input type="text" v-model="modifierUser.promo " id="promo" name="promo"
                                                        class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
                                                        required>

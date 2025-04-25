@@ -273,7 +273,8 @@ function toggleMobileMenu() {
                                 <span class="bg-orange-100 text-orange-800 text-xs font-light me-2 px-2.5 py-0.5 rounded">Beta</span>
                             </div>
                             <p class="mb-3 text-xs font-light text-gray-600">
-                                Le site est en version bêta. Pour toute question ou retour, n'hésitez pas à nous contacter à <a class="underline" href="#">mailtest@mail.com</a>
+                                Le site est en version bêta. Pour toute question ou retour, n'hésitez pas à nous
+                                contacter à <a class="underline" href="#">mmi23f03@mmi-troyes.fr</a>
                             </p>
                         </div>
                     </div>

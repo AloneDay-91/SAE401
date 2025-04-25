@@ -84,6 +84,7 @@ onMounted(GetDevoir)
                                             <div class="flex gap-1 items-center mb-3">
                                                 <label for="intitule" class="hidden w-32.5">Intitulé : </label>
                                                 <input v-model="devoirs.intitule" type="text" id="intitule"
+                                                       aria-label="intitulé"
                                                        name="intitule"
                                                        class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                                        required disabled/>
@@ -104,6 +105,7 @@ onMounted(GetDevoir)
                                             <div class="flex gap-1 items-center mb-3">
                                                 <label for="description" class="w-32.5 hidden">Description : </label>
                                                 <input v-model="devoirs.contenu" type="text" id="description"
+                                                       aria-label="description"
                                                        name="description"
                                                        class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                                        required disabled/>
@@ -124,6 +126,7 @@ onMounted(GetDevoir)
                                             <div class="flex gap-1 items-center mb-3">
                                                 <label for="matiere" class="w-32.5 hidden">Matière : </label>
                                                 <input v-model="devoirs.id_matieres.nom" id="matiere" name="matiere"
+                                                       aria-label="matière"
                                                        class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                                        required disabled>
                                             </div>
@@ -143,6 +146,7 @@ onMounted(GetDevoir)
                                             <div class="flex gap-1 items-center mb-3">
                                                 <label for="categorie" class="w-32.5 hidden">Catégorie : </label>
                                                 <input v-model="devoirs.id_categories.nom" id="categorie"
+                                                       aria-label="catégorie"
                                                        name="categorie"
                                                        class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                                        required disabled>
@@ -163,6 +167,7 @@ onMounted(GetDevoir)
                                             <div class="flex gap-1 items-center mb-3">
                                                 <label for="date" class="w-32.5 hidden">Date : </label>
                                                 <input :value="formatDate(devoirs.date)" type="date" id="date"
+                                                       aria-label="date"
                                                        name="date"
                                                        class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                                        required disabled/>
@@ -182,6 +187,7 @@ onMounted(GetDevoir)
                                         <div class="flex gap-1 items-center mb-3">
                                             <label for="heure" class="w-32.5 hidden">Heure : </label>
                                             <input :value="formatTime(devoirs.heure)" type="time" id="heure"
+                                                   aria-label="heure"
                                                    name="heure"
                                                    class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                                    required disabled/>
@@ -200,6 +206,7 @@ onMounted(GetDevoir)
                                         <div class="flex gap-1 items-center mb-3">
                                             <label for="rendu" class="w-32.5 hidden">Format de rendu : </label>
                                             <input v-model="devoirs.id_formatRendu.intitule" id="rendu" name="rendu"
+                                                   aria-label="format de rendu"
                                                    class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                                    required disabled>
                                         </div>
@@ -215,8 +222,9 @@ onMounted(GetDevoir)
                                             <p class="text-gray-500 font-light text-sm">Lien du rendu du devoir</p>
                                         </div>
                                         <div class="flex gap-1 items-center mb-3">
-                                            <label for="rendu" class="w-32.5 hidden">Lien du rendu : </label>
-                                            <input v-model="devoirs.id_formatRendu.lien" id="rendu" name="rendu"
+                                            <label for="LienRendu" class="w-32.5 hidden">Lien du rendu : </label>
+                                            <input v-model="devoirs.id_formatRendu.lien" id="LienRendu" name="LienRendu"
+                                                   aria-label="lien du rendu"
                                                    class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                                    required disabled>
                                         </div>
@@ -232,11 +240,12 @@ onMounted(GetDevoir)
                                             <p class="text-gray-500 font-light text-sm">Créateur du devoir</p>
                                         </div>
                                         <div class="flex gap-1 items-center mb-3">
-                                            <label for="rendu" class="w-32.5 hidden">Créateur : </label>
+                                            <label for="createur" class="w-32.5 hidden">Créateur : </label>
                                             <input
                                                 :value="devoirs.id_users ? `${devoirs.id_users.nom} ${devoirs.id_users.prenom}` : ''"
-                                                id="rendu"
-                                                name="rendu"
+                                                id="createur"
+                                                aria-label="créateur"
+                                                name="createur"
                                                 class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                                 required
                                                 disabled
@@ -259,6 +268,7 @@ onMounted(GetDevoir)
                                             <input
                                                 :value="`${devoirs.id_classes.intitule} ${devoirs.id_classes.promo} ${devoirs.id_classes.type}`"
                                                 id="classe"
+                                                aria-label="classe"
                                                 name="classe"
                                                 class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                                 required

@@ -354,6 +354,7 @@ const deleteDevoir = async (devoirId) => {
                                             <Button class="inline-flex hover:cursor-pointer" variant="ghost"
                                                     size="small">
                                                 <Ellipsis stroke-width="1.5" size="16"/>
+                                                <span class="sr-only">Action</span>
                                             </Button>
                                         </template>
 
@@ -483,8 +484,8 @@ const deleteDevoir = async (devoirId) => {
                                                    class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
                                                    required>
 
-                                            <label for="heure"
-                                                   class="block mb-2 text-sm font-light text-gray-600"></label>
+                                            <label for="heure" class="block mb-2 text-sm font-light text-gray-600"><span
+                                                    class="sr-only">à</span></label>
                                             <input type="time" id="heure" name="heure" v-model="modifierDevoir.heure"
                                                    class="bg-gray-50 border border-gray-300 text-gray-500 font-light text-sm rounded-lg block w-full p-2 py-1.5"
                                                    required>

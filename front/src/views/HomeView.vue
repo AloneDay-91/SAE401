@@ -372,9 +372,11 @@ onMounted(() => {
                                 <Button variant="outline" size="small" class="hover:cursor-pointer"
                                         @click="previousWeek">
                                     <ChevronLeft stroke-width="1.5" size="18"/>
+                                    <span class="sr-only">Précédent</span>
                                 </Button>
                                 <Button variant="outline" size="small" class="hover:cursor-pointer" @click="nextWeek">
                                     <ChevronRight stroke-width="1.5" size="18"/>
+                                    <span class="sr-only">Suivant</span>
                                 </Button>
                                 <Button variant="outline" size="small" class="hover:cursor-pointer" @click="goToToday">
                                     Aujourd'hui
@@ -495,17 +497,20 @@ onMounted(() => {
                             <div :class="devoir.id_categories.couleur" class="absolute h-full w-2 rounded-tl-lg rounded-bl-lg left-0"></div>
                             <div class="flex items-center gap-4 pl-4 w-full pr-2">
                                 <div class="flex items-center">
-                                    <label class="flex items-center cursor-pointer">
+                                    <label for="checkbox" class="flex items-center cursor-pointer">
+                                        <span class="sr-only">Checkbox</span>
                                         <input
+                                                name="checkbox"
                                             type="checkbox"
                                             class="peer hidden"
                                             :checked="getCheckboxStatus(devoir['@id'])"
                                             @change="updateDevoirStatus(devoir['@id'], $event.target.checked)"
                                             :disabled="loadingStatuses[devoir['@id']]"
+                                                aria-label="checkbox"
                                         />
-                                        <div class="h-4 w-4 border-2 border-gray-400 peer-checked:bg-green-400 peer-checked:border-green-400 rounded flex items-center justify-center">
+                                        <span class="h-4 w-4 border-2 border-gray-400 peer-checked:bg-green-400 peer-checked:border-green-400 rounded flex items-center justify-center">
                                             <Check size="12" color="black" stroke-width="2" class="hidden peer-checked:block" />
-                                        </div>
+                                        </span>
                                     </label>
                                 </div>
                                 <div class="flex items-start flex-col w-full">

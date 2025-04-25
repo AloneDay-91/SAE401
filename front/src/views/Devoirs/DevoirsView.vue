@@ -256,7 +256,8 @@ const devoirsVerifies = computed(() => {
                             <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal hidden lg:table-cell">
                                 Classes
                             </th>
-                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal"></th>
+                            <th scope="col" class="px-6 py-3 text-gray-500 text-xs font-normal"><span class="sr-only">Action</span>
+                            </th>
                         </tr>
                         </thead>
                         <tbody>

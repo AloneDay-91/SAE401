@@ -180,7 +180,7 @@ const AjouterDevoirs = async () => {
                     <div>
                         <div class="flex gap-1 items-center mb-3">
                             <label for="intitule" class="hidden w-32.5">Intitulé : </label>
-                            <input v-model="intitule" type="text" id="intitule" name="intitule"
+                            <input v-model="intitule" type="text" id="intitule" name="intitule" aria-label="intitulé"
                                    class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                    required/>
                         </div>
@@ -201,6 +201,7 @@ const AjouterDevoirs = async () => {
                         <div class="flex gap-1 items-center mb-3">
                             <label for="description" class="w-32.5 hidden">Description : </label>
                             <input v-model="contenu" type="text" id="description" name="description"
+                                   aria-label="description"
                                    class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                    required/>
                         </div>
@@ -220,7 +221,7 @@ const AjouterDevoirs = async () => {
                     <div>
                         <div class="flex gap-1 items-center mb-3">
                             <label for="matiere" class="w-32.5 hidden">Matière : </label>
-                            <select v-model="matiere1" id="matiere" name="matiere"
+                            <select v-model="matiere1" id="matiere" name="matiere" aria-label="matiere"
                                     class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                     required>
                                 <option v-for="matiere in matieres" :key="matiere.id" :value="matiere.id">
@@ -244,7 +245,7 @@ const AjouterDevoirs = async () => {
                     <div>
                         <div class="flex gap-1 items-center mb-3">
                             <label for="categorie" class="w-32.5 hidden">Catégorie : </label>
-                            <select v-model="categorie1" id="categorie" name="categorie"
+                            <select v-model="categorie1" id="categorie" name="categorie" aria-label="categorie"
                                     class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                     required>
                                 <option v-for="categorie in categories" :key="categorie.id" :value="categorie.id">
@@ -268,7 +269,7 @@ const AjouterDevoirs = async () => {
                     <div>
                         <div class="flex gap-1 items-center mb-3">
                             <label for="date" class="w-32.5 hidden">Date : </label>
-                            <input v-model="date" type="date" id="date" name="date"
+                            <input v-model="date" type="date" id="date" name="date" aria-label="date"
                                    class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                    required/>
                         </div>
@@ -287,7 +288,7 @@ const AjouterDevoirs = async () => {
                     </div>
                     <div class="flex gap-1 items-center mb-3">
                         <label for="heure" class="w-32.5 hidden">Heure : </label>
-                        <input v-model="heure" type="time" id="heure" name="heure"
+                        <input v-model="heure" type="time" id="heure" name="heure" aria-label="heure"
                                class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                required/>
                     </div>
@@ -305,7 +306,7 @@ const AjouterDevoirs = async () => {
                     </div>
                     <div class="flex gap-1 items-center mb-3">
                         <label for="rendu" class="w-32.5 hidden">Format de rendu : </label>
-                        <select v-model="rendu1" id="rendu" name="rendu"
+                        <select v-model="rendu1" id="rendu" name="rendu" aria-label="rendu"
                                 class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                 required>
                             <option v-for="rendu in format_rendus" :key="rendu.id" :value="rendu.id">
@@ -326,8 +327,8 @@ const AjouterDevoirs = async () => {
                         <p class="text-gray-500 font-light text-sm">Classe du devoir</p>
                     </div>
                     <div class="flex gap-1 items-center mb-3">
-                        <label for="rendu" class="w-32.5 hidden">Classe : </label>
-                        <select v-model="classe" id="classe" name="classe"
+                        <label for="classe" class="w-32.5 hidden">Classe : </label>
+                        <select v-model="classe" id="classe" name="classe" aria-label="classe"
                                 class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                 required>
                             <option v-for="classe in classes" :key="classe.id" :value="classe.id">

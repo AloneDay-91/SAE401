@@ -96,7 +96,7 @@ const AjouterUsers = async () => {
                     <div>
                         <div class="flex gap-1 items-center mb-3">
                             <label for="nom" class="hidden w-32.5">Nom : </label>
-                            <input type="text" v-model="nom" id="nom"
+                            <input type="text" v-model="nom" id="nom" aria-label="nom"
                                    class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                    required>
                         </div>
@@ -116,7 +116,7 @@ const AjouterUsers = async () => {
                     <div>
                         <div class="flex gap-1 items-center mb-3">
                             <label for="prenom" class="hidden w-32.5">Prénom : </label>
-                            <input type="text" v-model="prenom" id="prenom"
+                            <input type="text" v-model="prenom" id="prenom" aria-label="prénom"
                                    class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                    required>
                         </div>
@@ -136,7 +136,7 @@ const AjouterUsers = async () => {
                     <div>
                         <div class="flex gap-1 items-center mb-3">
                             <label for="email" class="hidden w-32.5">Email : </label>
-                            <input type="email" v-model="email" id="email"
+                            <input type="email" v-model="email" id="email" aria-label="email"
                                    class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                    required>
                         </div>
@@ -262,7 +262,7 @@ const AjouterUsers = async () => {
                     <div>
                         <div class="flex gap-1 items-center mb-3">
                             <label for="password" class="hidden w-32.5">Mot de passe : </label>
-                            <input type="password" v-model="password" id="password"
+                            <input type="password" v-model="password" id="password" aria-label="mot de passe"
                                    class="bg-white border border-gray-300 text-gray-500 font-light text-sm rounded-lg block p-2 py-1.5 w-50"
                                    required>
                         </div>

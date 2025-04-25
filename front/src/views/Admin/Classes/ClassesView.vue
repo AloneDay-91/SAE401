@@ -250,6 +250,7 @@ const openDeleteModal = () => {
                                         <template #trigger>
                                             <Button class="inline-flex hover:cursor-pointer" variant="ghost" size="small">
                                                 <Ellipsis stroke-width="1.5" size="16" />
+                                                <span class="sr-only">Action</span>
                                             </Button>
                                         </template>
 
