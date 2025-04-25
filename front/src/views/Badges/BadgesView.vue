@@ -111,12 +111,6 @@ const pourcentageTermines = computed(() => Math.min((devoirsTermines.value / pro
 const pourcentageAvances = computed(() => Math.min((devoirsAvance.value / prochainObjectifAvances.value) * 100, 100));
 const pourcentageVotes = computed(() => Math.min((devoirsVotes.value / prochainObjectifVotes.value) * 100, 100));
 
-// Badges actuels
-/*const badgeAjoutes = computed(() => `./src/assets/${niveauAjoutes.value.badge}`);
-const badgeTermines = computed(() => `./src/assets/${niveauTermines.value.badge}`);
-const badgeAvances = computed(() => `./src/assets/${niveauAvances.value.badge}`);
-const badgeVotes = computed(() => `./src/assets/${niveauVotes.value.badge}`);*/
-
 // Fonction pour récupérer le nombre de devoirs ajoutés
 const fetchDevoirsAjoutes = async () => {
   try {
@@ -165,7 +159,7 @@ onMounted(() => {
         <div class="bg-white shadow-sm sm:rounded-lg border border-gray-200 mt-6">
           <div class="px-4 py-5 sm:px-6 md:flex md:items-center md:justify-start gap-4 block">
             <div class="max-w-md">
-                <img :src="niveauAjoutes.value.badge" alt="Badge Ajoutés">
+                <img :src="niveauAjoutes.badge" alt="Badge Ajoutés">
             </div>
             <div class="w-full">
               <h3 class="text-lg font-medium leading-6 text-gray-900">Devoirs Ajoutés</h3>
@@ -183,7 +177,7 @@ onMounted(() => {
         <div class="bg-white shadow-sm sm:rounded-lg border border-gray-200 mt-6">
           <div class="px-4 py-5 sm:px-6 md:flex md:items-center md:justify-start gap-4 block">
             <div class="max-w-md">
-                <img :src="niveauTermines.value.badge" alt="Badge Terminés">
+                <img :src="niveauTermines.badge" alt="Badge Terminés">
             </div>
             <div class="w-full">
               <h3 class="text-lg font-medium leading-6 text-gray-900">Devoirs Terminés</h3>
@@ -201,7 +195,7 @@ onMounted(() => {
         <div class="bg-white shadow-sm sm:rounded-lg border border-gray-200 mt-6">
           <div class="px-4 py-5 sm:px-6 md:flex md:items-center md:justify-start gap-4 block">
             <div class="max-w-md">
-                <img :src="niveauAvances.value.badge" alt="Badge Avancés">
+                <img :src="niveauAvances.badge" alt="Badge Avancés">
             </div>
             <div class="w-full">
               <h3 class="text-lg font-medium leading-6 text-gray-900">Devoirs Avancés</h3>
@@ -219,7 +213,7 @@ onMounted(() => {
         <div class="bg-white shadow-sm sm:rounded-lg border border-gray-200 mt-6">
           <div class="px-4 py-5 sm:px-6 md:flex md:items-center md:justify-start gap-4 block">
             <div class="max-w-md">
-                <img :src="niveauVotes.value.badge" alt="Badge Votés">
+                <img :src="niveauVotes.badge" alt="Badge Votés">
             </div>
             <div class="w-full">
               <h3 class="text-lg font-medium leading-6 text-gray-900">Devoirs Votés</h3>
