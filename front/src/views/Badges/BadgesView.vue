@@ -16,29 +16,43 @@ const devoirsTermines = ref(12);
 const devoirsAvance = ref(8);
 const devoirsVotes = ref(5);
 
+import BadgeAjoute1 from '@/assets/badges/Ajouter_Lvl_1.svg';
+import BadgeAjoute2 from '@/assets/badges/Ajouter_Lvl_2.svg';
+import BadgeAjoute3 from '@/assets/badges/Ajouter_Lvl_3.svg';
+import BadgeTermine1 from '@/assets/badges/Terminer_Lvl_1.svg';
+import BadgeTermine2 from '@/assets/badges/Terminer_Lvl_2.svg';
+import BadgeTermine3 from '@/assets/badges/Terminer_Lvl_3.svg';
+import BadgeAvance1 from '@/assets/badges/Avance_Lvl_1.svg';
+import BadgeAvance2 from '@/assets/badges/Avance_Lvl_2.svg';
+import BadgeAvance3 from '@/assets/badges/Avance_Lvl_3.svg';
+import BadgeVote1 from '@/assets/badges/Voter_Lvl_1.svg';
+import BadgeVote2 from '@/assets/badges/Voter_Lvl_2.svg';
+import BadgeVote3 from '@/assets/badges/Voter_Lvl_3.svg';
+
+
 // Les niveaux pour chaque catégorie
 const niveauxAjoutes = [
-  { niveau: 1, objectif: 0, badge: "Ajouter_Lvl_1.svg" },
-  { niveau: 2, objectif: 6, badge: "Ajouter_Lvl_2.svg" },
-  { niveau: 3, objectif: 15, badge: "Ajouter_Lvl_3.svg" },
+    {niveau: 1, objectif: 0, badge: BadgeAjoute1},
+    {niveau: 2, objectif: 6, badge: BadgeAjoute2},
+    {niveau: 3, objectif: 15, badge: BadgeAjoute3},
 ];
 
 const niveauxTermines = [
-  { niveau: 1, objectif: 0, badge: "Terminer_Lvl_1.svg" },
-  { niveau: 2, objectif: 5, badge: "Terminer_Lvl_2.svg" },
-  { niveau: 3, objectif: 12, badge: "Terminer_Lvl_3.svg" },
+    {niveau: 1, objectif: 0, badge: BadgeTermine1},
+    {niveau: 2, objectif: 5, badge: BadgeTermine2},
+    {niveau: 3, objectif: 12, badge: BadgeTermine3},
 ];
 
 const niveauxAvances = [
-  { niveau: 1, objectif: 0, badge: "Avance_Lvl_1.svg" },
-  { niveau: 2, objectif: 8, badge: "Avance_Lvl_2.svg" },
-  { niveau: 3, objectif: 20, badge: "Avance_Lvl_3.svg" },
+    {niveau: 1, objectif: 0, badge: BadgeAvance1},
+    {niveau: 2, objectif: 5, badge: BadgeAvance2},
+    {niveau: 3, objectif: 10, badge: BadgeAvance3},
 ];
 
 const niveauxVotes = [
-  { niveau: 1, objectif: 0, badge: "Voter_Lvl_1.svg" },
-  { niveau: 2, objectif: 10, badge: "Voter_Lvl_2.svg" },
-  { niveau: 3, objectif: 25, badge: "Voter_Lvl_3.svg" },
+    {niveau: 1, objectif: 0, badge: BadgeVote1},
+    {niveau: 2, objectif: 10, badge: BadgeVote2},
+    {niveau: 3, objectif: 25, badge: BadgeVote3},
 ];
 
 // Calculer le niveau actuel pour chaque catégorie
@@ -98,10 +112,10 @@ const pourcentageAvances = computed(() => Math.min((devoirsAvance.value / procha
 const pourcentageVotes = computed(() => Math.min((devoirsVotes.value / prochainObjectifVotes.value) * 100, 100));
 
 // Badges actuels
-const badgeAjoutes = computed(() => `./src/assets/${niveauAjoutes.value.badge}`);
+/*const badgeAjoutes = computed(() => `./src/assets/${niveauAjoutes.value.badge}`);
 const badgeTermines = computed(() => `./src/assets/${niveauTermines.value.badge}`);
 const badgeAvances = computed(() => `./src/assets/${niveauAvances.value.badge}`);
-const badgeVotes = computed(() => `./src/assets/${niveauVotes.value.badge}`);
+const badgeVotes = computed(() => `./src/assets/${niveauVotes.value.badge}`);*/
 
 // Fonction pour récupérer le nombre de devoirs ajoutés
 const fetchDevoirsAjoutes = async () => {
@@ -151,7 +165,7 @@ onMounted(() => {
         <div class="bg-white shadow-sm sm:rounded-lg border border-gray-200 mt-6">
           <div class="px-4 py-5 sm:px-6 md:flex md:items-center md:justify-start gap-4 block">
             <div class="max-w-md">
-              <img :src="badgeAjoutes" alt="Badge Ajoutés">
+                <img :src="niveauAjoutes.value.badge" alt="Badge Ajoutés">
             </div>
             <div class="w-full">
               <h3 class="text-lg font-medium leading-6 text-gray-900">Devoirs Ajoutés</h3>
@@ -169,7 +183,7 @@ onMounted(() => {
         <div class="bg-white shadow-sm sm:rounded-lg border border-gray-200 mt-6">
           <div class="px-4 py-5 sm:px-6 md:flex md:items-center md:justify-start gap-4 block">
             <div class="max-w-md">
-              <img :src="badgeTermines" alt="Badge Terminés">
+                <img :src="niveauTermines.value.badge" alt="Badge Terminés">
             </div>
             <div class="w-full">
               <h3 class="text-lg font-medium leading-6 text-gray-900">Devoirs Terminés</h3>
@@ -187,7 +201,7 @@ onMounted(() => {
         <div class="bg-white shadow-sm sm:rounded-lg border border-gray-200 mt-6">
           <div class="px-4 py-5 sm:px-6 md:flex md:items-center md:justify-start gap-4 block">
             <div class="max-w-md">
-              <img :src="badgeAvances" alt="Badge Avancés">
+                <img :src="niveauAvances.value.badge" alt="Badge Avancés">
             </div>
             <div class="w-full">
               <h3 class="text-lg font-medium leading-6 text-gray-900">Devoirs Avancés</h3>
@@ -205,7 +219,7 @@ onMounted(() => {
         <div class="bg-white shadow-sm sm:rounded-lg border border-gray-200 mt-6">
           <div class="px-4 py-5 sm:px-6 md:flex md:items-center md:justify-start gap-4 block">
             <div class="max-w-md">
-              <img :src="badgeVotes" alt="Badge Votés">
+                <img :src="niveauVotes.value.badge" alt="Badge Votés">
             </div>
             <div class="w-full">
               <h3 class="text-lg font-medium leading-6 text-gray-900">Devoirs Votés</h3>
