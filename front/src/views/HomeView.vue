@@ -497,10 +497,11 @@ onMounted(() => {
                             <div :class="devoir.id_categories.couleur" class="absolute h-full w-2 rounded-tl-lg rounded-bl-lg left-0"></div>
                             <div class="flex items-center gap-4 pl-4 w-full pr-2">
                                 <div class="flex items-center">
-                                    <label for="checkbox" class="flex items-center cursor-pointer">
+                                    <label for="checkbox-devoir" class="flex items-center cursor-pointer">
                                         <span class="sr-only">Checkbox</span>
                                         <input
-                                                name="checkbox"
+                                                name="checkbox-devoir"
+                                                id="checkbox-devoir"
                                             type="checkbox"
                                             class="peer hidden"
                                             :checked="getCheckboxStatus(devoir['@id'])"
