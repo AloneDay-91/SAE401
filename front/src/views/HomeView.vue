@@ -252,8 +252,8 @@ const updateDevoirStatus = async (devoirId, isChecked) => {
         const data = existingStatus?.id
             ? { status: !!isChecked }
             : {
-                user: `${API_URL}/users/${user.value.id}`,
-                devoirs: `${API_URL}/devoirs/${devoirsId}`,
+                user: `/api/users/${user.value.id}`,
+                devoirs: `/api/devoirs/${devoirsId}`,
                 status: !!isChecked
             };
 
