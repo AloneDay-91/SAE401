@@ -292,7 +292,7 @@ const loadCheckboxStatuses = async () => {
     try {
         const response = await axios.get(`${API_URL}/checkbox_statuses`, {
             params: {
-                user: `${API_URL}/users/${user.value.id}`, // Utilisation du format IRI
+                user: `/api/users/${user.value.id}`, // Utilisation du format IRI
                 'devoirs.id[]': devoirsUtilisateur.value.map(d => d.id)
             },
             headers: {
